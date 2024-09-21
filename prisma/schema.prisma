@@ -34,6 +34,8 @@ model User {
   name      String?
   password  String
   subType   SUB_TYPE
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    String   @default("bfdc30ce-9442-4729-9f2c-4513d851052c")
   active    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,4 +48,5 @@ model Role {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   permissions String[]
+  User        User[]
 }

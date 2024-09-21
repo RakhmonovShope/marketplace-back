@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AdminService } from '../admin/admin.service';
+import { AdminService } from '../admin';
 import { User } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 
@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate({ id }: { id: string }) {
-    const user: User = await this.adminService.admin({ id });
+    const user: User = await this.adminService.admin(id);
 
     if (!user) {
       throw new UnauthorizedException();

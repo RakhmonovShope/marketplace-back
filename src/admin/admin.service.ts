@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, User } from '@prisma/client';
+import { User } from '@prisma/client';
+import * as AdminDTO from './admin.dto';
 
 @Injectable()
 export class AdminService {
@@ -8,40 +9,39 @@ export class AdminService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async admin(
-    adminWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<User | null> {
+  async admin(id: string): Promise<User | null> {
     this.logger.log('adminById');
 
     const user = await this.prisma.user.findUnique({
-      where: adminWhereUniqueInput,
+      where: { id },
     });
+
     return user;
   }
 
   async getAllAdmins() {
     this.logger.log('getAllAdmins');
     const admins = await this.prisma.user.findMany();
+
     return admins;
   }
 
-  async updateAdmin(params: {
-    where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
-  }): Promise<User> {
+  async updateAdmin(payload: AdminDTO.Update): Promise<User> {
     this.logger.log('updateAdmin');
 
     const updateAdmin = await this.prisma.user.update({
-      where: params.where,
-      data: params.data,
+      where: {
+        id: payload.id,
+      },
+      data: payload,
     });
     return updateAdmin;
   }
 
-  async deleteAdmin(where: Prisma.UserWhereUniqueInput): Promise<User> {
+  async deleteAdmin(id: string): Promise<User> {
     this.logger.log('deleteAdmin');
     const deleteAdmin = await this.prisma.user.delete({
-      where,
+      where: { id },
     });
     return deleteAdmin;
   }

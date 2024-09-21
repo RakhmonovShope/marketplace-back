@@ -16,17 +16,18 @@ export class AuthService {
 
   async signUp(data: AuthDTO.SignUp): Promise<User> {
     this.logger.log('signUp');
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
-    const createAdmin = await this.prisma.user.create({
+    const createUser = await this.prisma.user.create({
       data: {
         ...data,
         password: hashedPassword,
       },
     });
 
-    return createAdmin;
+    return createUser;
   }
 
   async signIn(data: AuthDTO.SignIn): Promise<{ accessToken: string }> {
