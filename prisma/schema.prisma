@@ -24,29 +24,224 @@ enum SUB_TYPE {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   firstName String
   lastName  String
-  phone     String   @unique
+  phone     String    @unique
   email     String
   gender    GENDER
   birthday  String
   name      String?
   password  String
   subType   SUB_TYPE
-  role      Role     @relation(fields: [roleId], references: [id])
-  roleId    String   @default("bfdc30ce-9442-4729-9f2c-4513d851052c")
-  active    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role      @relation(fields: [roleId], references: [id])
+  roleId    String
+  active    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Order     Order[]
+  Comment   Comment[]
 }
 
 model Role {
   id          String   @id @default(uuid())
   nameUz      String
   nameRu      String
+  active      Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   permissions String[]
   User        User[]
+}
+
+model Category {
+  id            String      @id @default(uuid())
+  nameUz        String
+  nameRu        String
+  descriptionUz String
+  descriptionRu String
+  slugUz        String
+  slugRu        String
+  position      Int
+  parentId      String?
+  active        Boolean     @default(false)
+  attributes    Attribute[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  Product       Product[]
+}
+
+model Attribute {
+  id            String            @id @default(uuid())
+  nameUz        String
+  nameRu        String
+  descriptionUz String
+  descriptionRu String
+  active        Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  options       AttributeOption[]
+  Category      Category?         @relation(fields: [categoryId], references: [id])
+  categoryId    String?
+}
+
+model AttributeOption {
+  id          String    @id @default(uuid())
+  nameUz      String
+  nameRu      String
+  active      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Attribute   Attribute @relation(fields: [attributeId], references: [id])
+  attributeId String
+}
+
+model File {
+  id        String   @id @default(uuid())
+  name      String
+  url       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+}
+
+model Product {
+  id            String    @id @default(uuid())
+  nameUz        String
+  nameRu        String
+  descriptionUz String
+  descriptionRu String
+  price         Float
+  discount      Float
+  active        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  category      Category  @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  brand         Brand     @relation(fields: [brandId], references: [id])
+  brandId       String
+  store         Store     @relation(fields: [storeId], references: [id])
+  storeId       String
+  images        File[]
+  Order         Order?    @relation(fields: [orderId], references: [id])
+  orderId       String?
+  Comment       Comment[]
+}
+
+model Order {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum COMMENT_TYPE {
+  COMMENT
+  REVIEW
+}
+
+model Comment {
+  id        String       @id @default(uuid())
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product      @relation(fields: [productId], references: [id])
+  productId String
+  text      String
+  type      COMMENT_TYPE
+  rating    Int
+  active    Boolean      @default(false)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Promocode {
+  id          String   @id @default(uuid())
+  code        String
+  discount    Float
+  customerId  String
+  productId   String
+  categoryIds String[]
+  startDate   DateTime
+  endDate     DateTime
+  active      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Promotion {
+  id            String   @id @default(uuid())
+  nameUz        String
+  nameRu        String
+  descriptionUz String
+  descriptionRu String
+  discount      Float
+  startDate     DateTime
+  endDate       DateTime
+  active        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Badge {
+  id         String   @id @default(uuid())
+  status     String
+  icon       String
+  nameRu     String
+  nameUz     String
+  type       String
+  text_color String
+  background Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Banner {
+  id        String   @id @default(uuid())
+  nameRu    String
+  nameUz    String
+  coverRu   String
+  coverUz   String
+  active    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Brand {
+  id        String    @id @default(uuid())
+  nameRu    String
+  nameUz    String
+  logo      String
+  cover     String
+  active    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+}
+
+model Store {
+  id          String    @id @default(uuid())
+  name        String
+  pagename    String
+  description String
+  cover       String
+  logo        String
+  address     String
+  active      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Product     Product[]
+}
+
+model Page {
+  id        String   @id @default(uuid())
+  nameRu    String
+  nameUz    String
+  contentRu String
+  contentUz String
+  active    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
