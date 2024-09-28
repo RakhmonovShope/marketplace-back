@@ -17,12 +17,18 @@ dependencies:
   '@nestjs/jwt':
     specifier: ^10.2.0
     version: 10.2.0(@nestjs/common@10.4.1)
+  '@nestjs/mapped-types':
+    specifier: ^2.0.5
+    version: 2.0.5(@nestjs/common@10.4.1)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
   '@nestjs/passport':
     specifier: ^10.0.3
     version: 10.0.3(@nestjs/common@10.4.1)(passport@0.7.0)
   '@nestjs/platform-express':
     specifier: ^10.0.0
     version: 10.4.1(@nestjs/common@10.4.1)(@nestjs/core@10.4.1)
+  '@nestjs/serve-static':
+    specifier: ^4.0.2
+    version: 4.0.2(@nestjs/common@10.4.1)(@nestjs/core@10.4.1)(express@4.19.2)
   '@nestjs/swagger':
     specifier: ^7.4.1
     version: 7.4.1(@nestjs/common@10.4.1)(@nestjs/core@10.4.1)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
@@ -41,6 +47,12 @@ dependencies:
   class-validator:
     specifier: ^0.14.1
     version: 0.14.1
+  dotenv:
+    specifier: ^16.4.5
+    version: 16.4.5
+  mkdirp:
+    specifier: ^3.0.1
+    version: 3.0.1
   passport-jwt:
     specifier: ^4.0.1
     version: 4.0.1
@@ -53,6 +65,12 @@ dependencies:
   rxjs:
     specifier: ^7.8.1
     version: 7.8.1
+  swagger-ui-express:
+    specifier: ^5.0.1
+    version: 5.0.1(express@4.19.2)
+  uuid:
+    specifier: ^10.0.0
+    version: 10.0.0
 
 devDependencies:
   '@nestjs/cli':
@@ -1088,6 +1106,28 @@ packages:
     transitivePeerDependencies:
       - chokidar
     dev: true
+
+  /@nestjs/serve-static@4.0.2(@nestjs/common@10.4.1)(@nestjs/core@10.4.1)(express@4.19.2):
+    resolution: {integrity: sha512-cT0vdWN5ar7jDI2NKbhf4LcwJzU4vS5sVpMkVrHuyLcltbrz6JdGi1TfIMMatP2pNiq5Ie/uUdPSFDVaZX/URQ==}
+    peerDependencies:
+      '@fastify/static': ^6.5.0 || ^7.0.0
+      '@nestjs/common': ^9.0.0 || ^10.0.0
+      '@nestjs/core': ^9.0.0 || ^10.0.0
+      express: ^4.18.1
+      fastify: ^4.7.0
+    peerDependenciesMeta:
+      '@fastify/static':
+        optional: true
+      express:
+        optional: true
+      fastify:
+        optional: true
+    dependencies:
+      '@nestjs/common': 10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 10.4.1(@nestjs/common@10.4.1)(@nestjs/platform-express@10.4.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      express: 4.19.2
+      path-to-regexp: 0.2.5
+    dev: false
 
   /@nestjs/swagger@7.4.1(@nestjs/common@10.4.1)(@nestjs/core@10.4.1)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2):
     resolution: {integrity: sha512-OvXv3xLrMfuIkCXLJECN339seySPnTWIgcKlWLEKNvaRjbUMC/Vu0v9+Gbry/PsNyrJdU3FaypdKaefoH1qumQ==}
@@ -4213,6 +4253,12 @@ packages:
     hasBin: true
     dev: false
 
+  /mkdirp@3.0.1:
+    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dev: false
+
   /ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
 
@@ -4480,6 +4526,10 @@ packages:
 
   /path-to-regexp@0.1.7:
     resolution: {integrity: sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ==}
+
+  /path-to-regexp@0.2.5:
+    resolution: {integrity: sha512-l6qtdDPIkmAmzEO6egquYDfqQGPMRNGjYtrU13HAXb3YSRrt7HSb1sJY0pKp6o2bAa86tSB6iwaW2JbthPKr7Q==}
+    dev: false
 
   /path-to-regexp@3.2.0:
     resolution: {integrity: sha512-jczvQbCUS7XmS7o+y1aEO9OBVFeZBQ1MDSEqmO7xSoPgOPoowY/SxLpZ6Vh97/8qHZOteiCKb7gkG9gA2ZUxJA==}
@@ -5036,6 +5086,16 @@ packages:
     resolution: {integrity: sha512-CVbSfaLpstV65OnSjbXfVd6Sta3q3F7Cj/yYuvHMp1P90LztOLs6PfUnKEVAeiIVQt9u2SaPwv0LiH/OyMjHRw==}
     dev: false
 
+  /swagger-ui-express@5.0.1(express@4.19.2):
+    resolution: {integrity: sha512-SrNU3RiBGTLLmFU8GIJdOdanJTl4TOmT27tt3bWWHppqYmAZ6IDuEuBvMU6nZq0zLEe6b/1rACXCgLZqO6ZfrA==}
+    engines: {node: '>= v0.10.32'}
+    peerDependencies:
+      express: '>=4.0.0 || >=5.0.0-beta'
+    dependencies:
+      express: 4.19.2
+      swagger-ui-dist: 5.17.14
+    dev: false
+
   /symbol-observable@4.0.0:
     resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
     engines: {node: '>=0.10'}
@@ -5356,6 +5416,11 @@ packages:
   /utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
+
+  /uuid@10.0.0:
+    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
+    hasBin: true
+    dev: false
 
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}

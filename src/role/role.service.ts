@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import * as RoleDTO from './role.dto';
 
 @Injectable()
@@ -9,26 +9,24 @@ export class RoleService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAll() {
+  async getAll(): Promise<RoleDTO.RoleResponse[]> {
     this.logger.log('getAllRoles');
     const roles = await this.prisma.role.findMany();
 
     return roles;
   }
 
-  async getById(
-    roleWhereUniqueInput: Prisma.RoleWhereUniqueInput,
-  ): Promise<Role | null> {
+  async getById(id): Promise<RoleDTO.RoleResponse> {
     this.logger.log('roleById');
 
     const role = await this.prisma.role.findUnique({
-      where: roleWhereUniqueInput,
+      where: { id },
     });
 
     return role;
   }
 
-  async create(data: RoleDTO.Create): Promise<Role> {
+  async create(data: RoleDTO.Create): Promise<RoleDTO.RoleResponse> {
     this.logger.log('createRole');
 
     const createdRole = await this.prisma.role.create({ data });

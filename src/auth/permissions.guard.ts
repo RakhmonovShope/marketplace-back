@@ -35,7 +35,6 @@ export class PermissionsGuard implements CanActivate {
       );
     }
 
-    // Fetch the user’s role and its permissions from the database
     const role = await this.prisma.role.findUnique({
       where: { id: user.roleId },
       select: { permissions: true },
@@ -45,7 +44,6 @@ export class PermissionsGuard implements CanActivate {
       throw new ForbiddenException('User role not found.');
     }
 
-    // Check if the user has the necessary permissions
     const hasPermission = requiredPermissions.every((permission) =>
       role.permissions.includes(permission),
     );

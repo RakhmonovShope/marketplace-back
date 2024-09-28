@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User } from '@prisma/client';
 import * as AdminDTO from './admin.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AdminService {
@@ -9,7 +9,7 @@ export class AdminService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async admin(id: string): Promise<User | null> {
+  async admin(id: string): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('adminById');
 
     const user = await this.prisma.user.findUnique({
@@ -26,7 +26,24 @@ export class AdminService {
     return admins;
   }
 
-  async updateAdmin(payload: AdminDTO.Update): Promise<User> {
+  async createAdmin(
+    payload: AdminDTO.Create,
+  ): Promise<AdminDTO.UserResponseDto> {
+    this.logger.log('createAdmin');
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(payload.password, salt);
+
+    const createAdmin = await this.prisma.user.create({
+      data: { ...payload, password: hashedPassword },
+    });
+
+    return createAdmin;
+  }
+
+  async updateAdmin(
+    payload: AdminDTO.Update,
+  ): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('updateAdmin');
 
     const updateAdmin = await this.prisma.user.update({
@@ -38,11 +55,13 @@ export class AdminService {
     return updateAdmin;
   }
 
-  async deleteAdmin(id: string): Promise<User> {
+  async deleteAdmin(id: string): Promise<string> {
     this.logger.log('deleteAdmin');
-    const deleteAdmin = await this.prisma.user.delete({
+
+    await this.prisma.user.delete({
       where: { id },
     });
-    return deleteAdmin;
+
+    return 'deleted';
   }
 }
