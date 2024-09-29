@@ -10,6 +10,7 @@ import { RoleModule } from './role';
 import { FileModule } from './file/file.module';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { PageModule } from './page';
 import { join } from 'path';
 
 @Module({
@@ -20,6 +21,7 @@ import { join } from 'path';
     RoleModule,
     CategoryModule,
     FileModule,
+    PageModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
