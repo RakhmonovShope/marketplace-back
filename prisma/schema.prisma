@@ -102,8 +102,6 @@ model File {
   url       String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Product   Product? @relation(fields: [productId], references: [id])
-  productId String?
 }
 
 model Product {
@@ -123,7 +121,7 @@ model Product {
   brandId       String
   store         Store     @relation(fields: [storeId], references: [id])
   storeId       String
-  images        File[]
+  images        String[]
   Order         Order?    @relation(fields: [orderId], references: [id])
   orderId       String?
   Comment       Comment[]
