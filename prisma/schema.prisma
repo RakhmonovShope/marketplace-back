@@ -183,17 +183,22 @@ model Promotion {
   updatedAt     DateTime @updatedAt
 }
 
+enum BADGE_TYPE {
+  STATIC
+  DYNAMIC
+}
+
 model Badge {
-  id         String   @id @default(uuid())
-  status     String
+  id         String     @id @default(uuid())
+  active     Boolean    @default(false)
   icon       String
   nameRu     String
   nameUz     String
-  type       String
-  text_color String
+  type       BADGE_TYPE
+  textColor  String
   background Json
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model Banner {
