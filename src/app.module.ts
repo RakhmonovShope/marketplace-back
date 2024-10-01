@@ -11,6 +11,7 @@ import { FileModule } from './file/file.module';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PageModule } from './page';
+import { BannerModule } from './banner';
 import { BadgeModule } from './badge';
 import { join } from 'path';
 
@@ -24,6 +25,7 @@ import { join } from 'path';
     FileModule,
     PageModule,
     BadgeModule,
+    BannerModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
