@@ -229,8 +229,8 @@ model Store {
   name        String
   pagename    String
   description String
-  cover       String
-  logo        String
+  cover       String?
+  logo        String?
   address     String
   active      Boolean   @default(false)
   createdAt   DateTime  @default(now())

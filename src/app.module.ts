@@ -13,6 +13,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { PageModule } from './page';
 import { BannerModule } from './banner';
 import { BadgeModule } from './badge';
+import { StoreModule } from './store';
 import { join } from 'path';
 
 @Module({
@@ -26,6 +27,7 @@ import { join } from 'path';
     PageModule,
     BadgeModule,
     BannerModule,
+    StoreModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
