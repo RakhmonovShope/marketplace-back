@@ -41,7 +41,7 @@ export class StoreController {
 
   @Post()
   @ApiOperation({ summary: 'Create' })
-  @ApiBody({ type: StoreDTO.StoreResponse })
+  @ApiBody({ type: StoreDTO.Create })
   @Permissions(PERMISSIONS.STORE__CREATE)
   async create(
     @Body() payload: StoreDTO.Create,
@@ -51,7 +51,7 @@ export class StoreController {
 
   @Put()
   @ApiOperation({ summary: 'Update' })
-  @ApiBody({ type: StoreDTO.StoreResponse })
+  @ApiBody({ type: StoreDTO.Update })
   @Permissions(PERMISSIONS.STORE__UPDATE)
   async updateAdmin(
     @Body() payload: StoreDTO.Update,
