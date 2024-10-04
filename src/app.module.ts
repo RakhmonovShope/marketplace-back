@@ -14,6 +14,7 @@ import { PageModule } from './page';
 import { BannerModule } from './banner';
 import { BadgeModule } from './badge';
 import { StoreModule } from './store';
+import { BrandModule } from './brand';
 import { join } from 'path';
 
 @Module({
@@ -28,6 +29,7 @@ import { join } from 'path';
     BadgeModule,
     BannerModule,
     StoreModule,
+    BrandModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

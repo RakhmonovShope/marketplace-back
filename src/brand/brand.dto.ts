@@ -5,26 +5,18 @@ export class Create {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Name of the store in Uzbek',
-    example: 'Contact Uz',
+    description: 'NameUz of the brand in Uzbek',
+    example: 'brand Uz',
   })
-  name: string;
+  nameUz: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Name of the store in Uzbek',
-    example: 'Contact Uz',
+    description: 'NameRU of the brand in RU',
+    example: 'brand RU',
   })
-  pagename: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'Name of the store in Uzbek',
-    example: 'Contact Uz',
-  })
-  description: string;
+  nameRu: string;
 
   @IsOptional()
   @IsString()
@@ -32,7 +24,7 @@ export class Create {
     description: 'cover of the store',
     example: '/2024/9/25/4649dbd6-3d0f-4de2-96e1-46a1584125cb.jpg',
   })
-  cover?: string;
+  cover: string;
 
   @IsOptional()
   @IsString()
@@ -40,15 +32,7 @@ export class Create {
     description: 'logo of the store',
     example: '/2024/9/25/4649dbd6-3d0f-4de2-96e1-46a1584125cb.jpg',
   })
-  logo?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'Address of the store in Uzbek',
-    example: 'Contact Uz',
-  })
-  address: string;
+  logo: string;
 
   @IsBoolean()
   @ApiProperty({
@@ -78,26 +62,18 @@ export class BrandResponse {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Name of the store in Uzbek',
-    example: 'Contact Uz',
+    description: 'NameUz of the brand in Uzbek',
+    example: 'brand Uz',
   })
-  name: string;
+  nameUz: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Name of the store in Uzbek',
-    example: 'Contact Uz',
+    description: 'NameRU of the brand in RU',
+    example: 'brand RU',
   })
-  pagename: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'Name of the store in Uzbek',
-    example: 'Contact Uz',
-  })
-  description: string;
+  nameRu: string;
 
   @IsString()
   @ApiProperty({
@@ -112,14 +88,6 @@ export class BrandResponse {
     example: '/2024/9/25/4649dbd6-3d0f-4de2-96e1-46a1584125cb.jpg',
   })
   logo: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'Address of the store in Uzbek',
-    example: 'Contact Uz',
-  })
-  address: string;
 
   @IsBoolean()
   @ApiProperty({

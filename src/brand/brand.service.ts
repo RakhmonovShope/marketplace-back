@@ -11,7 +11,7 @@ export class BrandService {
 
   async getAll(): Promise<BrandDTO.BrandResponse[]> {
     this.logger.log('getAllBrands');
-    const pages = await this.prisma.store.findMany();
+    const pages = await this.prisma.brand.findMany();
 
     return pages;
   }
@@ -19,7 +19,7 @@ export class BrandService {
   async getById(id): Promise<BrandDTO.BrandResponse> {
     this.logger.log('pageById');
 
-    const page = await this.prisma.store.findUnique({
+    const page = await this.prisma.brand.findUnique({
       where: { id },
     });
 
@@ -29,7 +29,7 @@ export class BrandService {
   async create(data: BrandDTO.Create): Promise<BrandDTO.BrandResponse> {
     this.logger.log('createBrand');
 
-    const createdBrand = await this.prisma.store.create({ data });
+    const createdBrand = await this.prisma.brand.create({ data });
 
     return createdBrand;
   }
@@ -37,7 +37,7 @@ export class BrandService {
   async updateBrand({ payload }: { payload: BrandDTO.Update }): Promise<Brand> {
     this.logger.log('updateBrand');
 
-    const updateBrand = await this.prisma.store.update({
+    const updateBrand = await this.prisma.brand.update({
       where: { id: payload.id },
       data: payload,
     });
@@ -48,7 +48,7 @@ export class BrandService {
   async deleteBrand({ id }: { id: string }): Promise<boolean> {
     this.logger.log('deleteBrand');
 
-    await this.prisma.store.delete({
+    await this.prisma.brand.delete({
       where: { id },
     });
 
