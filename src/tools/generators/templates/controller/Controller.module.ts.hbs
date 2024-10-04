@@ -1,0 +1,13 @@
+import { Module } from '@nestjs/common';
+import { {{pascalCase name}}Service } from './{{kebabCase name}}.service';
+import { {{pascalCase name}}Controller } from './{{kebabCase name}}.controller';
+import { passportModule } from '../auth/auth.module';
+
+@Module({
+imports: [passportModule],
+controllers: [{{pascalCase name}}Controller],
+exports: [{{pascalCase name}}Service],
+providers: [{{pascalCase name}}Service],
+})
+
+export class {{pascalCase name}}Module {}

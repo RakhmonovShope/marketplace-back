@@ -6,7 +6,7 @@
 
 const pluralize = require('handlebars-helper-pluralize');
 
-const controllerGenerator = require('./templates/controller');
+const controllerGenerator = require('./templates/controller/index.ts.hbs');
 
 module.exports = (plop) => {
   plop.addHelper('pluralize', (text) => pluralize(2, text));

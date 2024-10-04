@@ -1,0 +1,74 @@
+import {
+Body,
+Controller,
+Delete,
+Get,
+Param,
+Post,
+Put,
+UseGuards,
+} from '@nestjs/common';
+import { {{pascalCase name}}Service } from './{{kebabCase name}}.service';
+import { AuthGuard } from '@nestjs/passport';
+import * as {{pascalCase name}}DTO from './{{kebabCase name}}.dto';
+import { PERMISSIONS } from '../auth/auth.enum';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { Permissions } from '../auth/permissions.decorator';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+@ApiBearerAuth()
+@ApiTags('{{pascalCase (pluralize name)}}')
+@Controller('{{kebabCase (pluralize name)}}')
+@UseGuards(AuthGuard(), PermissionsGuard)
+export class {{pascalCase name}}Controller {
+constructor(private readonly {{camelCase name}}Service: {{pascalCase name}}Service) {}
+
+@Get()
+@ApiOperation({ summary: '{{pascalCase name}} get all' })
+@ApiBody({ type: [{{pascalCase name}}DTO.{{pascalCase name}}Response] })
+@Permissions(PERMISSIONS.{{constantCase name}}__VIEW)
+async getAll(): Promise
+<{{pascalCase name}}DTO.{{pascalCase name}}Response[]> {
+return this.{{camelCase name}}Service.getAll();
+}
+
+@Get(':id')
+@ApiOperation({ summary: 'Get By Id' })
+@ApiBody({ type: {{pascalCase name}}DTO.{{pascalCase name}}Response })
+@Permissions(PERMISSIONS.{{constantCase name}}__VIEW)
+async getById(@Param('id') id: string): Promise
+<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
+  return this.{{camelCase name}}Service.getById(id);
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create {{pascalCase name}}' })
+  @ApiBody({ type: {{pascalCase name}}DTO.Create })
+  @Permissions(PERMISSIONS.{{constantCase name}}__CREATE)
+  async create(
+  @Body() payload: {{pascalCase name}}DTO.Create,
+  ): Promise
+  <{{pascalCase name}}DTO.{{pascalCase name}}Response> {
+    return this.{{camelCase name}}Service.create(payload);
+    }
+
+    @Put(':id')
+    @ApiOperation({ summary: 'Update {{pascalCase name}}' })
+    @ApiBody({ type: {{pascalCase name}}DTO.Update })
+    @Permissions(PERMISSIONS.{{constantCase name}}__UPDATE)
+    async update(
+    @Param('id') id: string,
+    @Body() payload: {{pascalCase name}}DTO.Update,
+    ): Promise
+    <{{pascalCase name}}DTO.{{pascalCase name}}Response> {
+      return this.{{camelCase name}}Service.update(id, payload);
+      }
+
+      @Delete(':id')
+      @ApiOperation({ summary: 'Delete {{pascalCase name}}' })
+      @Permissions(PERMISSIONS.{{constantCase name}}__DELETE)
+      async delete(@Param('id') id: string): Promise
+      <boolean> {
+        return this.{{camelCase name}}Service.delete(id);
+        }
+        }

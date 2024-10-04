@@ -1,0 +1,65 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { {{pascalCase name}} } from '@prisma/client';
+import * as {{pascalCase name}}DTO from './{{kebabCase name}}.dto';
+
+@Injectable()
+export class {{pascalCase name}}Service {
+private logger = new Logger('{{pascalCase name}}Service');
+
+constructor(private readonly prisma: PrismaService) {}
+
+async getAll(): Promise
+<{{pascalCase name}}DTO.{{pascalCase name}}Response[]> {
+this.logger.log('getAll{{pascalCase pluralize name}}');
+const {{camelCase pluralize name}} = await this.prisma.{{camelCase name}}.findMany();
+
+return {{camelCase pluralize name}};
+}
+
+async getById(id: string): Promise
+<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
+  this.logger.log('{{camelCase name}}ById');
+
+  const {{camelCase name}} = await this.prisma.{{camelCase name}}.findUnique({
+  where: { id },
+  });
+
+  return {{camelCase name}};
+  }
+
+  async create(data: {{pascalCase name}}DTO.Create): Promise
+  <{{pascalCase name}}DTO.{{pascalCase name}}Response> {
+    this.logger.log('create{{pascalCase name}}');
+
+    const created{{pascalCase name}} = await this.prisma.{{camelCase name}}.create({ data });
+
+    return created{{pascalCase name}};
+    }
+
+    async update{{pascalCase name}}({
+    payload,
+    }: {
+    payload: {{pascalCase name}}DTO.Update;
+    }): Promise<{{pascalCase name}}> {
+    this.logger.log('update{{pascalCase name}}');
+
+    const update{{pascalCase name}} = await this.prisma.{{camelCase name}}.update({
+    where: { id: payload.id },
+    data: payload,
+    });
+
+    return update{{pascalCase name}};
+    }
+
+    async delete{{pascalCase name}}({ id }: { id: string }): Promise
+    <boolean> {
+      this.logger.log('delete{{pascalCase name}}');
+
+      await this.prisma.{{camelCase name}}.delete({
+      where: { id },
+      });
+
+      return true;
+      }
+      }
