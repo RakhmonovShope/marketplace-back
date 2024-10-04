@@ -3,18 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { PrismaModule } from './prisma/prisma.module';
-import { AdminModule } from './admin';
-import { CategoryModule } from './category';
-import { AuthModule } from './auth/auth.module';
-import { RoleModule } from './role';
-import { FileModule } from './file/file.module';
+import { AdminModule } from './api/admin';
+import { CategoryModule } from './api/category';
+import { AuthModule } from './api/auth/auth.module';
+import { RoleModule } from './api/role';
+import { FileModule } from './api/file/file.module';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { PageModule } from './page';
-import { BannerModule } from './banner';
-import { BadgeModule } from './badge';
-import { StoreModule } from './store';
-import { BrandModule } from './brand';
+import { PageModule } from './api/page';
+import { BannerModule } from './api/banner';
+import { BadgeModule } from './api/badge';
+import { StoreModule } from './api/store';
+import { BrandModule } from './api/brand';
+
 import { join } from 'path';
 
 @Module({

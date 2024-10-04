@@ -4,7 +4,7 @@ import {
   NotFoundException,
   StreamableFile,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import * as FileDTO from './file.dto';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
