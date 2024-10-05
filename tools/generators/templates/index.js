@@ -24,11 +24,11 @@ module.exports = {
       path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.module.ts',
       templateFile: './templates/controller/Controller.module.ts.hbs',
     },
-    // {
-    //   type: 'add',
-    //   path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.service.ts',
-    //   templateFile: './templates/controller/Controller.service.ts.hbs',
-    // },
+    {
+      type: 'add',
+      path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.service.ts',
+      templateFile: './templates/controller/Controller.service.ts.hbs',
+    },
     {
       type: 'add',
       path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.controller.ts',
@@ -41,8 +41,20 @@ module.exports = {
     },
     {
       type: 'add',
-      path: '../../src/api/index.ts',
+      path: '../../src/api/{{kebabCase name}}/index.ts',
       templateFile: './templates/controller/index.ts.hbs',
+    },
+    {
+      type: 'append',
+      path: '../../src/app.module.ts',
+      pattern: /imports: \[/,
+      template: `    {{pascalCase name}}Module,`,
+    },
+    {
+      type: 'append',
+      path: '../../src/app.module.ts',
+      pattern: /from '@nestjs\/common';/,
+      template: `import { {{pascalCase name}}Module } from './api/{{kebabCase name}}/{{kebabCase name}}';`,
     },
   ],
 };

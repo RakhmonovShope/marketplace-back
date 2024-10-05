@@ -10,11 +10,11 @@ private logger = new Logger('{{pascalCase name}}Service');
   constructor(private readonly prisma: PrismaService) {}
 
   async getAll(): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response[]> {
-    this.logger.log('getAll{{pascalCase pluralize name}}');
+    this.logger.log('getAll{{pascalCase (pluralize name)}}');
 
-    const {{camelCase pluralize name}} = await this.prisma.{{camelCase name}}.findMany();
+    const {{camelCase (pluralize name)}} = await this.prisma.{{camelCase name}}.findMany();
 
-    return {{camelCase pluralize name}};
+    return {{camelCase (pluralize name)}};
   }
 
   async getById(id: string): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
