@@ -1,4 +1,4 @@
-const componentExists = require('../utils/componentExists');
+const componentExists = require('../../utils/componentExists');
 
 module.exports = {
   description: 'Generate a new module',
@@ -54,7 +54,16 @@ module.exports = {
       type: 'append',
       path: '../../src/app.module.ts',
       pattern: /from '@nestjs\/common';/,
-      template: `import { {{pascalCase name}}Module } from './api/{{kebabCase name}}/{{kebabCase name}}';`,
+      template: `import { {{pascalCase name}}Module } from './api/{{kebabCase name}}';`,
+    },
+    {
+      type: 'append',
+      path: '../../src/api/auth/auth.enum.ts',
+      pattern: /PERMISSIONS: \{/,
+      template: `    {{upperCase name}}__CREATE = '{{upperCase name}}__CREATE',
+                     {{upperCase name}}__VIEW = '{{upperCase name}}__VIEW',
+                     {{upperCase name}}__UPDATE = '{{upperCase name}}__UPDATE',
+                     {{upperCase name}}__DELETE = '{{upperCase name}}__DELETE',`,
     },
   ],
 };
