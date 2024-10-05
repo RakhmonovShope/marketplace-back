@@ -22,27 +22,27 @@ module.exports = {
     {
       type: 'add',
       path: 'src/api/{{kebabCase name}}/{{kebabCase name}}.module.ts',
-      templateFile: './controller/Controller.module.ts.hbs',
+      templateFile: './templates/controller/Controller.module.ts.hbs',
     },
     {
       type: 'add',
       path: 'src/api/{{kebabCase name}}/{{kebabCase name}}.service.ts',
-      templateFile: './controller/Controller.service.ts.hbs',
+      templateFile: './templates/controller/Controller.service.ts.hbs',
     },
     {
       type: 'add',
       path: 'src/api/{{kebabCase name}}/{{kebabCase name}}.controller.ts',
-      templateFile: './controller/Controller.controller.ts.hbs',
+      templateFile: './templates/controller/Controller.controller.ts.hbs',
     },
     {
       type: 'add',
       path: 'src/api/{{kebabCase name}}/{{kebabCase name}}.dto.ts',
-      templateFile: './controller/Controller.dto.ts.hbs',
+      templateFile: './templates/controller/Controller.dto.ts.hbs',
     },
     {
       type: 'add',
       path: 'src/api/index.ts',
-      templateFile: './controller/index.ts.hbs',
+      templateFile: './templates/controller/index.ts.hbs',
     },
     {
       type: 'append',
