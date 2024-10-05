@@ -60,10 +60,11 @@ module.exports = {
       type: 'append',
       path: '../../src/api/auth/auth.enum.ts',
       pattern: /PERMISSIONS\s*{/,
-      template: `    {{upperCase name}}__CREATE = '{{upperCase name}}__CREATE',
-                     {{upperCase name}}__VIEW = '{{upperCase name}}__VIEW',
-                     {{upperCase name}}__UPDATE = '{{upperCase name}}__UPDATE',
-                     {{upperCase name}}__DELETE = '{{upperCase name}}__DELETE',`,
+      template: `  //{{upperCase name}}  
+      {{upperCase name}}__CREATE = '{{upperCase name}}__CREATE',
+      {{upperCase name}}__VIEW = '{{upperCase name}}__VIEW',
+      {{upperCase name}}__UPDATE = '{{upperCase name}}__UPDATE',
+      {{upperCase name}}__DELETE = '{{upperCase name}}__DELETE',`,
     },
   ],
 };
