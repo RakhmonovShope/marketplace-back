@@ -10,8 +10,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       provide: 'REDIS_CLIENT',
       useFactory: (configService: ConfigService) => {
         return new Redis({
-          host: 'localhost',
-          port: 6379,
+          host: configService.get('REDIS_HOST', 'localhost'),
+          port: Number(configService.get('REDIS_PORT', 6394)),
         });
       },
       inject: [ConfigService],
