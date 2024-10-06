@@ -15,11 +15,15 @@ import { BannerModule } from './api/banner';
 import { BadgeModule } from './api/badge';
 import { StoreModule } from './api/store';
 import { BrandModule } from './api/brand';
+import { RedisModule, RedisService } from './redis';
 
 import { join } from 'path';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     PrismaModule,
     AuthModule,
     AdminModule,
@@ -31,15 +35,13 @@ import { join } from 'path';
     BannerModule,
     StoreModule,
     BrandModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    RedisModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'files'), // Replace with the correct path to the files directory
       serveRoot: '/files', // This means files will be accessible via localhost:3000/files
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RedisService],
 })
 export class AppModule {}
