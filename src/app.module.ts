@@ -15,8 +15,7 @@ import { BannerModule } from './api/banner';
 import { BadgeModule } from './api/badge';
 import { StoreModule } from './api/store';
 import { BrandModule } from './api/brand';
-import { RedisService } from './redis';
-
+import { RedisModule, RedisService } from './redis';
 import { join } from 'path';
 
 @Module({
@@ -35,6 +34,7 @@ import { join } from 'path';
     BannerModule,
     StoreModule,
     BrandModule,
+    RedisModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'files'), // Replace with the correct path to the files directory
       serveRoot: '/files', // This means files will be accessible via localhost:3000/files
