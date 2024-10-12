@@ -11,10 +11,17 @@ import {
 import { RoleService } from './role.service';
 import { AuthGuard } from '@nestjs/passport';
 import * as RoleDTO from './role.dto';
+import { PageableResponseDto } from './role.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PickType } from '@nestjs/mapped-types';
 
 @ApiBearerAuth()
@@ -24,9 +31,20 @@ import { PickType } from '@nestjs/mapped-types';
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Role get all by page' })
+  @ApiBody({ type: RoleDTO.PaginationFilterOrderRequest })
+  @ApiResponse({ type: [RoleDTO.RoleResponse] })
+  @Permissions(PERMISSIONS.ROLE__VIEW)
+  async getAllByPage(
+    @Body() params: RoleDTO.PaginationFilterOrderRequest,
+  ): Promise<PageableResponseDto> {
+    return this.roleService.getAllByPage(params);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Role get all' })
-  @ApiBody({ type: [RoleDTO.RoleResponse] })
+  @ApiResponse({ type: [RoleDTO.RoleResponse] })
   @Permissions(PERMISSIONS.ROLE__VIEW)
   async getAll(): Promise<RoleDTO.RoleResponse[]> {
     return this.roleService.getAll();
@@ -34,7 +52,7 @@ export class RoleController {
 
   @Get('/permissions')
   @ApiOperation({ summary: 'Permissions' })
-  @ApiBody({ type: PickType<RoleDTO.RoleResponse, 'permissions'> })
+  @ApiResponse({ type: PickType<RoleDTO.RoleResponse, 'permissions'> })
   @Permissions(PERMISSIONS.ROLE__PERMISSION__VIEW)
   async getPermissions() {
     return Object.values(PERMISSIONS);
@@ -42,7 +60,7 @@ export class RoleController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiBody({ type: RoleDTO.RoleResponse })
+  @ApiResponse({ type: RoleDTO.RoleResponse })
   @Permissions(PERMISSIONS.ROLE__VIEW)
   async getAdmin(@Param('id') id: string): Promise<RoleDTO.RoleResponse> {
     return this.roleService.getById({ id });
@@ -50,7 +68,7 @@ export class RoleController {
 
   @Post()
   @ApiOperation({ summary: 'Create' })
-  @ApiBody({ type: RoleDTO.RoleResponse })
+  @ApiResponse({ type: RoleDTO.RoleResponse })
   @Permissions(PERMISSIONS.ROLE__CREATE)
   async create(@Body() payload: RoleDTO.Create): Promise<RoleDTO.RoleResponse> {
     return this.roleService.create(payload);
@@ -58,7 +76,7 @@ export class RoleController {
 
   @Put()
   @ApiOperation({ summary: 'Update' })
-  @ApiBody({ type: RoleDTO.RoleResponse })
+  @ApiResponse({ type: RoleDTO.RoleResponse })
   @Permissions(PERMISSIONS.ROLE__UPDATE)
   async updateAdmin(
     @Body() payload: RoleDTO.Update,
