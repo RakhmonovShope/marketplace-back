@@ -24,7 +24,12 @@ export class RoleService {
     params: RoleDTO.PaginationFilterOrderRequest,
   ): Promise<PageableResponseDto> {
     this.logger.log('getAllRoles by pageable');
-    const { perPage, page, order, filter } = params;
+    const {
+      perPage = Number(this.config.get('PAGE_SIZE')),
+      page,
+      order,
+      filter,
+    } = params;
 
     const where: Prisma.RoleWhereInput = {};
 
@@ -58,8 +63,8 @@ export class RoleService {
 
     const roles = await this.prisma.role.findMany({
       where,
-      skip: (page - 1) * perPage || this.config.get('PER_PAGE'),
-      take: perPage || this.config.get('PER_PAGE'),
+      skip: (page - 1) * perPage,
+      take: perPage,
       orderBy: {
         createdAt: order ? order.toLowerCase() : 'asc',
       },
