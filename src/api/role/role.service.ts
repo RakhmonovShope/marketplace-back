@@ -1,15 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import * as RoleDTO from './role.dto';
 import { PageableResponseDto } from './role.dto';
 import { ConfigService } from '@nestjs/config';
-
-interface Filter {
-  name: string;
-  operation: '>' | '>=' | '<' | '<=' | '=' | '!=';
-  value: string | number;
-}
+import { getWhereOperations } from 'helpers';
 
 @Injectable()
 export class RoleService {
@@ -31,38 +26,8 @@ export class RoleService {
       filter,
     } = params;
 
-    const where: Prisma.RoleWhereInput = {};
-
-    filter.forEach((f: Filter) => {
-      const fieldName = f.name;
-      const value: any = f.value;
-
-      switch (f.operation) {
-        case '>':
-          where[fieldName] = { gt: value };
-          break;
-        case '>=':
-          where[fieldName] = { gte: value };
-          break;
-        case '<':
-          where[fieldName] = { lt: value };
-          break;
-        case '<=':
-          where[fieldName] = { lte: value };
-          break;
-        case '=':
-          where[fieldName] = { equals: value };
-          break;
-        case '!=':
-          where[fieldName] = { not: value };
-          break;
-        default:
-          throw new Error(`Unsupported filter operation: ${f.operation}`);
-      }
-    });
-
     const roles = await this.prisma.role.findMany({
-      where,
+      where: getWhereOperations(filter),
       skip: (page - 1) * perPage,
       take: perPage,
       orderBy: {
@@ -70,12 +35,12 @@ export class RoleService {
       },
     });
 
-    const totalCount = await this.prisma.role.count({ where });
+    const totalItems = await this.prisma.role.count();
 
     return {
       data: roles,
-      totalCount,
-      totalPages: Math.ceil(totalCount / perPage),
+      totalItems,
+      totalPages: Math.ceil(totalItems / perPage),
       currentPage: page,
     };
   }

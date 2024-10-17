@@ -10,6 +10,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { SortOrder } from 'prisma';
+import { PageableDto } from 'common/common.dto';
 
 export class Create {
   @IsString()
@@ -156,28 +157,10 @@ export class PaginationFilterOrderRequest {
   order: SortOrder;
 }
 
-export class PageableResponseDto {
+export class PageableResponseDto extends PageableDto {
   @ApiProperty({
     description: 'Array of items for the current page',
     isArray: true,
   })
   data: RoleResponse[];
-
-  @ApiProperty({
-    description: 'Total count of all matching items',
-    example: 100,
-  })
-  totalCount: number;
-
-  @ApiProperty({
-    description: 'Total number of pages',
-    example: 10,
-  })
-  totalPages: number;
-
-  @ApiProperty({
-    description: 'Current page number',
-    example: 1,
-  })
-  currentPage: number;
 }
