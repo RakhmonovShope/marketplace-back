@@ -14,7 +14,14 @@ import * as BannerDTO from './banner.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiBearerAuth()
 @ApiTags('Banners')
@@ -22,6 +29,17 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class BannerController {
   constructor(private readonly bannerService: BannerService) {}
+
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Banner get all by page' })
+  @ApiBody({ type: PaginationFilterOrderRequest })
+  @ApiResponse({ type: [BannerDTO.BannerResponse] })
+  @Permissions(PERMISSIONS.BANNER__VIEW)
+  async getAllByPage(
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<BannerDTO.PageableResponseDto> {
+    return this.bannerService.getAllByPage(params);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Banner get all' })

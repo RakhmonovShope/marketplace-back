@@ -2,12 +2,48 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Banner } from '@prisma/client';
 import * as BannerDTO from './banner.dto';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { getWhereOperations } from 'helpers';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BannerService {
   private logger = new Logger('Banner service');
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async getAllByPage(
+    params: PaginationFilterOrderRequest,
+  ): Promise<BannerDTO.PageableResponseDto> {
+    this.logger.log('getAllBanners by pageable');
+    const {
+      perPage = Number(this.config.get('PAGE_SIZE')),
+      page,
+      order,
+      filter,
+    } = params;
+
+    const items = await this.prisma.banner.findMany({
+      where: getWhereOperations(filter),
+      skip: (page - 1) * perPage,
+      take: perPage,
+      orderBy: {
+        createdAt: order ? order.toLowerCase() : 'asc',
+      },
+    });
+
+    const totalItems = await this.prisma.banner.count();
+
+    return {
+      data: items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / perPage),
+      currentPage: page,
+    };
+  }
 
   async getAll(): Promise<BannerDTO.BannerResponse[]> {
     this.logger.log('getAllBanners');

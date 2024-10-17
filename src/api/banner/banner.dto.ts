@@ -1,5 +1,6 @@
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PageableDto } from 'common/common.dto';
 
 export class Create {
   @IsString()
@@ -105,4 +106,12 @@ export class BannerResponse {
     example: '2024-01-02T00:00:00.000Z',
   })
   updatedAt: Date;
+}
+
+export class PageableResponseDto extends PageableDto {
+  @ApiProperty({
+    description: 'Array of items for the current page',
+    isArray: true,
+  })
+  data: BannerResponse[];
 }
