@@ -32,7 +32,7 @@ export class PageController {
   constructor(private readonly pageService: PageService) {}
 
   @Post('/pageable')
-  @ApiOperation({ summary: 'Role get all by page' })
+  @ApiOperation({ summary: 'Page get all by page' })
   @ApiBody({ type: PaginationFilterOrderRequest })
   @ApiResponse({ type: [PageDTO.PageResponse] })
   @Permissions(PERMISSIONS.PAGE__VIEW)
