@@ -18,7 +18,7 @@ export class BadgeService {
   async getAllByPage(
     params: PaginationFilterOrderRequest,
   ): Promise<BadgeDTO.PageableResponseDto> {
-    this.logger.log('getAllUsers by pageable');
+    this.logger.log('getAllBadges by pageable');
     const {
       perPage = Number(this.config.get('PAGE_SIZE')),
       page,
