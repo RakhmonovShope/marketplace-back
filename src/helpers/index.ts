@@ -1,0 +1,1 @@
+export { getWhereOperations } from './getWhereOperations';
