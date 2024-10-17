@@ -2,12 +2,48 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as AdminDTO from './admin.dto';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { getWhereOperations } from '../../helpers';
 
 @Injectable()
 export class AdminService {
   private logger = new Logger('Admin service');
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async getAllByPage(
+    params: PaginationFilterOrderRequest,
+  ): Promise<AdminDTO.PageableResponseDto> {
+    this.logger.log('getAllUsers by pageable');
+    const {
+      perPage = Number(this.config.get('PAGE_SIZE')),
+      page,
+      order,
+      filter,
+    } = params;
+
+    const items = await this.prisma.user.findMany({
+      where: getWhereOperations(filter),
+      skip: (page - 1) * perPage,
+      take: perPage,
+      orderBy: {
+        createdAt: order ? order.toLowerCase() : 'asc',
+      },
+    });
+
+    const totalItems = await this.prisma.user.count();
+
+    return {
+      data: items,
+      totalItems,
+      totalPages: Math.ceil(totalItems / perPage),
+      currentPage: page,
+    };
+  }
 
   async admin(id: string): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('adminById');

@@ -16,10 +16,12 @@ import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
@@ -27,6 +29,17 @@ import {
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Admin get all by page' })
+  @ApiBody({ type: PaginationFilterOrderRequest })
+  @ApiResponse({ type: [AdminDTO.UserResponseDto] })
+  @Permissions(PERMISSIONS.ADMIN__VIEW)
+  async getAllByPage(
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<AdminDTO.PageableResponseDto> {
+    return this.adminService.getAllByPage(params);
+  }
 
   @ApiOperation({ summary: 'Admin get all' })
   @Get()
