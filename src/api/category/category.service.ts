@@ -1,12 +1,48 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as CategoryDTO from './category.dto';
+import { PaginationFilterOrderRequest } from '../../common/common.dto';
+import { getWhereOperations } from 'helpers';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CategoryService {
   private logger = new Logger('Category service');
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async getAllByPage(
+    params: PaginationFilterOrderRequest,
+  ): Promise<CategoryDTO.PageableResponseDto> {
+    this.logger.log('getAllCategories by pageable');
+    const {
+      perPage = Number(this.config.get('PAGE_SIZE')),
+      page,
+      order,
+      filter,
+    } = params;
+
+    const roles = await this.prisma.category.findMany({
+      where: getWhereOperations(filter),
+      skip: (page - 1) * perPage,
+      take: perPage,
+      orderBy: {
+        createdAt: order ? order.toLowerCase() : 'asc',
+      },
+    });
+
+    const totalItems = await this.prisma.category.count();
+
+    return {
+      data: roles,
+      totalItems,
+      totalPages: Math.ceil(totalItems / perPage),
+      currentPage: page,
+    };
+  }
 
   async getAll(): Promise<CategoryDTO.CategoryResponse[]> {
     this.logger.log('getAllCategorys');

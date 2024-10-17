@@ -14,7 +14,14 @@ import * as CategoryDTO from './category.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiBearerAuth()
 @ApiTags('Category')
@@ -22,6 +29,17 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
+
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Page get all by page' })
+  @ApiBody({ type: PaginationFilterOrderRequest })
+  @ApiResponse({ type: [CategoryDTO.CategoryResponse] })
+  @Permissions(PERMISSIONS.CATEGORY__VIEW)
+  async getAllByPage(
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<CategoryDTO.PageableResponseDto> {
+    return this.categoryService.getAllByPage(params);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Category get all' })

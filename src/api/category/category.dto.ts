@@ -5,8 +5,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-// src/category/dto/category-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
+import { PageableDto } from 'common/common.dto';
 
 export class Create {
   @ApiProperty({ description: 'nameUz' })
@@ -133,4 +133,12 @@ export class CategoryResponse {
     example: '2024-01-02T00:00:00.000Z',
   })
   updatedAt: Date;
+}
+
+export class PageableResponseDto extends PageableDto {
+  @ApiProperty({
+    description: 'Array of items for the current page',
+    isArray: true,
+  })
+  data: CategoryResponse[];
 }
