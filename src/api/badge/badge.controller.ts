@@ -14,7 +14,14 @@ import * as BadgeDTO from './badge.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiBearerAuth()
 @ApiTags('Badges')
@@ -22,6 +29,17 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class BadgeController {
   constructor(private readonly badgeService: BadgeService) {}
+
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Badge get all by page' })
+  @ApiBody({ type: PaginationFilterOrderRequest })
+  @ApiResponse({ type: [BadgeDTO.BadgeResponse] })
+  @Permissions(PERMISSIONS.BADGE__VIEW)
+  async getAllByPage(
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<BadgeDTO.PageableResponseDto> {
+    return this.badgeService.getAllByPage(params);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Badge get all' })
