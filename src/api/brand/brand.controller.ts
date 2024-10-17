@@ -14,7 +14,14 @@ import * as BrandDTO from './brand.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiBearerAuth()
 @ApiTags('Brands')
@@ -22,6 +29,17 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
+
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Brand get all by page' })
+  @ApiBody({ type: PaginationFilterOrderRequest })
+  @ApiResponse({ type: [BrandDTO.BrandResponse] })
+  @Permissions(PERMISSIONS.BRAND__VIEW)
+  async getAllByPage(
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<BrandDTO.PageableResponseDto> {
+    return this.brandService.getAllByPage(params);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Brand get all' })
