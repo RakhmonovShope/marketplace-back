@@ -1,13 +1,50 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 import { Store } from '@prisma/client';
 import * as StoreDTO from './store.dto';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
+
+import { getWhereOperations } from 'helpers';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StoreService {
   private logger = new Logger('Store service');
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
+
+  async getAllByPage(
+    params: PaginationFilterOrderRequest,
+  ): Promise<StoreDTO.PageableResponseDto> {
+    this.logger.log('getAllRoles by pageable');
+    const {
+      perPage = Number(this.config.get('PAGE_SIZE')),
+      page,
+      order,
+      filter,
+    } = params;
+
+    const roles = await this.prisma.store.findMany({
+      where: getWhereOperations(filter),
+      skip: (page - 1) * perPage,
+      take: perPage,
+      orderBy: {
+        createdAt: order ? order.toLowerCase() : 'asc',
+      },
+    });
+
+    const totalItems = await this.prisma.store.count();
+
+    return {
+      data: roles,
+      totalItems,
+      totalPages: Math.ceil(totalItems / perPage),
+      currentPage: page,
+    };
+  }
 
   async getAll(): Promise<StoreDTO.StoreResponse[]> {
     this.logger.log('getAllStores');

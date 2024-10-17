@@ -14,7 +14,14 @@ import * as StoreDTO from './store.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiBearerAuth()
 @ApiTags('Stores')
@@ -22,6 +29,17 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
+
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Store get all by page' })
+  @ApiBody({ type: PaginationFilterOrderRequest })
+  @ApiResponse({ type: [StoreDTO.StoreResponse] })
+  @Permissions(PERMISSIONS.STORE__VIEW)
+  async getAllByPage(
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<StoreDTO.PageableResponseDto> {
+    return this.storeService.getAllByPage(params);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Store get all' })
