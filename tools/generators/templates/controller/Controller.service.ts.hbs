@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { {{pascalCase name}} } from '@prisma/client';
 import * as {{pascalCase name}}DTO from './{{kebabCase name}}.dto';
 import { getWhereOperations } from 'helpers';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @Injectable()
 export class {{pascalCase name}}Service {
@@ -14,8 +15,8 @@ private logger = new Logger('{{pascalCase name}}Service');
   ) {}
 
   async getAllByPage(
-    params: RoleDTO.PaginationFilterOrderRequest,
-  ): Promise<PageableResponseDto> {
+    params: PaginationFilterOrderRequest,
+  ): Promise<{{pascalCase name}}DTO.PageableResponseDto> {
     this.logger.log('getAll{{pascalCase (pluralize name)}} by pageable');
     const {
       perPage = Number(this.config.get('PAGE_SIZE')),

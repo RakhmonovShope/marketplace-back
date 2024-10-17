@@ -15,6 +15,7 @@ import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiBearerAuth()
 @ApiTags('{{pascalCase (pluralize name)}}')
@@ -25,12 +26,12 @@ export class {{pascalCase name}}Controller {
 
   @Post('/pageable')
   @ApiOperation({ summary: '{{pascalCase name}} get all by page' })
-  @ApiBody({ type: {{pascalCase name}}DTO.PaginationFilterOrderRequest })
+  @ApiBody({ type: PaginationFilterOrderRequest })
   @ApiResponse({ type: [{{pascalCase name}}DTO.{{pascalCase name}}Response] })
   @Permissions(PERMISSIONS.{{constantCase name}}__VIEW)
   async getAllByPage(
-  @Body() params: {{pascalCase name}}DTO.PaginationFilterOrderRequest,
-  ): Promise<PageableResponseDto> {
+  @Body() params: PaginationFilterOrderRequest,
+  ): Promise<{{pascalCase name}}DTO.PageableResponseDto> {
     return this.{{camelCase name}}Service.getAllByPage(params);
     }
 
