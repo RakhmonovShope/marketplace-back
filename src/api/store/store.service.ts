@@ -19,7 +19,7 @@ export class StoreService {
   async getAllByPage(
     params: PaginationFilterOrderRequest,
   ): Promise<StoreDTO.PageableResponseDto> {
-    this.logger.log('getAllRoles by pageable');
+    this.logger.log('getAllStores by pageable');
     const {
       perPage = Number(this.config.get('PAGE_SIZE')),
       page,
