@@ -11,10 +11,18 @@ import {
 import { PageService } from './page.service';
 import { AuthGuard } from '@nestjs/passport';
 import * as PageDTO from './page.dto';
+import { PageableResponseDto } from './page.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('Pages')
@@ -22,6 +30,17 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class PageController {
   constructor(private readonly pageService: PageService) {}
+
+  @Post('/pageable')
+  @ApiOperation({ summary: 'Role get all by page' })
+  @ApiBody({ type: PaginationFilterOrderRequest })
+  @ApiResponse({ type: [PageDTO.PageResponse] })
+  @Permissions(PERMISSIONS.PAGE__VIEW)
+  async getAllByPage(
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<PageableResponseDto> {
+    return this.pageService.getAllByPage(params);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Page get all' })
