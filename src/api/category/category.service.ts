@@ -25,7 +25,7 @@ export class CategoryService {
       filter,
     } = params;
 
-    const roles = await this.prisma.category.findMany({
+    const items = await this.prisma.category.findMany({
       where: getWhereOperations(filter),
       skip: (page - 1) * perPage,
       take: perPage,
@@ -37,7 +37,7 @@ export class CategoryService {
     const totalItems = await this.prisma.category.count();
 
     return {
-      data: roles,
+      data: items,
       totalItems,
       totalPages: Math.ceil(totalItems / perPage),
       currentPage: page,

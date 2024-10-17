@@ -27,7 +27,7 @@ export class StoreService {
       filter,
     } = params;
 
-    const roles = await this.prisma.store.findMany({
+    const items = await this.prisma.store.findMany({
       where: getWhereOperations(filter),
       skip: (page - 1) * perPage,
       take: perPage,
@@ -39,7 +39,7 @@ export class StoreService {
     const totalItems = await this.prisma.store.count();
 
     return {
-      data: roles,
+      data: items,
       totalItems,
       totalPages: Math.ceil(totalItems / perPage),
       currentPage: page,
