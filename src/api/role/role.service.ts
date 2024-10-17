@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Role } from '@prisma/client';
 import * as RoleDTO from './role.dto';
-import { PageableResponseDto } from './role.dto';
 import { ConfigService } from '@nestjs/config';
 import { getWhereOperations } from 'helpers';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @Injectable()
 export class RoleService {
@@ -16,8 +16,8 @@ export class RoleService {
   ) {}
 
   async getAllByPage(
-    params: RoleDTO.PaginationFilterOrderRequest,
-  ): Promise<PageableResponseDto> {
+    params: PaginationFilterOrderRequest,
+  ): Promise<RoleDTO.PageableResponseDto> {
     this.logger.log('getAllRoles by pageable');
     const {
       perPage = Number(this.config.get('PAGE_SIZE')),

@@ -11,10 +11,10 @@ import {
 import { RoleService } from './role.service';
 import { AuthGuard } from '@nestjs/passport';
 import * as RoleDTO from './role.dto';
-import { PageableResponseDto } from './role.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
+import { PaginationFilterOrderRequest } from 'common/common.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -33,12 +33,12 @@ export class RoleController {
 
   @Post('/pageable')
   @ApiOperation({ summary: 'Role get all by page' })
-  @ApiBody({ type: RoleDTO.PaginationFilterOrderRequest })
+  @ApiBody({ type: PaginationFilterOrderRequest })
   @ApiResponse({ type: [RoleDTO.RoleResponse] })
   @Permissions(PERMISSIONS.ROLE__VIEW)
   async getAllByPage(
-    @Body() params: RoleDTO.PaginationFilterOrderRequest,
-  ): Promise<PageableResponseDto> {
+    @Body() params: PaginationFilterOrderRequest,
+  ): Promise<RoleDTO.PageableResponseDto> {
     return this.roleService.getAllByPage(params);
   }
 
