@@ -23,6 +23,18 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class {{pascalCase name}}Controller {
   constructor(private readonly {{camelCase name}}Service: {{pascalCase name}}Service) {}
 
+  @Post('/pageable')
+  @ApiOperation({ summary: '{{pascalCase name}} get all by page' })
+  @ApiBody({ type: {{pascalCase name}}DTO.PaginationFilterOrderRequest })
+  @ApiResponse({ type: [{{pascalCase name}}DTO.{{pascalCase name}}Response] })
+  @Permissions(PERMISSIONS.{{constantCase name}}__VIEW)
+  async getAllByPage(
+  @Body() params: {{pascalCase name}}DTO.PaginationFilterOrderRequest,
+  ): Promise<PageableResponseDto> {
+    return this.{{camelCase name}}Service.getAllByPage(params);
+    }
+
+
   @Get()
   @ApiOperation({ summary: '{{pascalCase name}} get all' })
   @ApiBody({ type: [{{pascalCase name}}DTO.{{pascalCase name}}Response] })

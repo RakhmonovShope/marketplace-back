@@ -2,12 +2,47 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { {{pascalCase name}} } from '@prisma/client';
 import * as {{pascalCase name}}DTO from './{{kebabCase name}}.dto';
+import { getWhereOperations } from 'helpers';
 
 @Injectable()
 export class {{pascalCase name}}Service {
 private logger = new Logger('{{pascalCase name}}Service');
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService
+  ) {}
+
+  async getAllByPage(
+    params: RoleDTO.PaginationFilterOrderRequest,
+  ): Promise<PageableResponseDto> {
+    this.logger.log('getAll{{pascalCase (pluralize name)}} by pageable');
+    const {
+      perPage = Number(this.config.get('PAGE_SIZE')),
+      page,
+      order,
+      filter,
+    } = params;
+
+    const {{camelCase (pluralize name)}} = await this.prisma.{{camelCase name}}.findMany({
+    where: getWhereOperations(filter),
+    skip: (page - 1) * perPage,
+    take: perPage,
+    orderBy: {
+    createdAt: order ? order.toLowerCase() : 'asc',
+    },
+    });
+
+    const totalItems = await this.prisma.{{camelCase name}}.count();
+
+    return {
+      data: {{camelCase (pluralize name)}},
+      totalItems,
+      totalPages: Math.ceil(totalItems / perPage),
+      currentPage: page,
+    };
+  }
+
 
   async getAll(): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response[]> {
     this.logger.log('getAll{{pascalCase (pluralize name)}}');
