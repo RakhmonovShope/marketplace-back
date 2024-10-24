@@ -123,10 +123,10 @@ export class AudioController {
     return createdAudio;
   }
 
+  @Get(':year/:month/:day/:name')
   @ApiOperation({ summary: 'Get a audio' })
   @ApiResponse({ status: 200, description: 'Audio found and returned.' })
   @ApiResponse({ status: 404, description: 'Audio not found.' })
-  @Get(':year/:month/:day/:name')
   async getAudio(
     @Param('year') year: string,
     @Param('month') month: string,
