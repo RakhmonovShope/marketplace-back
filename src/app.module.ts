@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AudioModule } from './api/audio';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -22,6 +23,7 @@ import { join } from 'path';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    AudioModule,
     PrismaModule,
     AuthModule,
     AdminModule,
@@ -34,8 +36,12 @@ import { join } from 'path';
     StoreModule,
     BrandModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'files'), // Replace with the correct path to the files directory
-      serveRoot: '/files', // This means files will be accessible via localhost:3000/files
+      rootPath: join(__dirname, '..', 'files'),
+      serveRoot: '/files',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'audios'),
+      serveRoot: '/audios',
     }),
   ],
   controllers: [AppController],

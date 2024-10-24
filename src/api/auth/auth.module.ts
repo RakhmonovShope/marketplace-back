@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategry';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import * as Admin from '../admin';
+import { AdminService } from '../admin';
 
 export const passportModule = PassportModule.register({
   defaultStrategy: 'jwt',
@@ -22,9 +22,10 @@ export const passportModule = PassportModule.register({
         },
       }),
     }),
-    passportModule,
+    forwardRef(() => passportModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, Admin.AdminService, JwtStrategy],
+  providers: [AuthService, AdminService, JwtStrategy],
+  exports: [passportModule],
 })
 export class AuthModule {}
