@@ -71,7 +71,8 @@ export class AudioController {
       }),
       limits: { fileSize: 10 * 1024 * 1024 },
       fileFilter: (req, file, callback) => {
-        if (file.mimetype.match(/\/(mp3|wav|aac)$/)) {
+        const acceptedMimeTypes = ['audio/mpeg', 'audio/wav', 'audio/aac'];
+        if (acceptedMimeTypes.includes(file.mimetype)) {
           callback(null, true);
         } else {
           callback(
@@ -103,7 +104,6 @@ export class AudioController {
   @ApiResponse({ status: 201, description: 'Audio uploaded successfully.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   async uploadAudio(@UploadedFile() file: Express.Multer.File) {
-    console.log('Request is made');
     const uploadDir = file.destination;
     const baseUploadPath = join(__dirname, '..', '..', 'audios');
     const relativePath = uploadDir
