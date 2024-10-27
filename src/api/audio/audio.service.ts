@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { createReadStream, existsSync } from 'fs';
 import * as AudioDTO from './audio.dto';
 import { Audio as PrismaAudio } from '@prisma/client';
+import * as process from 'node:process';
 
 @Injectable()
 export class AudioService {
@@ -47,6 +48,7 @@ export class AudioService {
       where: { url },
     });
 
+    console.log('audio', audio);
     if (!audio) {
       throw new NotFoundException('Audio file not found');
     }
@@ -61,7 +63,7 @@ export class AudioService {
 
     const relativePath = url.startsWith('/') ? url.slice(1) : url;
 
-    return join(__dirname, '..', '..', 'audios', ...relativePath.split('/'));
+    return join(process.cwd(), 'uploads', 'audios', ...relativePath.split('/'));
   }
 
   audioExists(filePath: string): boolean {

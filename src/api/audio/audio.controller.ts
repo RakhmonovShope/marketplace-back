@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   HttpException,
@@ -31,6 +32,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
 import { PERMISSIONS } from '../auth/auth.enum';
+import { AudioResponseDto } from './audio.dto';
+import * as process from 'node:process';
 
 @ApiTags('Audio')
 @Controller('audio')
@@ -38,8 +41,12 @@ export class AudioController {
   constructor(private readonly audioService: AudioService) {}
 
   @Post('upload')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions(PERMISSIONS.AUDIO__UPLOAD)
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload a Audio' })
+  @ApiResponse({ type: AudioResponseDto })
   @UseInterceptors(
     FileInterceptor('audio', {
       storage: diskStorage({
@@ -50,14 +57,14 @@ export class AudioController {
           const day = now.getDate().toString();
 
           const uploadPath = join(
-            __dirname,
-            '..',
-            '..',
+            process.cwd(),
+            'uploads',
             'audios',
             year,
             month,
             day,
           );
+
           await mkdirp(uploadPath);
 
           callback(null, uploadPath);
@@ -86,8 +93,6 @@ export class AudioController {
       },
     }),
   )
-  @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Audio upload',
     schema: {
@@ -100,12 +105,11 @@ export class AudioController {
       },
     },
   })
-  @ApiOperation({ summary: 'Upload a Audio' })
-  @ApiResponse({ status: 201, description: 'Audio uploaded successfully.' })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
   async uploadAudio(@UploadedFile() file: Express.Multer.File) {
     const uploadDir = file.destination;
-    const baseUploadPath = join(__dirname, '..', '..', 'audios');
+
+    const baseUploadPath = join(process.cwd(), 'uploads', 'audios');
+
     const relativePath = uploadDir
       .replace(baseUploadPath, '')
       .split('/')
@@ -125,8 +129,7 @@ export class AudioController {
 
   @Get(':year/:month/:day/:name')
   @ApiOperation({ summary: 'Get a audio' })
-  @ApiResponse({ status: 200, description: 'Audio found and returned.' })
-  @ApiResponse({ status: 404, description: 'Audio not found.' })
+  @ApiResponse({ status: 200, description: 'Streamlined image is returned' })
   async getAudio(
     @Param('year') year: string,
     @Param('month') month: string,
@@ -140,18 +143,52 @@ export class AudioController {
       day,
       name,
     );
-    const filePath = this.audioService.getAudioPath(audioRecord.url);
 
-    if (!this.audioService.audioExists(filePath)) {
+    const audioPath = this.audioService.getAudioPath(audioRecord.url);
+
+    if (!this.audioService.audioExists(audioPath)) {
       throw new NotFoundException('Audio file not found on server');
     }
 
-    const mimeType = this.audioService.getMimeType(filePath);
+    const mimeType = this.audioService.getMimeType(audioPath);
     res.set({
       'Content-Type': mimeType,
       'Content-Disposition': `attachment; filename="${audioRecord.name}"`,
     });
 
-    return this.audioService.streamAudio(filePath);
+    return this.audioService.streamAudio(audioPath);
+  }
+
+  @Get(':year/:month/:day/:name/info')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard(), PermissionsGuard)
+  @Permissions(PERMISSIONS.AUDIO__VIEW)
+  @ApiOperation({ summary: 'Get a audio info by path' })
+  @ApiResponse({ status: 201, type: AudioResponseDto })
+  @ApiResponse({ status: 404, description: 'Audio not found.' })
+  async getAudioInfoByPath(
+    @Param('year') year: string,
+    @Param('month') month: string,
+    @Param('day') day: string,
+    @Param('name') name: string,
+  ): Promise<AudioResponseDto> {
+    if (!year || !month || !day || !name) {
+      throw new BadRequestException('Invalid audio path parameters');
+    }
+
+    const audioRecord = await this.audioService.getAudioByPath(
+      year,
+      month,
+      day,
+      name,
+    );
+
+    const audioPath = this.audioService.getAudioPath(audioRecord.url);
+
+    if (!this.audioService.audioExists(audioPath)) {
+      throw new NotFoundException('Audio not found on server');
+    }
+
+    return this.audioService.mapToAudioResponseDto(audioRecord);
   }
 }
