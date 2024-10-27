@@ -23,6 +23,7 @@ import { extname, join } from 'path';
 import { AuthGuard } from '@nestjs/passport';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import * as FileDTO from './file.dto';
+import { FileResponseDto } from './file.dto';
 
 import {
   ApiBearerAuth,
@@ -35,6 +36,7 @@ import {
 import { mkdirp } from 'mkdirp';
 import { Permissions } from '../auth/permissions.decorator';
 import { PERMISSIONS } from '../auth/auth.enum';
+import * as process from 'node:process';
 
 @ApiTags('File')
 @Controller('files')
@@ -55,9 +57,8 @@ export class FileController {
             const day = now.getDate().toString();
 
             const uploadPath = join(
-              __dirname,
-              '..',
-              '..',
+              process.cwd(),
+              'uploads',
               'files',
               year,
               month,
@@ -106,15 +107,14 @@ export class FileController {
     },
   })
   @ApiOperation({ summary: 'Upload a file' })
-  @ApiResponse({ status: 201, description: 'File uploaded successfully.' })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 201, type: FileResponseDto })
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new HttpException('File upload failed', HttpStatus.BAD_REQUEST);
     }
 
     const uploadDir = file.destination;
-    const baseUploadPath = join(__dirname, '..', '..', 'files');
+    const baseUploadPath = join(process.cwd(), 'uploads', 'files');
     const relativePath = uploadDir
       .replace(baseUploadPath, '')
       .split(path.sep)
@@ -174,7 +174,7 @@ export class FileController {
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions(PERMISSIONS.FILE__VIEW)
   @ApiOperation({ summary: 'Get a file info by path' })
-  @ApiResponse({ status: 200, description: 'File found and returned.' })
+  @ApiResponse({ status: 201, type: FileResponseDto })
   @ApiResponse({ status: 404, description: 'File not found.' })
   async getFileInfoByPath(
     @Param('year') year: string,

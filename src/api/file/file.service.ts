@@ -10,6 +10,7 @@ import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { createReadStream, existsSync } from 'fs';
 import { File as PrismaFile } from '@prisma/client';
+import * as process from 'node:process';
 
 @Injectable()
 export class FileService {
@@ -55,7 +56,7 @@ export class FileService {
 
     const relativePath = url.startsWith('/') ? url.slice(1) : url;
 
-    return join(__dirname, '..', '..', 'files', ...relativePath.split('/'));
+    return join(process.cwd(), 'uploads', 'files', ...relativePath.split('/'));
   }
 
   fileExists(filePath: string): boolean {
