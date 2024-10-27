@@ -16,7 +16,6 @@ export class TransformInterceptor implements NestInterceptor {
   intercept(_: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((data) => {
-        console.log('data', data);
         if (data instanceof StreamableFile) {
           return data;
         }
