@@ -1,21 +1,12 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-  StreamableFile,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
-import { createReadStream, existsSync } from 'fs';
 import * as AudioDTO from './audio.dto';
 import { Audio as PrismaAudio } from '@prisma/client';
-import * as process from 'node:process';
 
 @Injectable()
 export class AudioService {
-  private logger = new Logger('Audio service');
+  private logger = new Logger('AudioService');
 
   constructor(
     private prisma: PrismaService,
@@ -27,7 +18,7 @@ export class AudioService {
     extension: string;
     url: string;
   }): Promise<AudioDTO.AudioResponseDto> {
-    this.logger.log('Uploading Audio');
+    this.logger.log('Uploading Audio to S3');
 
     const audio = await this.prisma.audio.create({
       data,
@@ -36,43 +27,16 @@ export class AudioService {
     return this.mapToAudioResponseDto(audio);
   }
 
-  async getAudioByPath(
-    year: string,
-    month: string,
-    day: string,
-    name: string,
-  ): Promise<AudioDTO.AudioResponseDto> {
-    const url = `/${year}/${month}/${day}/${name}`;
-
+  async getAudioByPath(id: string): Promise<AudioDTO.AudioResponseDto> {
     const audio = await this.prisma.audio.findUnique({
-      where: { url },
+      where: { id },
     });
 
-    console.log('audio', audio);
     if (!audio) {
-      throw new NotFoundException('Audio file not found');
+      throw new NotFoundException('Audio file not found in S3');
     }
 
     return this.mapToAudioResponseDto(audio);
-  }
-
-  getAudioPath(url: string): string {
-    if (url.includes('..')) {
-      throw new BadRequestException('Invalid file URL');
-    }
-
-    const relativePath = url.startsWith('/') ? url.slice(1) : url;
-
-    return join(process.cwd(), 'uploads', 'audios', ...relativePath.split('/'));
-  }
-
-  audioExists(filePath: string): boolean {
-    return existsSync(filePath);
-  }
-
-  streamAudio(filePath: string): StreamableFile {
-    const audioStream = createReadStream(filePath);
-    return new StreamableFile(audioStream);
   }
 
   getMimeType(filePath: string): string {

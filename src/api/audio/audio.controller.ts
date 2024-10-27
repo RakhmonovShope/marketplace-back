@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Get,
   HttpException,
@@ -8,17 +7,15 @@ import {
   Param,
   Post,
   Res,
-  StreamableFile,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import * as multerS3 from 'multer-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { AudioService } from './audio.service';
 import { v4 as uuidv4 } from 'uuid';
-import { extname, join } from 'path';
-import { mkdirp } from 'mkdirp';
 import { Response } from 'express';
 import {
   ApiBearerAuth,
@@ -33,7 +30,14 @@ import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { AudioResponseDto } from './audio.dto';
-import * as process from 'node:process';
+
+const s3 = new S3Client({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+  region: process.env.AWS_REGION,
+});
 
 @ApiTags('Audio')
 @Controller('audio')
@@ -45,35 +49,19 @@ export class AudioController {
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions(PERMISSIONS.AUDIO__UPLOAD)
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload a Audio' })
+  @ApiOperation({ summary: 'Upload an Audio' })
   @ApiResponse({ type: AudioResponseDto })
   @UseInterceptors(
     FileInterceptor('audio', {
-      storage: diskStorage({
-        destination: async (req, file, callback) => {
-          const now = new Date();
-          const year = now.getFullYear().toString();
-          const month = (now.getMonth() + 1).toString();
-          const day = now.getDate().toString();
-
-          const uploadPath = join(
-            process.cwd(),
-            'uploads',
-            'audios',
-            year,
-            month,
-            day,
-          );
-
-          await mkdirp(uploadPath);
-
-          callback(null, uploadPath);
+      storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_S3_BUCKET_NAME,
+        metadata: (req, file, cb) => {
+          cb(null, { fieldName: file.fieldname });
         },
-        filename: (req, file, callback) => {
-          const uniqueSuffix = uuidv4();
-          const ext = extname(file.originalname);
-          const filename = `${uniqueSuffix}${ext}`;
-          callback(null, filename);
+        key: (req, file, cb) => {
+          const filename = `${uuidv4()}${file.originalname}`;
+          cb(null, `uploads/audios/${filename}`);
         },
       }),
       limits: { fileSize: 10 * 1024 * 1024 },
@@ -105,88 +93,43 @@ export class AudioController {
       },
     },
   })
-  async uploadAudio(@UploadedFile() file: Express.Multer.File) {
-    const uploadDir = file.destination;
-
-    const baseUploadPath = join(process.cwd(), 'uploads', 'audios');
-
-    const relativePath = uploadDir
-      .replace(baseUploadPath, '')
-      .split('/')
-      .filter(Boolean);
-    const [year, month, day] = relativePath;
-
-    const audioUrl = `/${year}/${month}/${day}/${file.filename}`;
+  async uploadAudio(@UploadedFile() file: Express.MulterS3File) {
+    const audioUrl = file.location;
 
     const createdAudio = await this.audioService.createAudio({
       name: file.originalname,
-      extension: extname(file.originalname),
+      extension: file.mimetype.split('/').pop(),
       url: audioUrl,
     });
 
     return createdAudio;
   }
 
-  @Get(':year/:month/:day/:name')
-  @ApiOperation({ summary: 'Get a audio' })
-  @ApiResponse({ status: 200, description: 'Streamlined image is returned' })
-  async getAudio(
-    @Param('year') year: string,
-    @Param('month') month: string,
-    @Param('day') day: string,
-    @Param('name') name: string,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const audioRecord = await this.audioService.getAudioByPath(
-      year,
-      month,
-      day,
-      name,
-    );
+  @Get(':id')
+  @ApiOperation({ summary: 'Get an audio file' })
+  @ApiResponse({ status: 200, description: 'Returns the audio file from S3' })
+  async getAudio(@Param('id') id: string, @Res() res: Response) {
+    const audioRecord = await this.audioService.getAudioByPath(id);
 
-    const audioPath = this.audioService.getAudioPath(audioRecord.url);
-
-    if (!this.audioService.audioExists(audioPath)) {
-      throw new NotFoundException('Audio file not found on server');
+    if (!audioRecord) {
+      throw new NotFoundException('Audio file not found');
     }
 
-    const mimeType = this.audioService.getMimeType(audioPath);
-    res.set({
-      'Content-Type': mimeType,
-      'Content-Disposition': `attachment; filename="${audioRecord.name}"`,
-    });
-
-    return this.audioService.streamAudio(audioPath);
+    res.redirect(audioRecord.url);
   }
 
-  @Get(':year/:month/:day/:name/info')
+  @Get(':id/info')
   @ApiBearerAuth()
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions(PERMISSIONS.AUDIO__VIEW)
-  @ApiOperation({ summary: 'Get a audio info by path' })
-  @ApiResponse({ status: 201, type: AudioResponseDto })
+  @ApiOperation({ summary: 'Get audio info by path' })
+  @ApiResponse({ status: 200, type: AudioResponseDto })
   @ApiResponse({ status: 404, description: 'Audio not found.' })
-  async getAudioInfoByPath(
-    @Param('year') year: string,
-    @Param('month') month: string,
-    @Param('day') day: string,
-    @Param('name') name: string,
-  ): Promise<AudioResponseDto> {
-    if (!year || !month || !day || !name) {
-      throw new BadRequestException('Invalid audio path parameters');
-    }
+  async getAudioInfoByPath(@Param('id') id: string): Promise<AudioResponseDto> {
+    const audioRecord = await this.audioService.getAudioByPath(id);
 
-    const audioRecord = await this.audioService.getAudioByPath(
-      year,
-      month,
-      day,
-      name,
-    );
-
-    const audioPath = this.audioService.getAudioPath(audioRecord.url);
-
-    if (!this.audioService.audioExists(audioPath)) {
-      throw new NotFoundException('Audio not found on server');
+    if (!audioRecord) {
+      throw new NotFoundException('Audio not found');
     }
 
     return this.audioService.mapToAudioResponseDto(audioRecord);
