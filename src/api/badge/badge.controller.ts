@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { BadgeService } from './badge.service';
@@ -22,6 +23,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { Response } from 'express';
+import { Readable } from 'stream';
 
 @ApiBearerAuth()
 @ApiTags('Badges')
@@ -81,5 +84,36 @@ export class BadgeController {
   @Permissions(PERMISSIONS.BADGE__DELETE)
   async deleteAdmin(@Param('id') id: string): Promise<boolean> {
     return this.badgeService.deleteBadge({ id });
+  }
+
+  @Post('stream')
+  @Permissions(PERMISSIONS.BADGE__DELETE)
+  async getStream(@Res() res: Response): Promise<any> {
+    res.setHeader('Content-Type', 'text/plain'); // Stream plain text
+    res.setHeader('Transfer-Encoding', 'chunked'); // Enable chunked transfer
+
+    const stream = new Readable({
+      read() {
+        // No-op
+      },
+    });
+
+    let count = 0;
+
+    // Log every chunk being sent
+    const interval = setInterval(() => {
+      if (count === 5) {
+        clearInterval(interval);
+        console.log('Sending: Done streaming.');
+        stream.push('Done streaming.\n');
+        stream.push(null); // Signals the end of the stream
+      } else {
+        const chunk = `Chunk ${++count}\n`;
+        console.log('Sending:', chunk);
+        stream.push(chunk);
+      }
+    }, 1000);
+
+    stream.pipe(res);
   }
 }
