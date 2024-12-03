@@ -63,7 +63,9 @@ export class MessageService {
     return message;
   }
 
-  async create(data: MessageDTO.Create): Promise<MessageDTO.MessageResponse> {
+  async create(
+    data: MessageDTO.CreateMessage,
+  ): Promise<MessageDTO.MessageResponse> {
     this.logger.log('createMessage');
 
     const createdMessage = await this.prisma.message.create({ data });
@@ -71,7 +73,11 @@ export class MessageService {
     return createdMessage;
   }
 
-  async update({ payload }: { payload: MessageDTO.Update }): Promise<Message> {
+  async update({
+    payload,
+  }: {
+    payload: MessageDTO.UpdateMessage;
+  }): Promise<Message> {
     this.logger.log('updateMessage');
 
     const updateMessage = await this.prisma.message.update({

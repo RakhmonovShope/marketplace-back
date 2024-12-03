@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PageableDto } from 'common/common.dto';
 
-export class Create {
+export class CreateMessage {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -28,7 +28,7 @@ export class Create {
   content: string;
 }
 
-export class Update extends Create {
+export class UpdateMessage extends CreateMessage {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({

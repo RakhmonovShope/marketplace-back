@@ -59,21 +59,21 @@ export class MessageController {
 
   @Post()
   @ApiOperation({ summary: 'Create Message' })
-  @ApiBody({ type: MessageDTO.Create })
+  @ApiBody({ type: MessageDTO.CreateMessage })
   @Permissions(PERMISSIONS.MESSAGE__CREATE)
   async create(
-    @Body() payload: MessageDTO.Create,
+    @Body() payload: MessageDTO.CreateMessage,
   ): Promise<MessageDTO.MessageResponse> {
     return this.messageService.create(payload);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update Message' })
-  @ApiBody({ type: MessageDTO.Update })
+  @ApiBody({ type: MessageDTO.UpdateMessage })
   @Permissions(PERMISSIONS.MESSAGE__UPDATE)
   async update(
     @Param('id') id: string,
-    @Body() payload: MessageDTO.Update,
+    @Body() payload: MessageDTO.UpdateMessage,
   ): Promise<MessageDTO.MessageResponse> {
     return this.messageService.update({ payload });
   }
