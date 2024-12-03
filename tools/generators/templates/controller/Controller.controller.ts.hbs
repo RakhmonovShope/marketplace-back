@@ -57,13 +57,13 @@ export class {{pascalCase name}}Controller {
   @ApiBody({ type: {{pascalCase name}}DTO.Create })
   @Permissions(PERMISSIONS.{{constantCase name}}__CREATE)
   async create(
-    @Body() payload: {{pascalCase name}}DTO.Create,
+    @Body() payload: {{pascalCase name}}DTO.Create{{pascalCase name}},
   ): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
     return this.{{camelCase name}}Service.create(payload);
   }
   @Put(':id')
   @ApiOperation({ summary: 'Update {{pascalCase name}}' })
-  @ApiBody({ type: {{pascalCase name}}DTO.Update })
+  @ApiBody({ type: {{pascalCase name}}DTO.Update{{pascalCase name}} })
   @Permissions(PERMISSIONS.{{constantCase name}}__UPDATE)
   async update(
     @Param('id') id: string,
