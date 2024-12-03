@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { MessageModule } from './api/message';
 import { AudioModule } from './api/audio';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
 import { PrismaModule } from './prisma/prisma.module';
 import { AdminModule } from './api/admin';
 import { CategoryModule } from './api/category';
@@ -18,6 +18,7 @@ import { BrandModule } from './api/brand';
 
 @Module({
   imports: [
+    MessageModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
