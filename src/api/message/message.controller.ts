@@ -22,13 +22,17 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { ChatGateway } from './chat.gateway';
 
 @ApiBearerAuth()
 @ApiTags('Messages')
 @Controller('messages')
 @UseGuards(AuthGuard(), PermissionsGuard)
 export class MessageController {
-  constructor(private readonly messageService: MessageService) {}
+  constructor(
+    private readonly messageService: MessageService,
+    private readonly chatGateway: ChatGateway,
+  ) {}
 
   @Post('/pageable')
   @ApiOperation({ summary: 'Message get all by page' })
@@ -64,7 +68,13 @@ export class MessageController {
   async create(
     @Body() payload: MessageDTO.CreateMessage,
   ): Promise<MessageDTO.MessageResponse> {
-    return this.messageService.create(payload);
+    const newMessage = this.messageService.create(payload);
+
+    this.chatGateway.server
+      .to(payload.receiverId)
+      .emit('receiveMessage', newMessage);
+
+    return newMessage;
   }
 
   @Put(':id')
@@ -75,13 +85,23 @@ export class MessageController {
     @Param('id') id: string,
     @Body() payload: MessageDTO.UpdateMessage,
   ): Promise<MessageDTO.MessageResponse> {
-    return this.messageService.update({ payload });
+    const updatedMessage = await this.messageService.update({ payload });
+
+    this.chatGateway.server
+      .to(payload.receiverId)
+      .emit('updateMessage', updatedMessage);
+
+    return updatedMessage;
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete Message' })
   @Permissions(PERMISSIONS.MESSAGE__DELETE)
   async delete(@Param('id') id: string): Promise<boolean> {
-    return this.messageService.delete({ id });
+    const result = await this.messageService.delete({ id });
+
+    this.chatGateway.server.emit('deleteMessage', { id });
+
+    return result;
   }
 }
