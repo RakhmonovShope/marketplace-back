@@ -14,7 +14,7 @@ import * as {{pascalCase name}}DTO from './{{kebabCase name}}.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { PaginationFilterOrderRequest } from 'common/common.dto';
 
 @ApiBearerAuth()
@@ -69,13 +69,13 @@ export class {{pascalCase name}}Controller {
     @Param('id') id: string,
     @Body() payload: {{pascalCase name}}DTO.Update,
   ): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
-    return this.{{camelCase name}}Service.update(id, payload);
+    return this.{{camelCase name}}Service.update({payload});
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete {{pascalCase name}}' })
   @Permissions(PERMISSIONS.{{constantCase name}}__DELETE)
   async delete(@Param('id') id: string): Promise<boolean> {
-    return this.{{camelCase name}}Service.delete(id);
+    return this.{{camelCase name}}Service.delete({id});
   }
 }

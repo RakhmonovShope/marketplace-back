@@ -2,7 +2,7 @@ import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PageableDto } from 'common/common.dto';
 
-export class Create{{pascalCase name}} {
+export class Create {
 @IsString()
 @IsNotEmpty()
 @ApiProperty({
@@ -43,7 +43,7 @@ example: true,
 active: boolean;
 }
 
-export class Update{{pascalCase name}} extends Create{{pascalCase name}} {
+export class Update extends Create {
 @IsString()
 @IsNotEmpty()
 @ApiProperty({

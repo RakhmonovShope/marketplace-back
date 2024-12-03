@@ -4,6 +4,7 @@ import { {{pascalCase name}} } from '@prisma/client';
 import * as {{pascalCase name}}DTO from './{{kebabCase name}}.dto';
 import { getWhereOperations } from 'helpers';
 import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class {{pascalCase name}}Service {
@@ -71,7 +72,7 @@ private logger = new Logger('{{pascalCase name}}Service');
     return created{{pascalCase name}};
   }
 
-  async update{{pascalCase name}}({ payload, }: { payload: {{pascalCase name}}DTO.Update; }): Promise<{{pascalCase name}}> {
+  async update({ payload, }: { payload: {{pascalCase name}}DTO.Update; }): Promise<{{pascalCase name}}> {
     this.logger.log('update{{pascalCase name}}');
 
     const update{{pascalCase name}} = await this.prisma.{{camelCase name}}.update({
@@ -82,7 +83,7 @@ private logger = new Logger('{{pascalCase name}}Service');
     return update{{pascalCase name}};
   }
 
-  async delete{{pascalCase name}}({ id }: { id: string }): Promise<boolean> {
+  async delete({ id }: { id: string }): Promise<boolean> {
     this.logger.log('delete{{pascalCase name}}');
 
     await this.prisma.{{camelCase name}}.delete({
