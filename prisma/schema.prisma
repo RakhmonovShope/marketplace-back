@@ -1,3 +1,9 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -5,6 +11,16 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum GENDER {
+  MALE
+  FEMALE
+}
+
+enum SUB_TYPE {
+  ADMIN
+  CUSTOMER
 }
 
 model User {
@@ -18,23 +34,23 @@ model User {
   name      String?
   password  String
   subType   SUB_TYPE
+  role      Role      @relation(fields: [roleId], references: [id])
+  roleId    String
   active    Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  roleId    String
-  Comment   Comment[]
   Order     Order[]
-  role      Role      @relation(fields: [roleId], references: [id])
+  Comment   Comment[]
 }
 
 model Role {
   id          String   @id @default(uuid())
   nameUz      String
   nameRu      String
+  active      Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   permissions String[]
-  active      Boolean  @default(false)
   User        User[]
 }
 
@@ -49,9 +65,9 @@ model Category {
   position      Int
   parentId      String?
   active        Boolean     @default(false)
+  attributes    Attribute[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  attributes    Attribute[]
   Product       Product[]
 }
 
@@ -64,9 +80,9 @@ model Attribute {
   active        Boolean           @default(false)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  categoryId    String?
-  Category      Category?         @relation(fields: [categoryId], references: [id])
   options       AttributeOption[]
+  Category      Category?         @relation(fields: [categoryId], references: [id])
+  categoryId    String?
 }
 
 model AttributeOption {
@@ -76,8 +92,8 @@ model AttributeOption {
   active      Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  attributeId String
   Attribute   Attribute @relation(fields: [attributeId], references: [id])
+  attributeId String
 }
 
 model File {
@@ -108,30 +124,37 @@ model Product {
   active        Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  categoryId    String
-  brandId       String
-  storeId       String
-  orderId       String?
-  images        String[]
-  Comment       Comment[]
-  brand         Brand     @relation(fields: [brandId], references: [id])
   category      Category  @relation(fields: [categoryId], references: [id])
-  Order         Order?    @relation(fields: [orderId], references: [id])
+  categoryId    String
+  brand         Brand     @relation(fields: [brandId], references: [id])
+  brandId       String
   store         Store     @relation(fields: [storeId], references: [id])
+  storeId       String
+  images        String[]
+  Order         Order?    @relation(fields: [orderId], references: [id])
+  orderId       String?
+  Comment       Comment[]
 }
 
 model Order {
   id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id])
   userId    String
+  products  Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  user      User      @relation(fields: [userId], references: [id])
-  products  Product[]
+}
+
+enum COMMENT_TYPE {
+  COMMENT
+  REVIEW
 }
 
 model Comment {
   id        String       @id @default(uuid())
+  user      User         @relation(fields: [userId], references: [id])
   userId    String
+  product   Product      @relation(fields: [productId], references: [id])
   productId String
   text      String
   type      COMMENT_TYPE
@@ -139,8 +162,6 @@ model Comment {
   active    Boolean      @default(false)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  product   Product      @relation(fields: [productId], references: [id])
-  user      User         @relation(fields: [userId], references: [id])
 }
 
 model Promocode {
@@ -171,17 +192,22 @@ model Promotion {
   updatedAt     DateTime @updatedAt
 }
 
+enum BADGE_TYPE {
+  STATIC
+  DYNAMIC
+}
+
 model Badge {
   id         String     @id @default(uuid())
+  active     Boolean    @default(false)
   icon       String
   nameRu     String
   nameUz     String
+  type       BADGE_TYPE
+  textColor  String
   background Json
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  active     Boolean    @default(false)
-  type       BADGE_TYPE
-  textColor  String
 }
 
 model Banner {
@@ -230,24 +256,4 @@ model Page {
   active    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-enum GENDER {
-  MALE
-  FEMALE
-}
-
-enum SUB_TYPE {
-  ADMIN
-  CUSTOMER
-}
-
-enum COMMENT_TYPE {
-  COMMENT
-  REVIEW
-}
-
-enum BADGE_TYPE {
-  STATIC
-  DYNAMIC
 }
