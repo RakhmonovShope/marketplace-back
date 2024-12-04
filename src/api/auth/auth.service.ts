@@ -50,4 +50,25 @@ export class AuthService {
       throw new UnauthorizedException('Please check your login credentials');
     }
   }
+
+  async getMe(accessToken: string): Promise<User> {
+    this.logger.log('getMe');
+
+    try {
+      const decoded = this.jwtService.verify(accessToken);
+
+      console.log('decoded', decoded);
+      const user = await this.prisma.user.findUnique({
+        where: { id: decoded.id },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired token', error);
+    }
+  }
 }
