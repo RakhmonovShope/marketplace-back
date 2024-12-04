@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
@@ -49,8 +50,10 @@ export class MessageController {
   @ApiOperation({ summary: 'Message get all' })
   @ApiBody({ type: [MessageDTO.MessageResponse] })
   @Permissions(PERMISSIONS.MESSAGE__VIEW)
-  async getAll(): Promise<MessageDTO.MessageResponse[]> {
-    return this.messageService.getAll();
+  async getAll(
+    @Query() { receiverId, senderId }: { senderId: string; receiverId: string },
+  ): Promise<MessageDTO.MessageResponse[]> {
+    return this.messageService.getAll({ receiverId, senderId });
   }
 
   @Get(':id')

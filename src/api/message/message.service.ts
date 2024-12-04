@@ -45,10 +45,30 @@ export class MessageService {
     };
   }
 
-  async getAll(): Promise<MessageDTO.MessageResponse[]> {
+  async getAll({
+    receiverId,
+    senderId,
+  }: {
+    senderId: string;
+    receiverId: string;
+  }): Promise<MessageDTO.MessageResponse[]> {
     this.logger.log('getAllMessages');
 
-    const messages = await this.prisma.message.findMany();
+    const messages = await this.prisma.message.findMany({
+      where: {
+        OR: [
+          {
+            senderId,
+            receiverId,
+          },
+          {
+            senderId: receiverId,
+            receiverId: senderId,
+          },
+        ],
+      },
+      orderBy: { createdAt: 'asc' },
+    });
 
     return messages;
   }
