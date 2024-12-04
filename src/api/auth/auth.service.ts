@@ -57,7 +57,6 @@ export class AuthService {
     try {
       const decoded = this.jwtService.verify(accessToken);
 
-      console.log('decoded', decoded);
       const user = await this.prisma.user.findUnique({
         where: { id: decoded.id },
       });
