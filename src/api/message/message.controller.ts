@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -73,28 +72,7 @@ export class MessageController {
   ): Promise<MessageDTO.MessageResponse> {
     const newMessage = this.messageService.create(payload);
 
-    this.chatGateway.server
-      .to(payload.receiverId)
-      .emit('receiveMessage', newMessage);
-
     return newMessage;
-  }
-
-  @Put(':id')
-  @ApiOperation({ summary: 'Update Message' })
-  @ApiBody({ type: MessageDTO.UpdateMessage })
-  @Permissions(PERMISSIONS.MESSAGE__UPDATE)
-  async update(
-    @Param('id') id: string,
-    @Body() payload: MessageDTO.UpdateMessage,
-  ): Promise<MessageDTO.MessageResponse> {
-    const updatedMessage = await this.messageService.update({ payload });
-
-    this.chatGateway.server
-      .to(payload.receiverId)
-      .emit('updateMessage', updatedMessage);
-
-    return updatedMessage;
   }
 
   @Delete(':id')

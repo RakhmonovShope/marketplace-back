@@ -15,12 +15,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly messageService: MessageService) {}
 
   handleConnection(client: Socket) {
-    console.log('client', client);
-    console.log(`Client connected: ${client.id}`);
+    const { receiverId } = client.handshake.query;
+
+    if (receiverId) {
+      client.join(receiverId);
+    }
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
+    console.log('Client disconnected', client.id);
   }
 
   @SubscribeMessage('sendMessage')
