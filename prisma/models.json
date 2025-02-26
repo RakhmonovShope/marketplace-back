@@ -1,0 +1,20 @@
+[
+  "User",
+  "Role",
+  "Category",
+  "Attribute",
+  "AttributeOption",
+  "File",
+  "Audio",
+  "Product",
+  "Order",
+  "Comment",
+  "Promocode",
+  "Promotion",
+  "Badge",
+  "Banner",
+  "Brand",
+  "Store",
+  "Page",
+  "Message"
+]

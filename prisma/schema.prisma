@@ -270,3 +270,12 @@ model Message {
   sender     User     @relation("SentMessages", fields: [senderId], references: [id])
   receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }
+
+model Car {
+  id        String   @id @default(uuid())
+  name      String
+  govNumber String
+  made      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
