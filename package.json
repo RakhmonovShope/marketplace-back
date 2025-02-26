@@ -9,7 +9,7 @@
     "build": "pnpm run prisma:generate && nest build",
     "seed": "ts-node prisma/seed.ts",
     "migrate:seed": "npx prisma migrate deploy && npx prisma db seed",
-    "prisma:generate": "prisma generate",
+    "prisma:generate": "prisma generate && node prisma/generate.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -21,7 +21,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate": "plop --plopfile tools/generators/index.js"
+    "generate": "pnpm run prisma:generate && pnpm plop --plopfile tools/generators/index.js"
   },
   "prisma": {
     "seed": "ts-node --transpile-only prisma/seed.ts"
