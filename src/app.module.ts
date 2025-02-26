@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { MessageModule } from './api/message';
 import { AudioModule } from './api/audio';
 import { AppController } from './app.controller';
@@ -15,15 +16,17 @@ import { BannerModule } from './api/banner';
 import { BadgeModule } from './api/badge';
 import { StoreModule } from './api/store';
 import { BrandModule } from './api/brand';
+import * as Cron from './api/cron';
 
 @Module({
   imports: [
-    MessageModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AudioModule,
     PrismaModule,
+    MessageModule,
+    AudioModule,
     AuthModule,
     AdminModule,
     RoleModule,
@@ -36,6 +39,6 @@ import { BrandModule } from './api/brand';
     BrandModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, Cron.Examples.CronService],
 })
 export class AppModule {}
