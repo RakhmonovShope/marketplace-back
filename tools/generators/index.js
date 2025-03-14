@@ -33,82 +33,12 @@ module.exports = (plop) => {
 
   console.log('🚀 New models detected:', newModels);
 
-  // ✅ Step 1: Update models.json immediately to prevent re-execution
   const updatedModels = [...existingModels, ...newModels];
   fs.writeFileSync(MODELS_JSON_PATH, JSON.stringify(updatedModels, null, 2));
 
   const model = newModels[0];
 
-  // ✅ Step 2: Register generators in the SAME Plop instance
-
-  const crud = {
-    description: `Generate a new module for ${model}`,
-    prompts: [
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Enter the model name',
-        default: model,
-      },
-    ],
-    actions: [
-      {
-        type: 'add',
-        path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.module.ts',
-        templateFile: './templates/controller/Controller.module.ts.hbs',
-      },
-      {
-        type: 'add',
-        path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.service.ts',
-        templateFile: './templates/controller/Controller.service.ts.hbs',
-      },
-      {
-        type: 'add',
-        path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.controller.ts',
-        templateFile: './templates/controller/Controller.controller.ts.hbs',
-      },
-      {
-        type: 'add',
-        path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.dto.ts',
-        templateFile: './templates/controller/Controller.dto.ts.hbs',
-      },
-      {
-        type: 'add',
-        path: '../../src/api/{{kebabCase name}}/index.ts',
-        templateFile: './templates/controller/index.ts.hbs',
-      },
-      {
-        type: 'append',
-        path: '../../src/app.module.ts',
-        pattern: /imports: \[/,
-        template: `    {{pascalCase name}}Module,`,
-      },
-      {
-        type: 'append',
-        path: '../../src/app.module.ts',
-        pattern: /from '@nestjs\/common';/,
-        template: `import { {{pascalCase name}}Module } from './api/{{kebabCase name}}';`,
-      },
-      {
-        type: 'append',
-        path: '../../src/api/auth/auth.enum.ts',
-        pattern: /PERMISSIONS\s*{/,
-        template: `  //{{upperCase name}}  
-        {{upperCase name}}__CREATE = '{{upperCase name}}__CREATE',
-        {{upperCase name}}__VIEW = '{{upperCase name}}__VIEW',
-        {{upperCase name}}__UPDATE = '{{upperCase name}}__UPDATE',
-        {{upperCase name}}__DELETE = '{{upperCase name}}__DELETE',`,
-      },
-    ],
-  };
-
-  plop.setGenerator(model, crud);
-
-  // ✅ Step 3: Execute generators inside the SAME plop instance
-  // for (const model of newModels) {
-  //   console.log(`⚡ Running generator for: ${model}`);
-  //   await plop.getGenerator(`${model}-module`);
-  // }
+  plop.setGenerator(model, crudGenerator(model));
 
   console.log('✅ Auto-generation complete!');
 };

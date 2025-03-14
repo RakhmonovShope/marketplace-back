@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CarModule } from './api/car';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MessageModule } from './api/message';
 import { AudioModule } from './api/audio';
@@ -20,6 +21,7 @@ import * as Cron from './api/cron';
 
 @Module({
   imports: [
+    CarModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
