@@ -1,38 +1,39 @@
-module.exports = (defaultModule) => ({
-  description: `Generate a new module for ${defaultModule}`,
+module.exports = (defaultName, fields) => ({
+  description: `Generate a new module for ${defaultName}`,
   prompts: [
     {
       type: 'input',
       name: 'name',
       message: 'Enter the model name',
-      default: defaultModule,
+      default: defaultName,
     },
   ],
   actions: [
     {
       type: 'add',
       path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.module.ts',
-      templateFile: './templates/controller/Controller.module.ts.hbs',
+      templateFile: './templates/crud/Controller.module.ts.hbs',
     },
     {
       type: 'add',
       path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.service.ts',
-      templateFile: './templates/controller/Controller.service.ts.hbs',
+      templateFile: './templates/crud/Controller.service.ts.hbs',
     },
     {
       type: 'add',
       path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.controller.ts',
-      templateFile: './templates/controller/Controller.controller.ts.hbs',
+      templateFile: './templates/crud/Controller.controller.ts.hbs',
     },
     {
       type: 'add',
       path: '../../src/api/{{kebabCase name}}/{{kebabCase name}}.dto.ts',
-      templateFile: './templates/controller/Controller.dto.ts.hbs',
+      templateFile: './templates/crud/Controller.dto.ts.hbs',
+      data: { fields }, // Pass extracted fields to the template
     },
     {
       type: 'add',
       path: '../../src/api/{{kebabCase name}}/index.ts',
-      templateFile: './templates/controller/index.ts.hbs',
+      templateFile: './templates/crud/index.ts.hbs',
     },
     {
       type: 'append',

@@ -1,0 +1,66 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, {{#if hasBooleanFields}}IsBoolean, {{/if}}IsString } from 'class-validator';
+import { PageableDto } from 'common/common.dto';
+
+export class Create{{pascalCase name}} {
+{{#each fields}}
+  {{#if (eq this.type 'string')}}
+    @IsString()
+  {{/if}}
+  {{#if (eq this.type 'boolean')}}
+    @IsBoolean()
+  {{/if}}
+  @IsNotEmpty()
+  @ApiProperty({
+  description: '{{this.name}} of the {{camelCase ../name}}',
+  example: '{{this.example}}',
+  })
+  {{this.name}}: {{this.type}};
+{{/each}}
+}
+
+export class Update{{pascalCase name}} extends Create{{pascalCase name}} {
+@IsString()
+@IsNotEmpty()
+@ApiProperty({
+description: 'Unique identifier for the {{camelCase name}}',
+example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+})
+id: string;
+}
+
+export class {{pascalCase name}}Response {
+@ApiProperty({
+description: 'Unique identifier for the {{camelCase name}}',
+example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+})
+id: string;
+
+{{#each fields}}
+  @ApiProperty({
+  description: '{{this.name}} of the {{camelCase ../name}}',
+  example: '{{this.example}}',
+  })
+  {{this.name}}: {{this.type}};
+{{/each}}
+
+@ApiProperty({
+description: 'Timestamp when the {{camelCase name}} was created',
+example: '2024-01-01T00:00:00.000Z',
+})
+createdAt: Date;
+
+@ApiProperty({
+description: 'Timestamp when the {{camelCase name}} was last updated',
+example: '2024-01-02T00:00:00.000Z',
+})
+updatedAt: Date;
+}
+
+export class PageableResponseDto extends PageableDto {
+@ApiProperty({
+description: 'Array of items for the current page',
+isArray: true,
+})
+data: {{pascalCase name}}Response[];
+}
