@@ -6,6 +6,9 @@ const crudGenerator = require('./templates/crud');
 module.exports = (plop) => {
   plop.addHelper('pluralize', (text) => pluralize(2, text));
 
+  // ✅ Add the missing "eq" helper
+  plop.addHelper('eq', (a, b) => a === b);
+
   const SCHEMA_PATH = path.join(__dirname, '../../prisma/schema.prisma');
   const MODELS_JSON_PATH = path.join(__dirname, '../../prisma/models.json');
 
