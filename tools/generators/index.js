@@ -1,3 +1,4 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const pluralize = require('handlebars-helper-pluralize');
@@ -5,8 +6,6 @@ const crudGenerator = require('./templates/crud');
 
 module.exports = (plop) => {
   plop.addHelper('pluralize', (text) => pluralize(2, text));
-
-  // ✅ Add the missing "eq" helper
   plop.addHelper('eq', (a, b) => a === b);
 
   const SCHEMA_PATH = path.join(__dirname, '../../prisma/schema.prisma');
@@ -39,17 +38,26 @@ module.exports = (plop) => {
 
   console.log(`🚀 New model detected: ${lastAddedModel.name}`);
 
-  // ✅ Step 1: Update models.json immediately to prevent re-execution
-  const updatedModels = [...existingModels, lastAddedModel.name];
-  fs.writeFileSync(MODELS_JSON_PATH, JSON.stringify(updatedModels, null, 2));
-
-  // ✅ Step 2: Register CRUD generator with extracted fields
+  // ✅ Step 1: Register CRUD generator for the last missing model
   plop.setGenerator(
     lastAddedModel.name,
     crudGenerator(lastAddedModel.name, lastAddedModel.fields),
   );
 
-  console.log('✅ Auto-generation complete!');
+  // ✅ Step 2: Run Prisma Migration **AFTER** file generation
+  try {
+    console.log('🚀 Running Prisma migration...');
+    execSync('pnpm prisma migrate dev --name init', { stdio: 'inherit' });
+    console.log('✅ Prisma migration applied successfully!');
+
+    // Update models.json with the new model
+    const updatedModels = [...existingModels, lastAddedModel.name];
+    fs.writeFileSync(MODELS_JSON_PATH, JSON.stringify(updatedModels, null, 2));
+    console.log('✅ Updated models.json with the new model.');
+  } catch (error) {
+    console.error('❌ Error applying Prisma migration:', error);
+    process.exit(1); // Exit with an error code if migration fails
+  }
 };
 
 // ✅ Helper Function: Extract Fields from Prisma Schema
