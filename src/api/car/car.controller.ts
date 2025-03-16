@@ -61,18 +61,15 @@ export class CarController {
   @ApiOperation({ summary: 'Create Car' })
   @ApiBody({ type: CarDTO.Create })
   @Permissions(PERMISSIONS.CAR__CREATE)
-  async create(@Body() payload: CarDTO.CreateCar): Promise<CarDTO.CarResponse> {
+  async create(@Body() payload: CarDTO.Create): Promise<CarDTO.CarResponse> {
     return this.carService.create(payload);
   }
 
-  @Put(':id')
+  @Put()
   @ApiOperation({ summary: 'Update Car' })
-  @ApiBody({ type: CarDTO.UpdateCar })
+  @ApiBody({ type: CarDTO.Update })
   @Permissions(PERMISSIONS.CAR__UPDATE)
-  async update(
-    @Param('id') id: string,
-    @Body() payload: CarDTO.Update,
-  ): Promise<CarDTO.CarResponse> {
+  async update(@Body() payload: CarDTO.Update): Promise<CarDTO.CarResponse> {
     return this.carService.update({ payload });
   }
 

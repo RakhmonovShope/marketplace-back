@@ -1,9 +1,10 @@
 export enum PERMISSIONS {
-  //CAR  
-        CAR__CREATE = 'CAR__CREATE',
-        CAR__VIEW = 'CAR__VIEW',
-        CAR__UPDATE = 'CAR__UPDATE',
-        CAR__DELETE = 'CAR__DELETE',
+  //CAR
+  CAR__CREATE = 'CAR__CREATE',
+  CAR__VIEW = 'CAR__VIEW',
+  CAR__UPDATE = 'CAR__UPDATE',
+  CAR__DELETE = 'CAR__DELETE',
+
   //MESSAGE
   MESSAGE__CREATE = 'MESSAGE__CREATE',
   MESSAGE__VIEW = 'MESSAGE__VIEW',

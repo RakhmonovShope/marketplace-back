@@ -64,7 +64,7 @@ private logger = new Logger('{{pascalCase name}}Service');
     return {{camelCase name}};
   }
 
-  async create(data: {{pascalCase name}}DTO.Create{{pascalCase name}}): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
+  async create(data: {{pascalCase name}}DTO.Create): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
     this.logger.log('create{{pascalCase name}}');
 
     const created{{pascalCase name}} = await this.prisma.{{camelCase name}}.create({ data });
@@ -72,7 +72,7 @@ private logger = new Logger('{{pascalCase name}}Service');
     return created{{pascalCase name}};
   }
 
-  async update({ payload, }: { payload: {{pascalCase name}}DTO.Update{{pascalCase name}}; }): Promise<{{pascalCase name}}> {
+  async update({ payload, }: { payload: {{pascalCase name}}DTO.Update; }): Promise<{{pascalCase name}}> {
     this.logger.log('update{{pascalCase name}}');
 
     const update{{pascalCase name}} = await this.prisma.{{camelCase name}}.update({

@@ -17,11 +17,9 @@ import { BannerModule } from './api/banner';
 import { BadgeModule } from './api/badge';
 import { StoreModule } from './api/store';
 import { BrandModule } from './api/brand';
-import * as Cron from './api/cron';
 
 @Module({
   imports: [
-    CarModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -39,8 +37,9 @@ import * as Cron from './api/cron';
     BannerModule,
     StoreModule,
     BrandModule,
+    CarModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Cron.Examples.CronService],
+  providers: [AppService],
 })
 export class AppModule {}

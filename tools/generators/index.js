@@ -24,7 +24,6 @@ module.exports = (plop) => {
     existingModels = JSON.parse(fs.readFileSync(MODELS_JSON_PATH, 'utf-8'));
   }
 
-  // ✅ Find the last missing model
   const missingModels = extractedModels.filter(
     (model) => !existingModels.some((m) => m.name === model.name),
   );
@@ -38,29 +37,28 @@ module.exports = (plop) => {
 
   console.log(`🚀 New model detected: ${lastAddedModel.name}`);
 
-  // ✅ Step 1: Register CRUD generator for the last missing model
   plop.setGenerator(
     lastAddedModel.name,
     crudGenerator(lastAddedModel.name, lastAddedModel.fields),
   );
 
-  // ✅ Step 2: Run Prisma Migration **AFTER** file generation
   try {
     console.log('🚀 Running Prisma migration...');
     execSync('pnpm prisma migrate dev --name init', { stdio: 'inherit' });
     console.log('✅ Prisma migration applied successfully!');
 
-    // Update models.json with the new model
     const updatedModels = [...existingModels, lastAddedModel.name];
     fs.writeFileSync(MODELS_JSON_PATH, JSON.stringify(updatedModels, null, 2));
     console.log('✅ Updated models.json with the new model.');
   } catch (error) {
     console.error('❌ Error applying Prisma migration:', error);
-    process.exit(1); // Exit with an error code if migration fails
+    process.exit(1);
   }
+
+  // const updatedModels = [...existingModels, lastAddedModel.name];
+  // fs.writeFileSync(MODELS_JSON_PATH, JSON.stringify(updatedModels, null, 2));
 };
 
-// ✅ Helper Function: Extract Fields from Prisma Schema
 function extractFields(modelBody) {
   return [...modelBody.matchAll(/(\w+)\s+(\w+)/g)].map((match) => ({
     name: match[1],

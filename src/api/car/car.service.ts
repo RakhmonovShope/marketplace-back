@@ -63,7 +63,7 @@ export class CarService {
     return car;
   }
 
-  async create(data: CarDTO.CreateCar): Promise<CarDTO.CarResponse> {
+  async create(data: CarDTO.Create): Promise<CarDTO.CarResponse> {
     this.logger.log('createCar');
 
     const createdCar = await this.prisma.car.create({ data });
@@ -71,7 +71,7 @@ export class CarService {
     return createdCar;
   }
 
-  async update({ payload }: { payload: CarDTO.UpdateCar }): Promise<Car> {
+  async update({ payload }: { payload: CarDTO.Update }): Promise<Car> {
     this.logger.log('updateCar');
 
     const updateCar = await this.prisma.car.update({

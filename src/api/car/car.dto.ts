@@ -2,14 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { PageableDto } from 'common/common.dto';
 
-export class CreateCar {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'id of the car',
-    example: 'Example Value',
-  })
-  id: string;
+export class Create {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -17,6 +10,7 @@ export class CreateCar {
     example: 'Example Value',
   })
   name: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -24,6 +18,7 @@ export class CreateCar {
     example: 'Example Value',
   })
   govNumber: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -31,21 +26,9 @@ export class CreateCar {
     example: 'Example Value',
   })
   made: string;
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'createdAt of the car',
-    example: '2024-01-01T00:00:00.000Z',
-  })
-  createdAt: Date;
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'updatedAt of the car',
-    example: '2024-01-01T00:00:00.000Z',
-  })
-  updatedAt: Date;
 }
 
-export class UpdateCar extends CreateCar {
+export class Update extends Create {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -61,6 +44,7 @@ export class CarResponse {
     example: 'Example Value',
   })
   id: string;
+
   @ApiProperty({
     description: 'name of the car',
     example: 'Example Value',

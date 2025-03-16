@@ -35,7 +35,6 @@ export class {{pascalCase name}}Controller {
     return this.{{camelCase name}}Service.getAllByPage(params);
     }
 
-
   @Get()
   @ApiOperation({ summary: '{{pascalCase name}} get all' })
   @ApiBody({ type: [{{pascalCase name}}DTO.{{pascalCase name}}Response] })
@@ -57,18 +56,16 @@ export class {{pascalCase name}}Controller {
   @ApiBody({ type: {{pascalCase name}}DTO.Create })
   @Permissions(PERMISSIONS.{{constantCase name}}__CREATE)
   async create(
-    @Body() payload: {{pascalCase name}}DTO.Create{{pascalCase name}},
+    @Body() payload: {{pascalCase name}}DTO.Create,
   ): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
     return this.{{camelCase name}}Service.create(payload);
   }
-  @Put(':id')
+
+  @Put()
   @ApiOperation({ summary: 'Update {{pascalCase name}}' })
-  @ApiBody({ type: {{pascalCase name}}DTO.Update{{pascalCase name}} })
+  @ApiBody({ type: {{pascalCase name}}DTO.Update })
   @Permissions(PERMISSIONS.{{constantCase name}}__UPDATE)
-  async update(
-    @Param('id') id: string,
-    @Body() payload: {{pascalCase name}}DTO.Update,
-  ): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
+  async update( @Body() payload: {{pascalCase name}}DTO.Update): Promise<{{pascalCase name}}DTO.{{pascalCase name}}Response> {
     return this.{{camelCase name}}Service.update({payload});
   }
 
