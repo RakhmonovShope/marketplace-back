@@ -23,6 +23,7 @@ import { BrandModule } from './api/brand';
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: '.env',
     }),
     PrismaModule,
     MessageModule,
