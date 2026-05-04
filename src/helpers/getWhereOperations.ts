@@ -1,3 +1,5 @@
+import { BadRequestException } from '@nestjs/common';
+
 interface Filter {
   name: string;
   operation: '>' | '>=' | '<' | '<=' | '=' | '!=';
@@ -31,7 +33,7 @@ export const getWhereOperations: any = (filter: any) => {
         where[fieldName] = { not: value };
         break;
       default:
-        throw new Error(`Unsupported filter operation: ${f.operation}`);
+        throw new BadRequestException();
     }
   });
 
