@@ -63,7 +63,7 @@ export class RoleController {
   @ApiResponse({ type: RoleDTO.RoleResponse })
   @Permissions(PERMISSIONS.ROLE__VIEW)
   async getAdmin(@Param('id') id: string): Promise<RoleDTO.RoleResponse> {
-    return this.roleService.getById({ id });
+    return this.roleService.getById(id);
   }
 
   @Post()

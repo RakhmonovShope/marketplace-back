@@ -55,6 +55,7 @@ export class RoleService {
   async getById(id): Promise<RoleDTO.RoleResponse> {
     this.logger.log('roleById');
 
+    console.log('<==========>', id);
     const role = await this.prisma.role.findUnique({
       where: { id },
     });

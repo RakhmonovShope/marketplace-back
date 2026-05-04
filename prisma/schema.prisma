@@ -279,3 +279,12 @@ model Car {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model TestModal {
+  id        String   @id @default(uuid())
+  name      String
+  govNumber String
+  made      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
