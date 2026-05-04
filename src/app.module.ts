@@ -18,12 +18,19 @@ import { BadgeModule } from './api/badge';
 import { StoreModule } from './api/store';
 import { BrandModule } from './api/brand';
 
+import { envValidationSchema } from './common/env.validation.schema';
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      validationSchema: envValidationSchema,
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: false,
+      },
     }),
     PrismaModule,
     MessageModule,
