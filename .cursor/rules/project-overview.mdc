@@ -1,0 +1,42 @@
+---
+description: Marketplace Backend — стек, ключевые команды, базовые правила работы
+alwaysApply: true
+---
+
+# Marketplace Backend
+
+NestJS 10 (Express) + TypeScript 5 + Prisma 5 (PostgreSQL). Менеджер пакетов — **pnpm**, не npm/yarn.
+
+Полный гид: см. `AGENTS.md` в корне.
+
+## Ключевые директории
+
+- `src/api/<feature>/` — feature-модули (controller / service / module / dto / index).
+- `src/common/common.dto.ts` — `PageableDto`, `PaginationFilterOrderRequest`.
+- `src/helpers/` — чистые утилиты (`getWhereOperations`).
+- `src/prisma/` — глобальный `PrismaService`.
+- `src/api/auth/` — JWT + RBAC (`PERMISSIONS`, `PermissionsGuard`, `@Permissions`).
+- `prisma/schema.prisma` — единственный источник схемы БД.
+- `tools/generators/` — Plop CRUD codegen.
+
+`tsconfig.json` имеет `baseUrl: "src"` — импорты вида `common/common.dto`, `helpers` валидны.
+
+## Команды (всегда `pnpm`)
+
+```bash
+pnpm start:dev                         # dev watch
+pnpm build                             # prisma generate + nest build
+pnpm lint && pnpm format               # перед коммитом
+pnpm prisma migrate dev --name <name>  # новая миграция
+pnpm generate                          # Plop CRUD из новой Prisma-модели
+pnpm seed                              # сид супер-админа
+```
+
+## Базовые правила
+
+1. Эталонный CRUD-модуль — `src/api/category/`. При создании нового — копируй его форму либо запускай `pnpm generate`.
+2. Локализованные поля всегда дублируются `Uz` / `Ru` (`nameUz`/`nameRu`, `descriptionUz`/`descriptionRu` и т.д.).
+3. Защищённые роуты обязаны иметь `@UseGuards(AuthGuard(), PermissionsGuard)` + `@Permissions(PERMISSIONS.<NAME>)`.
+4. Pageable-эндпоинт — `POST /<resource>/pageable`, принимает `PaginationFilterOrderRequest`, возвращает `PageableResponseDto`.
+5. Никогда не редактируй `prisma/migrations/`, `dist/`, `node_modules/`, `pnpm-lock.yaml` руками.
+6. Любые SQL-операции — только через Prisma Client (`PrismaService`).

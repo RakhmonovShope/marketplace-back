@@ -1,0 +1,65 @@
+---
+description: Permission-based RBAC — PERMISSIONS, @Permissions, PermissionsGuard
+globs: src/api/**/*.ts
+alwaysApply: false
+---
+
+# RBAC и Permissions
+
+Система ролей основана на `Role.permissions: String[]` в БД и enum'е `PERMISSIONS` в `src/api/auth/auth.enum.ts`.
+
+## Где что лежит
+
+- `src/api/auth/auth.enum.ts` — единственный реестр всех permission-констант.
+- `src/api/auth/permissions.decorator.ts` — декоратор `@Permissions(...)`.
+- `src/api/auth/permissions.guard.ts` — guard, читающий `user.roleId`, подтягивающий `Role.permissions` из БД и сверяющий с метаданными метода.
+- `src/api/auth/auth.module.ts` — экспортирует `passportModule`, который любой feature-модуль подключает в свой `imports`.
+
+## Имя permission-константы
+
+Формат: `<FEATURE>__<ACTION>`, например `CATEGORY__VIEW`, `STORE__DELETE`, `ROLE__PERMISSION__VIEW`.
+
+Стандартный набор для нового CRUD-модуля:
+
+```ts
+//<FEATURE>
+<FEATURE>__CREATE = '<FEATURE>__CREATE',
+<FEATURE>__VIEW = '<FEATURE>__VIEW',
+<FEATURE>__UPDATE = '<FEATURE>__UPDATE',
+<FEATURE>__DELETE = '<FEATURE>__DELETE',
+```
+
+Plop добавляет эти константы автоматически при `pnpm generate` (см. `tools/generators/templates/crud/index.js`).
+
+## Как защитить роут
+
+Защищённый роут требует одновременно:
+
+```ts
+@UseGuards(AuthGuard(), PermissionsGuard)        // на классе или методе
+@Permissions(PERMISSIONS.CATEGORY__VIEW)          // на методе
+async getAll() { ... }
+```
+
+`AuthGuard()` (passport-jwt) валидирует токен и кладёт `user` в request. `PermissionsGuard` затем проверяет `user.roleId` против требуемых permission'ов.
+
+Если у метода нет `@Permissions(...)`, guard просто пропускает запрос (см. `permissions.guard.ts:26`).
+
+## Публичные роуты
+
+Не вешай guard'ы на:
+- `AuthController` (`/auth/signin`, `/auth/signup`).
+- `GET /files/:y/:m/:d/:name` — публичная отдача статики.
+- WebSocket-gateway'и (см. `chat.gateway.ts`) — авторизация решается на уровне handshake.
+
+## При добавлении нового модуля
+
+1. Добавь 4 permission'а в `auth.enum.ts` (Plop делает это сам).
+2. Если super-admin должен иметь доступ — добавь новые строки в массив `permissions` в `prisma/seed.ts`.
+3. Запусти `pnpm seed` или дай инструкцию — иначе у существующего super-admin'а не будет доступа к новой сущности.
+
+## Что не делать
+
+- Не вводи permission-логику параллельно через свой собственный guard.
+- Не используй строковые литералы вместо `PERMISSIONS.X` — это ломает refactor и поиск usages.
+- Не давай permission'ы через `@SetMetadata('permissions', ...)` напрямую — только через `@Permissions(...)`.

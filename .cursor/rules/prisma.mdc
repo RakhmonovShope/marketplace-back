@@ -1,0 +1,61 @@
+---
+description: Конвенции Prisma-схемы и миграций
+globs: prisma/**/*.prisma
+alwaysApply: false
+---
+
+# Prisma — схема и миграции
+
+`prisma/schema.prisma` — единственный источник истины для БД. Никогда не редактируй сгенерированный клиент в `node_modules/@prisma/client/`.
+
+## Конвенции модели
+
+```prisma
+model Category {
+  id            String    @id @default(uuid())
+  nameUz        String
+  nameRu        String
+  descriptionUz String
+  descriptionRu String
+  position      Int
+  parentId      String?
+  active        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+```
+
+Обязательные правила:
+
+1. **ID** — всегда `String @id @default(uuid())`. Никаких `Int autoincrement` или `cuid` без явной причины.
+2. **Audit-поля** — обязательно: `createdAt DateTime @default(now())` и `updatedAt DateTime @updatedAt`.
+3. **Soft-disable** — `active Boolean @default(false)`. Активация выполняется отдельным апдейтом.
+4. **Локализация** — каждое отображаемое строковое поле дублируется суффиксами `Uz` / `Ru` (`nameUz`, `nameRu`, `descriptionUz`, `descriptionRu`, `coverUz`, `coverRu`, `slugUz`, `slugRu`).
+5. **Имена** — модели в `PascalCase`, единственное число (`User`, `Category`). Поля — `camelCase`. Enum — `UPPER_SNAKE_CASE` с `UPPER_SNAKE_CASE`-значениями.
+6. **Связи** — внешний ключ называется `<relation>Id`, отношение объявляется как:
+   ```prisma
+   role   Role   @relation(fields: [roleId], references: [id])
+   roleId String
+   ```
+
+## Миграции
+
+- Изменения схемы **всегда** оформляются миграцией:
+  ```bash
+  pnpm prisma migrate dev --name add_<entity>_or_<change>
+  ```
+- Имя миграции — короткое, в `snake_case`, описывает суть изменения.
+- Не редактируй вручную файлы в `prisma/migrations/` — они read-only после применения.
+- Для прода используется `pnpm migrate:seed` (`prisma migrate deploy && db seed`).
+
+## После изменения схемы
+
+1. `pnpm prisma generate` (или просто `pnpm build`) — регенерация Prisma Client.
+2. Если новая модель — `pnpm generate` создаст CRUD-модуль через Plop, после чего нужно проверить `prisma/models.json` (туда записывается имя сгенерированной модели).
+3. Если super-admin должен получить доступ к новой сущности — добавить новые `<NAME>__CREATE/VIEW/UPDATE/DELETE` в `prisma/seed.ts`.
+
+## Что не делать
+
+- Не убирай `updatedAt` ради «оптимизации».
+- Не удаляй `active`-флаг — он используется в фильтрах фронтенда.
+- Не вводи snake_case-имена полей через `@map` без согласования.

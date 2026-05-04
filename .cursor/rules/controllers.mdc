@@ -1,0 +1,68 @@
+---
+description: Паттерны NestJS-контроллеров и Swagger-декораторов
+globs: src/api/**/*.controller.ts
+alwaysApply: false
+---
+
+# Контроллеры
+
+## Декораторы класса (обязательны)
+
+```ts
+@ApiBearerAuth()
+@ApiTags('Category')
+@Controller('category')
+@UseGuards(AuthGuard(), PermissionsGuard)
+export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
+}
+```
+
+Исключения: `AuthController` (sign-in/sign-up — публичные), публичный `GET /files/:y/:m/:d/:name` (отдача статики).
+
+## Стандартные роуты CRUD
+
+| Метод | Путь | Тело / Параметр | Возвращает | Permission |
+|-------|------|-----------------|------------|------------|
+| POST  | `/<r>/pageable` | `PaginationFilterOrderRequest` | `PageableResponseDto` | `<X>__VIEW` |
+| GET   | `/<r>` | — | `<X>Response[]` | `<X>__VIEW` |
+| GET   | `/<r>/:id` | `id: string` | `<X>Response` | `<X>__VIEW` |
+| POST  | `/<r>` | `Create` | `<X>Response` | `<X>__CREATE` |
+| PUT   | `/<r>` | `Update` (id внутри!) | `<X>Response` | `<X>__UPDATE` |
+| DELETE| `/<r>/:id` | `id: string` | `boolean` | `<X>__DELETE` |
+
+`PUT` берёт `id` **из тела**, не из URL. Не меняй этот контракт.
+
+## Декораторы метода (обязательны)
+
+```ts
+@Post('/pageable')
+@ApiOperation({ summary: 'Category get all by page' })
+@ApiBody({ type: PaginationFilterOrderRequest })
+@ApiResponse({ type: [CategoryDTO.CategoryResponse] })
+@Permissions(PERMISSIONS.CATEGORY__VIEW)
+async getAllByPage(
+  @Body() params: PaginationFilterOrderRequest,
+): Promise<CategoryDTO.PageableResponseDto> {
+  return this.categoryService.getAllByPage(params);
+}
+```
+
+## Импорт DTO
+
+Всегда namespace-импорт, никогда не разворачивай:
+
+```ts
+// GOOD
+import * as CategoryDTO from './category.dto';
+async create(@Body() payload: CategoryDTO.Create): Promise<CategoryDTO.CategoryResponse> {}
+
+// BAD
+import { Create, CategoryResponse } from './category.dto';
+```
+
+## Контроллер не должен
+
+- Содержать бизнес-логику или Prisma-вызовы — только делегировать в сервис.
+- Кидать `Error` напрямую — используй `HttpException`, `BadRequestException`, `NotFoundException`, `UnauthorizedException`, `ForbiddenException`.
+- Игнорировать `@Permissions(...)` на защищённых роутах.

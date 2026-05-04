@@ -1,0 +1,52 @@
+---
+description: TypeScript / Prettier / ESLint стиль и базовые правила импортов
+globs: **/*.ts
+alwaysApply: false
+---
+
+# Code style
+
+## Форматирование
+
+- Prettier: `singleQuote: true`, `trailingComma: 'all'`. Запускается `pnpm format`.
+- ESLint: `@typescript-eslint/recommended` + `prettier`. `pnpm lint --fix` исправит большинство мелочей.
+- Отключены: `no-explicit-any`, `interface-name-prefix`, `explicit-function-return-type`, `explicit-module-boundary-types`. Тем не менее `any` без обоснования — это плохо: предпочитай типы из `@prisma/client` или DTO.
+
+## Импорты
+
+- `tsconfig` имеет `baseUrl: "src"`. Используй короткие пути:
+  ```ts
+  import { PaginationFilterOrderRequest } from 'common/common.dto'; // GOOD
+  import { getWhereOperations } from 'helpers';                     // GOOD
+  import { PrismaService } from '../../prisma/prisma.service';       // тоже допустимо
+  ```
+- DTO импортируются как namespace: `import * as CategoryDTO from './category.dto'`.
+- Не используй `require(...)` в `src/` (генератор `tools/generators/index.js` — исключение).
+- Внешние пакеты идут первыми, внутренние — после, без пустых строк между группами.
+
+## Типы
+
+- Где удобно — типы Prisma: `import { User, Category } from '@prisma/client'`.
+- В контроллерах возвращай явные `Promise<<DTO>>` — это улучшает Swagger и читаемость.
+- `strictNullChecks: false` и `noImplicitAny: false` — пишем код так, будто они включены: явно типизируем параметры и возвращаемые значения.
+
+## Логирование
+
+- `private logger = new Logger('<Feature> service')` в каждом сервисе.
+- Первая строка метода: `this.logger.log('<actionName>')`.
+- Не используй `console.log` в production-коде. Исключение — `chat.gateway.ts` для WebSocket-debug, но лучше заменить на `Logger`.
+
+## Ошибки
+
+- Не кидай голые `throw new Error(...)`. Используй Nest-исключения:
+  - `BadRequestException` — невалидные параметры.
+  - `NotFoundException` — сущность не найдена.
+  - `UnauthorizedException` — нет/невалидный токен.
+  - `ForbiddenException` — нет permission.
+  - `HttpException(message, HttpStatus.X)` — кастомные статусы.
+
+## Прочее
+
+- Не пиши пояснительные комментарии типа `// create user` — код должен быть самодокументируемым. Комментарий нужен только для нетривиального intent'а.
+- Не оставляй закомментированный код в финальной версии.
+- Файлы — `kebab-case` (`category.controller.ts`), классы — `PascalCase`, переменные/функции — `camelCase`, enum-константы — `UPPER_SNAKE_CASE`.

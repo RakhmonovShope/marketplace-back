@@ -1,0 +1,58 @@
+---
+description: Структура feature-модуля в src/api/<name>/
+globs: src/api/**/*.ts
+alwaysApply: false
+---
+
+# Структура feature-модуля
+
+Каждый CRUD-модуль обязан иметь следующие файлы (см. `src/api/category/` как эталон):
+
+```
+src/api/<name>/
+  <name>.controller.ts   # REST endpoints + Swagger
+  <name>.service.ts      # Бизнес-логика, Prisma-вызовы, логгер
+  <name>.module.ts       # @Module — импортирует passportModule из auth.module
+  <name>.dto.ts          # Create / Update / <Name>Response / PageableResponseDto
+  index.ts               # Реэкспорт всех трёх классов
+```
+
+## index.ts — обязательный шаблон
+
+```ts
+export { CategoryService } from './category.service';
+export { CategoryController } from './category.controller';
+export { CategoryModule } from './category.module';
+```
+
+## Module — обязательный шаблон
+
+```ts
+import { Module } from '@nestjs/common';
+import { CategoryService } from './category.service';
+import { CategoryController } from './category.controller';
+import { passportModule } from '../auth/auth.module';
+
+@Module({
+  imports: [passportModule],
+  controllers: [CategoryController],
+  exports: [CategoryService],
+  providers: [CategoryService],
+})
+export class CategoryModule {}
+```
+
+`PrismaModule` не нужно импортировать — он `@Global()` и подключён в `AppModule`.
+
+## Регистрация в AppModule
+
+После создания нового модуля — **обязательно** добавить его в `imports: [...]` массив `src/app.module.ts`. Plop делает это автоматически через `pnpm generate`.
+
+## Расширения (при необходимости)
+
+- `<name>.enum.ts` — локальные enum'ы (см. `src/api/auth/auth.enum.ts`).
+- `<name>.guard.ts` — кастомные guard'ы (см. `src/api/auth/permissions.guard.ts`).
+- `<name>.gateway.ts` — WebSocket gateway (см. `src/api/message/chat.gateway.ts`).
+- `<name>.validation.ts` — кастомная валидация (см. `src/api/audio/audio.validation.ts`).
+
+Не используй другие имена файлов и не разбивай на лишние подпапки без причины.
