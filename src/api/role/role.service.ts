@@ -1,10 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Role } from '@prisma/client';
 import * as RoleDTO from './role.dto';
 import { ConfigService } from '@nestjs/config';
 import { getWhereOperations } from 'helpers';
 import { PaginationFilterOrderRequest } from 'common/common.dto';
+
+import { REDIS_CLIENT } from '../../common/redis.module';
+import { rolePermissionsCacheKey } from '../auth/permissions.guard';
+import Redis from 'ioredis';
 
 @Injectable()
 export class RoleService {
@@ -13,6 +17,7 @@ export class RoleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    @Inject(REDIS_CLIENT) private readonly redis: Redis,
   ) {}
 
   async getAllByPage(
@@ -79,6 +84,8 @@ export class RoleService {
       data: payload,
     });
 
+    await this.invalidateRoleCache(payload.id);
+
     return updateRole;
   }
 
@@ -89,6 +96,18 @@ export class RoleService {
       where: { id },
     });
 
+    await this.invalidateRoleCache(id);
+
     return true;
+  }
+
+  private async invalidateRoleCache(roleId: string): Promise<void> {
+    try {
+      await this.redis.del(rolePermissionsCacheKey(roleId));
+    } catch (err) {
+      this.logger.warn(
+        `Failed to invalidate role cache: ${(err as Error).message}`,
+      );
+    }
   }
 }

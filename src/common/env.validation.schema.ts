@@ -15,6 +15,10 @@ export const envValidationSchema = Joi.object({
   JWT_SECRET: Joi.string().min(16).required(),
   JWT_SESSION_EXPIRATION: Joi.string().default('1d'),
 
+  //REDIS
+  REDIS_HOST: Joi.string().default('localhost'),
+  REDIS_PORT: Joi.number().default(6379),
+
   // AWS S3 (audio.controller.ts da ishlatilgan)
   AWS_ACCESS_KEY_ID: Joi.string().required(),
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
