@@ -20,18 +20,45 @@ import { BrandModule } from './api/brand';
 
 import { envValidationSchema } from './common/env.validation.schema';
 
+import { RedisModule } from './common/redis.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+
+import { APP_GUARD } from '@nestjs/core';
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
       validationSchema: envValidationSchema,
       validationOptions: {
         allowUnknown: true,
         abortEarly: false,
       },
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'default', // 👈 default qo'shildi
+        ttl: 60_000,
+        limit: 10,
+      },
+      {
+        name: 'short', // qisqa muddat — 1 soniya
+        ttl: 1000,
+        limit: 5, // 1 soniyada 5 ta so'rov
+      },
+      {
+        name: 'medium', // o'rta muddat — 10 soniya
+        ttl: 10_000,
+        limit: 30, // 10 soniyada 30 ta so'rov
+      },
+      {
+        name: 'long', // uzoq muddat — 1 daqiqa
+        ttl: 60_000,
+        limit: 100, // 1 daqiqada 100 ta so'rov
+      },
+    ]),
+    RedisModule,
     PrismaModule,
     MessageModule,
     AudioModule,
@@ -48,6 +75,12 @@ import { envValidationSchema } from './common/env.validation.schema';
     CarModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

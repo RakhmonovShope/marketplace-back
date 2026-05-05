@@ -11,6 +11,7 @@ import { User as UserModel } from '@prisma/client';
 import * as AuthDTO from './auth.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as AdminDTO from '../admin/admin.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -19,6 +20,7 @@ export class AuthController {
 
   @Post('signin')
   @ApiOperation({ summary: 'Login (Sign In)' })
+  @Throttle({ short: { limit: 5, ttl: 10_000 } })
   async signIn(
     @Body() userData: AuthDTO.SignIn,
   ): Promise<{ accessToken: string }> {
@@ -27,6 +29,7 @@ export class AuthController {
 
   @Post('signup')
   @ApiOperation({ summary: 'Registration (Sign Up)' })
+  @Throttle({ long: { limit: 3, ttl: 3_600_000 } })
   async signUp(@Body() userData: AuthDTO.SignUp): Promise<UserModel> {
     return this.authService.signUp(userData);
   }
