@@ -15,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 
 interface TokenPayload {
   id: string;
+  sid: string;
 }
 
 interface AuthMeta {
@@ -75,21 +76,34 @@ export class AuthService {
   async getMe(accessToken: string): Promise<User> {
     this.logger.log('getMe');
 
+    let decoded: TokenPayload;
     try {
-      const decoded = this.jwtService.verify(accessToken);
-
-      const user = await this.prisma.user.findUnique({
-        where: { id: decoded.id },
-      });
-
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-
-      return user;
+      decoded = this.jwtService.verify<TokenPayload>(accessToken);
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired token', error);
     }
+
+    if (!decoded.sid) {
+      throw new UnauthorizedException('Session is missing in token');
+    }
+
+    const session = await this.prisma.refreshToken.findUnique({
+      where: { id: decoded.sid },
+    });
+
+    if (!session || session.revokedAt) {
+      throw new UnauthorizedException('Session has been revoked');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return user;
   }
 
   async refresh(
@@ -214,18 +228,19 @@ export class AuthService {
     userId: string,
     meta: AuthMeta,
   ): Promise<AuthDTO.TokensResponseDto> {
-    const payload: TokenPayload = { id: userId };
+    // Sessiya id (sid) — RefreshToken yozuvining birlamchi kaliti.
+    // Access tokenni shu sid bilan bog'laymiz, shunda logout/logoutAll
+    // refreshTokenni revoke qilganda accessToken ham yaroqsiz bo'ladi.
+    const sid = crypto.randomUUID();
+    const payload: TokenPayload = { id: userId, sid };
 
-    // Access — qisqa muddatli, default JwtModule sozlamasi bilan
     const accessToken = this.jwtService.sign(payload);
 
-    // Refresh — alohida secret va uzoqroq muddat
     const refreshToken = this.jwtService.sign(payload, {
       secret: this.config.get('JWT_REFRESH_SECRET'),
       expiresIn: this.config.get('JWT_REFRESH_EXPIRATION', '7d'),
     });
 
-    // Refresh tokenni DB ga hash qilib saqlaymiz
     const tokenHash = this.hashToken(refreshToken);
     const expiresAt = this.calculateExpiry(
       this.config.get('JWT_REFRESH_EXPIRATION', '7d'),
@@ -233,6 +248,7 @@ export class AuthService {
 
     await this.prisma.refreshToken.create({
       data: {
+        id: sid,
         tokenHash,
         userId,
         expiresAt,
