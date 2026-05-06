@@ -73,3 +73,18 @@ export class SignIn {
   @IsNotEmpty()
   password: string;
 }
+
+export class RefreshTokenDto {
+  @ApiProperty({ description: 'Refresh token' })
+  @IsString()
+  @IsNotEmpty()
+  refreshToken: string;
+}
+
+export class TokensResponseDto {
+  @ApiProperty()
+  accessToken: string;
+
+  @ApiProperty()
+  refreshToken: string;
+}

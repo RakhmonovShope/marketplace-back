@@ -18,7 +18,7 @@ export const passportModule = PassportModule.register({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
         signOptions: {
-          expiresIn: `${configService.get('JWT_SESSION_EXPIRATION')}s`,
+          expiresIn: configService.get('JWT_SESSION_EXPIRATION'),
         },
       }),
     }),

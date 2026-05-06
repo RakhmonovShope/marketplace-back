@@ -8,17 +8,17 @@ import { User } from '@prisma/client';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private adminService: AdminService,
-    private configService: ConfigService,
+    private readonly adminService: AdminService,
+    private readonly configService: ConfigService,
   ) {
     super({
-      secretOrKey: configService.get('JWT_SECRET'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: configService.get('JWT_SECRET'),
     });
   }
 
-  async validate({ id }: { id: string }) {
-    const user: User = await this.adminService.admin(id);
+  async validate({ id }: { id: string }): Promise<User> {
+    const user = await this.adminService.admin(id);
 
     if (!user) {
       throw new UnauthorizedException();

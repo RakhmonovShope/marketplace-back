@@ -14,6 +14,8 @@ export const envValidationSchema = Joi.object({
   // JWT
   JWT_SECRET: Joi.string().min(16).required(),
   JWT_SESSION_EXPIRATION: Joi.string().default('1d'),
+  JWT_REFRESH_SECRET: Joi.string().min(16).required(),
+  JWT_REFRESH_EXPIRATION: Joi.string().default('7d'),
 
   //REDIS
   REDIS_HOST: Joi.string().default('localhost'),

@@ -24,25 +24,26 @@ enum SUB_TYPE {
 }
 
 model User {
-  id               String    @id @default(uuid())
+  id               String         @id @default(uuid())
   firstName        String
   lastName         String
-  phone            String    @unique
+  phone            String         @unique
   email            String
   gender           GENDER
   birthday         String
   name             String?
   password         String
   subType          SUB_TYPE
-  role             Role      @relation(fields: [roleId], references: [id])
+  role             Role           @relation(fields: [roleId], references: [id])
   roleId           String
-  active           Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  active           Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   Order            Order[]
   Comment          Comment[]
-  sentMessages     Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  sentMessages     Message[]      @relation("SentMessages")
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  refreshTokens    RefreshToken[] // 👈 yangi qo'shildi
 }
 
 model Role {
@@ -287,4 +288,19 @@ model TestModal {
   made      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  tokenHash String    @unique // tokenni hash qilib saqlaymiz (xavfsizlik)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime // qachon eskiradi
+  revokedAt DateTime? // logout qilinganda to'ldiriladi
+  userAgent String? // qaysi browser/device
+  ipAddress String? // qaysi IP dan kirgan
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([tokenHash])
 }
