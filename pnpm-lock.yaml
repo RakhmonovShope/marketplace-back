@@ -50,6 +50,9 @@ dependencies:
   '@prisma/client':
     specifier: 5.19.1
     version: 5.19.1(prisma@5.19.1)
+  '@types/bcrypt':
+    specifier: ^6.0.0
+    version: 6.0.0
   '@types/multer':
     specifier: ^1.4.12
     version: 1.4.12
@@ -71,6 +74,9 @@ dependencies:
   dotenv:
     specifier: ^16.4.5
     version: 16.4.5
+  helmet:
+    specifier: ^8.1.0
+    version: 8.1.0
   ioredis:
     specifier: ^5.4.1
     version: 5.4.1
@@ -2608,6 +2614,12 @@ packages:
       '@babel/types': 7.25.6
     dev: true
 
+  /@types/bcrypt@6.0.0:
+    resolution: {integrity: sha512-/oJGukuH3D2+D+3H4JWLaAsJ/ji86dhRidzZ/Od7H/i8g+aCmvkeCc6Ni/f9uxGLSQVCRZkX2/lqEFG2BvWtlQ==}
+    dependencies:
+      '@types/node': 20.16.5
+    dev: false
+
   /@types/body-parser@1.19.5:
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
     dependencies:
@@ -4823,6 +4835,11 @@ packages:
     dependencies:
       capital-case: 1.0.4
       tslib: 2.8.1
+
+  /helmet@8.1.0:
+    resolution: {integrity: sha512-jOiHyAZsmnr8LqoPGmCjYAaiuWwjAPLgY8ZX2XrmHawt99/u1y6RgrZMTeoPfpUbV96HOalYgz1qzkRbw54Pmg==}
+    engines: {node: '>=18.0.0'}
+    dev: false
 
   /hexoid@1.0.0:
     resolution: {integrity: sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==}
