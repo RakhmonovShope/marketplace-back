@@ -26,4 +26,9 @@ export const envValidationSchema = Joi.object({
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
   AWS_REGION: Joi.string().required(),
   AWS_S3_BUCKET_NAME: Joi.string().required(),
+
+  // CORS whitelist — vergul bilan ajratilgan origin'lar ro'yxati.
+  // Misol: "http://localhost:3000,https://app.example.com"
+  // Bo'sh qoldirilsa: development'da hammasiga ruxsat, production'da rad etiladi.
+  CORS_ORIGINS: Joi.string().allow('').default(''),
 });
