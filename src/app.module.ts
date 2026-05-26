@@ -17,6 +17,7 @@ import { BannerModule } from './api/banner';
 import { BadgeModule } from './api/badge';
 import { StoreModule } from './api/store';
 import { BrandModule } from './api/brand';
+import { HealthModule } from './api/health';
 
 import { envValidationSchema } from './common/env.validation.schema';
 
@@ -73,6 +74,7 @@ import { APP_GUARD } from '@nestjs/core';
     StoreModule,
     BrandModule,
     CarModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
