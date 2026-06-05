@@ -54,8 +54,9 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 8. **Refresh token + logout**:
    - Qayerga tatbiq: `AuthService` + Prisma model.
 
-9. **Email verification + reset password**:
+9. **Email verification + reset password** ✅:
    - Qayerga tatbiq: Auth oqimi.
+   - Status: bajarildi (`VerificationToken` modeli + `MailService` + `verify-email`, `resend-verification`, `forgot-password`, `reset-password` endpointlari).
 
 10. **API versioning**:
    - Qayerga tatbiq: `main.ts`.

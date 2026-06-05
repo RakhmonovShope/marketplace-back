@@ -102,6 +102,20 @@ export class UserResponseDto {
   email: string;
 
   @ApiProperty({
+    description: 'Is the email address verified',
+    example: false,
+  })
+  emailVerified: boolean;
+
+  @ApiProperty({
+    description: 'Timestamp when the email was verified',
+    example: '2024-01-02T00:00:00.000Z',
+    required: false,
+    nullable: true,
+  })
+  emailVerifiedAt: Date | null;
+
+  @ApiProperty({
     description: 'Gender of the user',
     enum: GENDER,
     example: GENDER.MALE,

@@ -22,6 +22,7 @@ import { HealthModule } from './api/health';
 import { envValidationSchema } from './common/env.validation.schema';
 
 import { RedisModule } from './common/redis.module';
+import { MailModule } from './common/mail/mail.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { APP_GUARD } from '@nestjs/core';
@@ -60,6 +61,7 @@ import { APP_GUARD } from '@nestjs/core';
       },
     ]),
     RedisModule,
+    MailModule,
     PrismaModule,
     MessageModule,
     AudioModule,

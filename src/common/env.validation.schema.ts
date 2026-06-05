@@ -31,4 +31,22 @@ export const envValidationSchema = Joi.object({
   // Misol: "http://localhost:3000,https://app.example.com"
   // Bo'sh qoldirilsa: development'da hammasiga ruxsat, production'da rad etiladi.
   CORS_ORIGINS: Joi.string().allow('').default(''),
+
+  // Email (verification + reset password) — agar MAIL_TRANSPORT='console' bo'lsa,
+  // SMTP_* maydonlar majburiy emas: harflar console'ga chiqariladi (dev rejim).
+  MAIL_TRANSPORT: Joi.string().valid('smtp', 'console').default('console'),
+  SMTP_HOST: Joi.string().allow('').default(''),
+  SMTP_PORT: Joi.number().default(587),
+  SMTP_SECURE: Joi.boolean().default(false),
+  SMTP_USER: Joi.string().allow('').default(''),
+  SMTP_PASS: Joi.string().allow('').default(''),
+  MAIL_FROM: Joi.string().default('Marketplace <no-reply@marketplace.local>'),
+
+  // Foydalanuvchi bosadigan havola uchun frontend manzili.
+  // Misol: https://app.example.com — link 'https://app.example.com/verify-email?token=...' bo'ladi.
+  APP_BASE_URL: Joi.string().uri().default('http://localhost:3000'),
+
+  // Tokenlar muddati (verification email va reset password uchun).
+  EMAIL_VERIFICATION_TTL: Joi.string().default('1d'),
+  PASSWORD_RESET_TTL: Joi.string().default('1h'),
 });

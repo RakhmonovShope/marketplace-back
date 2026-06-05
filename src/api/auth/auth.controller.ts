@@ -105,4 +105,60 @@ export class AuthController {
 
     return this.authService.getMe(accessToken);
   }
+
+  // ===== Email verification + reset password =====
+
+  @Post('verify-email')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify email by token' })
+  @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
+  @Throttle({ medium: { limit: 10, ttl: 10_000 } })
+  async verifyEmail(
+    @Body() body: AuthDTO.VerifyEmailDto,
+  ): Promise<AuthDTO.MessageResponseDto> {
+    await this.authService.verifyEmail(body.token);
+    return { success: true, message: 'Email verified' };
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Resend email verification link' })
+  @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
+  @Throttle({ long: { limit: 3, ttl: 3_600_000 } })
+  async resendVerification(
+    @Body() body: AuthDTO.ResendVerificationDto,
+  ): Promise<AuthDTO.MessageResponseDto> {
+    await this.authService.resendVerification(body.email);
+    return {
+      success: true,
+      message: 'If the email exists, verification has been sent',
+    };
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request password reset link' })
+  @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
+  @Throttle({ long: { limit: 3, ttl: 3_600_000 } })
+  async forgotPassword(
+    @Body() body: AuthDTO.ForgotPasswordDto,
+  ): Promise<AuthDTO.MessageResponseDto> {
+    await this.authService.forgotPassword(body.email);
+    return {
+      success: true,
+      message: 'If the email exists, reset instructions have been sent',
+    };
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset password using emailed token' })
+  @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
+  @Throttle({ medium: { limit: 10, ttl: 10_000 } })
+  async resetPassword(
+    @Body() body: AuthDTO.ResetPasswordDto,
+  ): Promise<AuthDTO.MessageResponseDto> {
+    await this.authService.resetPassword(body.token, body.newPassword);
+    return { success: true, message: 'Password has been reset' };
+  }
 }

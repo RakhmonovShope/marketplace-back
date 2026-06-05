@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsString,
   Length,
+  MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -87,4 +88,47 @@ export class TokensResponseDto {
 
   @ApiProperty()
   refreshToken: string;
+}
+
+// ===== Email verification + reset password =====
+
+export class VerifyEmailDto {
+  @ApiProperty({ description: 'Email orqali kelgan xom token' })
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+}
+
+export class ResendVerificationDto {
+  @ApiProperty({ description: 'Email manzili' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}
+
+export class ForgotPasswordDto {
+  @ApiProperty({ description: 'Email manzili' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({ description: 'Email orqali kelgan xom token' })
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+
+  @ApiProperty({ description: 'Yangi parol (kamida 8 ta belgi)' })
+  @IsString()
+  @MinLength(8)
+  newPassword: string;
+}
+
+export class MessageResponseDto {
+  @ApiProperty({ example: true })
+  success: boolean;
+
+  @ApiProperty({ example: 'If the email exists, instructions have been sent' })
+  message: string;
 }

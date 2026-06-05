@@ -24,26 +24,29 @@ enum SUB_TYPE {
 }
 
 model User {
-  id               String         @id @default(uuid())
-  firstName        String
-  lastName         String
-  phone            String         @unique
-  email            String
-  gender           GENDER
-  birthday         String
-  name             String?
-  password         String
-  subType          SUB_TYPE
-  role             Role           @relation(fields: [roleId], references: [id])
-  roleId           String
-  active           Boolean        @default(false)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  Order            Order[]
-  Comment          Comment[]
-  sentMessages     Message[]      @relation("SentMessages")
-  receivedMessages Message[]      @relation("ReceivedMessages")
-  refreshTokens    RefreshToken[] // 👈 yangi qo'shildi
+  id                 String              @id @default(uuid())
+  firstName          String
+  lastName           String
+  phone              String              @unique
+  email              String
+  emailVerified      Boolean             @default(false)
+  emailVerifiedAt    DateTime?
+  gender             GENDER
+  birthday           String
+  name               String?
+  password           String
+  subType            SUB_TYPE
+  role               Role                @relation(fields: [roleId], references: [id])
+  roleId             String
+  active             Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  Order              Order[]
+  Comment            Comment[]
+  sentMessages       Message[]           @relation("SentMessages")
+  receivedMessages   Message[]           @relation("ReceivedMessages")
+  refreshTokens      RefreshToken[]
+  verificationTokens VerificationToken[]
 }
 
 model Role {
@@ -302,5 +305,27 @@ model RefreshToken {
   createdAt DateTime  @default(now())
 
   @@index([userId])
+  @@index([tokenHash])
+}
+
+enum VERIFICATION_TOKEN_TYPE {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+// Email tasdiqlash va parolni tiklash uchun bir martalik tokenlar.
+// Xom token foydalanuvchiga email orqali yuboriladi, DB da esa
+// faqat uning SHA-256 hash'i saqlanadi (RefreshToken bilan bir xil yondashuv).
+model VerificationToken {
+  id        String                  @id @default(uuid())
+  userId    String
+  user      User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String                  @unique
+  type      VERIFICATION_TOKEN_TYPE
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime                @default(now())
+
+  @@index([userId, type])
   @@index([tokenHash])
 }
