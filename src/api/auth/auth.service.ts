@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -81,6 +82,12 @@ export class AuthService {
     const passwordMatch = await bcrypt.compare(data.password, user.password);
     if (!passwordMatch) {
       throw new UnauthorizedException('Please check your login credentials');
+    }
+
+    // Email tasdiqlanmagan bo'lsa token bermaymiz: foydalanuvchi avval
+    // emailini tasdiqlashi kerak ('resend-verification' orqali xatni qayta olishi mumkin).
+    if (!user.emailVerified) {
+      throw new ForbiddenException('Email is not verified');
     }
 
     return this.issueTokens(user.id, meta);

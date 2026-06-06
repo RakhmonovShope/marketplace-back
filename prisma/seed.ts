@@ -64,6 +64,8 @@ async function main() {
         subType: 'ADMIN',
         roleId: superAdminRole.id,
         active: true,
+        emailVerified: true,
+        emailVerifiedAt: new Date(),
       },
     });
 
