@@ -64,6 +64,7 @@ export class PaginationFilterOrderRequest {
     description: 'Number of items per page',
     example: 10,
   })
+  @Type(() => Number)
   @Min(1)
   @Max(100)
   perPage: number;
@@ -74,6 +75,7 @@ export class PaginationFilterOrderRequest {
     description: 'Current page number',
     example: 1,
   })
+  @Type(() => Number)
   @Min(1)
   page: number;
 

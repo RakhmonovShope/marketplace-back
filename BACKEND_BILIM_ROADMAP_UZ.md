@@ -65,8 +65,9 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 11. **Hamma list endpointlarga pagination** ✅:
    - Qayerga tatbiq: `getAll()` metodlari.
 
-12. **`class-validator`ni chuqurlashtirish**:
+12. **`class-validator`ni chuqurlashtirish** ✅:
    - `@Min`, `@Max`, `@Matches`, `@ValidateNested`, `@Transform`.
+   - Status: `ValidationPipe` `whitelist` + `forbidNonWhitelisted` + `transform` bilan; `common.dto` da nested validatsiya (`@ValidateNested`, `@Type`, `@Min`, `@Max`, `@IsIn`).
 
 ---
 

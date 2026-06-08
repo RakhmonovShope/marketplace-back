@@ -75,8 +75,9 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      transform: true,
+      whitelist: true, // DTO'da e'lon qilinmagan maydonlarni olib tashlaydi
+      forbidNonWhitelisted: true, // ortiqcha maydon yuborilsa 400 xato qaytaradi
+      transform: true, // payload'ni DTO instance'ga aylantiradi + tip coercion
     }),
   );
   app.useGlobalInterceptors(
