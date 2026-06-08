@@ -62,7 +62,7 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
    - Qayerga tatbiq: `main.ts`.
    - Status: bajarildi (URI versioning, `defaultVersion: '1'` → barcha route'lar `/v1/...`). `root`, `health` va public fayl-berish `VERSION_NEUTRAL` (prefikssiz).
 
-11. **Hamma list endpointlarga pagination**:
+11. **Hamma list endpointlarga pagination** ✅:
    - Qayerga tatbiq: `getAll()` metodlari.
 
 12. **`class-validator`ni chuqurlashtirish**:

@@ -55,13 +55,6 @@ export class AdminService {
     return user;
   }
 
-  async getAllAdmins() {
-    this.logger.log('getAllAdmins');
-    const admins = await this.prisma.user.findMany();
-
-    return admins;
-  }
-
   async createAdmin(
     payload: AdminDTO.Create,
   ): Promise<AdminDTO.UserResponseDto> {

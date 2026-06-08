@@ -41,18 +41,6 @@ export class AdminController {
     return this.adminService.getAllByPage(params);
   }
 
-  @ApiOperation({ summary: 'Admin get all' })
-  @Get()
-  @ApiResponse({
-    status: 200,
-    description: 'Admins',
-    type: [AdminDTO.UserResponseDto],
-  })
-  @Permissions(PERMISSIONS.ADMIN__VIEW)
-  async getAllAdmins() {
-    return this.adminService.getAllAdmins();
-  }
-
   @ApiOperation({ summary: 'Admin by ID' })
   @Get(':id')
   @ApiResponse({
