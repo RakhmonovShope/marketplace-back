@@ -44,14 +44,6 @@ export class BadgeController {
     return this.badgeService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Badge get all' })
-  @ApiBody({ type: [BadgeDTO.BadgeResponse] })
-  @Permissions(PERMISSIONS.BADGE__VIEW)
-  async getAll(): Promise<BadgeDTO.BadgeResponse[]> {
-    return this.badgeService.getAll();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
   @ApiBody({ type: BadgeDTO.BadgeResponse })

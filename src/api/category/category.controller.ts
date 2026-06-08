@@ -41,14 +41,6 @@ export class CategoryController {
     return this.categoryService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Category get all' })
-  @ApiBody({ type: [CategoryDTO.CategoryResponse] })
-  @Permissions(PERMISSIONS.CATEGORY__VIEW)
-  async getAll() {
-    return this.categoryService.getAll();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Category get by Id' })
   @ApiBody({ type: CategoryDTO.CategoryResponse })

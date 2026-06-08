@@ -45,13 +45,6 @@ export class BadgeService {
     };
   }
 
-  async getAll(): Promise<BadgeDTO.BadgeResponse[]> {
-    this.logger.log('getAllBadges');
-    const badges = await this.prisma.badge.findMany();
-
-    return badges;
-  }
-
   async getById(id): Promise<BadgeDTO.BadgeResponse> {
     this.logger.log('badgeById');
 

@@ -46,13 +46,6 @@ export class PageService {
     };
   }
 
-  async getAll(): Promise<PageDTO.PageResponse[]> {
-    this.logger.log('getAllPages');
-    const pages = await this.prisma.page.findMany();
-
-    return pages;
-  }
-
   async getById(id): Promise<PageDTO.PageResponse> {
     this.logger.log('pageById');
 

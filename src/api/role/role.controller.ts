@@ -42,14 +42,6 @@ export class RoleController {
     return this.roleService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Role get all' })
-  @ApiResponse({ type: [RoleDTO.RoleResponse] })
-  @Permissions(PERMISSIONS.ROLE__VIEW)
-  async getAll(): Promise<RoleDTO.RoleResponse[]> {
-    return this.roleService.getAll();
-  }
-
   @Get('/permissions')
   @ApiOperation({ summary: 'Permissions' })
   @ApiResponse({ type: PickType<RoleDTO.RoleResponse, 'permissions'> })

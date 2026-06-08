@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
@@ -43,16 +42,6 @@ export class MessageController {
     @Body() params: PaginationFilterOrderRequest,
   ): Promise<MessageDTO.PageableResponseDto> {
     return this.messageService.getAllByPage(params);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Message get all' })
-  @ApiBody({ type: [MessageDTO.MessageResponse] })
-  @Permissions(PERMISSIONS.MESSAGE__VIEW)
-  async getAll(
-    @Query() { receiverId, senderId }: { senderId: string; receiverId: string },
-  ): Promise<MessageDTO.MessageResponse[]> {
-    return this.messageService.getAll({ receiverId, senderId });
   }
 
   @Get(':id')

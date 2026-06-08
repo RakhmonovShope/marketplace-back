@@ -46,13 +46,6 @@ export class StoreService {
     };
   }
 
-  async getAll(): Promise<StoreDTO.StoreResponse[]> {
-    this.logger.log('getAllStores');
-    const pages = await this.prisma.store.findMany();
-
-    return pages;
-  }
-
   async getById(id): Promise<StoreDTO.StoreResponse> {
     this.logger.log('pageById');
 

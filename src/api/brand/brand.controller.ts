@@ -41,14 +41,6 @@ export class BrandController {
     return this.brandService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Brand get all' })
-  @ApiBody({ type: [BrandDTO.BrandResponse] })
-  @Permissions(PERMISSIONS.BRAND__VIEW)
-  async getAll(): Promise<BrandDTO.BrandResponse[]> {
-    return this.brandService.getAll();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
   @ApiBody({ type: BrandDTO.BrandResponse })

@@ -50,13 +50,6 @@ export class RoleService {
     };
   }
 
-  async getAll(): Promise<RoleDTO.RoleResponse[]> {
-    this.logger.log('getAllRoles');
-    const roles = await this.prisma.role.findMany();
-
-    return roles;
-  }
-
   async getById(id): Promise<RoleDTO.RoleResponse> {
     this.logger.log('roleById');
 

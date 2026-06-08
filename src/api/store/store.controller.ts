@@ -41,14 +41,6 @@ export class StoreController {
     return this.storeService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Store get all' })
-  @ApiBody({ type: [StoreDTO.StoreResponse] })
-  @Permissions(PERMISSIONS.STORE__VIEW)
-  async getAll(): Promise<StoreDTO.StoreResponse[]> {
-    return this.storeService.getAll();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
   @ApiBody({ type: StoreDTO.StoreResponse })

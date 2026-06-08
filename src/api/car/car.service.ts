@@ -45,14 +45,6 @@ export class CarService {
     };
   }
 
-  async getAll(): Promise<CarDTO.CarResponse[]> {
-    this.logger.log('getAllCars');
-
-    const cars = await this.prisma.car.findMany();
-
-    return cars;
-  }
-
   async getById(id: string): Promise<CarDTO.CarResponse> {
     this.logger.log('carById');
 

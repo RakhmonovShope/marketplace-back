@@ -45,13 +45,6 @@ export class BannerService {
     };
   }
 
-  async getAll(): Promise<BannerDTO.BannerResponse[]> {
-    this.logger.log('getAllBanners');
-    const banners = await this.prisma.banner.findMany();
-
-    return banners;
-  }
-
   async getById(id): Promise<BannerDTO.BannerResponse> {
     this.logger.log('bannerById');
 

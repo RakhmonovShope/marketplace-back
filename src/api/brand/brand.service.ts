@@ -45,13 +45,6 @@ export class BrandService {
     };
   }
 
-  async getAll(): Promise<BrandDTO.BrandResponse[]> {
-    this.logger.log('getAllBrands');
-    const pages = await this.prisma.brand.findMany();
-
-    return pages;
-  }
-
   async getById(id): Promise<BrandDTO.BrandResponse> {
     this.logger.log('pageById');
 

@@ -44,13 +44,6 @@ export class CategoryService {
     };
   }
 
-  async getAll(): Promise<CategoryDTO.CategoryResponse[]> {
-    this.logger.log('getAllCategorys');
-    const categorys = await this.prisma.category.findMany();
-
-    return categorys;
-  }
-
   async getById(id: string): Promise<CategoryDTO.CategoryResponse> {
     this.logger.log('categoryById');
 

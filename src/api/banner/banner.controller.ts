@@ -41,14 +41,6 @@ export class BannerController {
     return this.bannerService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Banner get all' })
-  @ApiBody({ type: [BannerDTO.BannerResponse] })
-  @Permissions(PERMISSIONS.BANNER__VIEW)
-  async getAll(): Promise<BannerDTO.BannerResponse[]> {
-    return this.bannerService.getAll();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
   @ApiBody({ type: BannerDTO.BannerResponse })

@@ -42,14 +42,6 @@ export class PageController {
     return this.pageService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Page get all' })
-  @ApiBody({ type: [PageDTO.PageResponse] })
-  @Permissions(PERMISSIONS.PAGE__VIEW)
-  async getAll(): Promise<PageDTO.PageResponse[]> {
-    return this.pageService.getAll();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
   @ApiBody({ type: PageDTO.PageResponse })

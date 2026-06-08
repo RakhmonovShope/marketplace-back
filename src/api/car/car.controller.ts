@@ -41,14 +41,6 @@ export class CarController {
     return this.carService.getAllByPage(params);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Car get all' })
-  @ApiBody({ type: [CarDTO.CarResponse] })
-  @Permissions(PERMISSIONS.CAR__VIEW)
-  async getAll(): Promise<CarDTO.CarResponse[]> {
-    return this.carService.getAll();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
   @ApiBody({ type: CarDTO.CarResponse })
