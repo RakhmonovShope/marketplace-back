@@ -6,6 +6,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -62,6 +64,8 @@ export class PaginationFilterOrderRequest {
     description: 'Number of items per page',
     example: 10,
   })
+  @Min(1)
+  @Max(100)
   perPage: number;
 
   @IsNumber()
