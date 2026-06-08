@@ -54,6 +54,7 @@ export class SignUp {
   @ApiProperty({ description: `password` })
   @IsString()
   @IsNotEmpty()
+  @MinLength(8)
   password: string;
 
   @ApiProperty({ description: `roleId` })

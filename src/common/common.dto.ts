@@ -74,6 +74,7 @@ export class PaginationFilterOrderRequest {
     description: 'Current page number',
     example: 1,
   })
+  @Min(1)
   page: number;
 
   @IsArray()
