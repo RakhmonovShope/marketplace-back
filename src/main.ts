@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import { TransformInterceptor } from './transform.interceptor';
@@ -61,6 +61,15 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     maxAge: 86400,
+  });
+
+  // URI-based API versioning: barcha route'lar /v1/... prefiksini oladi.
+  // Versiya ko'rsatilmagan controller'lar avtomatik defaultVersion'ni oladi.
+  // Versioning shart bo'lmagan joylar (health, root) VERSION_NEUTRAL bilan
+  // belgilangan va prefikssiz qoladi.
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
   });
 
   app.useGlobalFilters(new AllExceptionsFilter());

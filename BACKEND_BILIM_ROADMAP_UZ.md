@@ -58,8 +58,9 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
    - Qayerga tatbiq: Auth oqimi.
    - Status: bajarildi (`VerificationToken` modeli + `MailService` + `verify-email`, `resend-verification`, `forgot-password`, `reset-password` endpointlari).
 
-10. **API versioning**:
+10. **API versioning** ✅:
    - Qayerga tatbiq: `main.ts`.
+   - Status: bajarildi (URI versioning, `defaultVersion: '1'` → barcha route'lar `/v1/...`). `root`, `health` va public fayl-berish `VERSION_NEUTRAL` (prefikssiz).
 
 11. **Hamma list endpointlarga pagination**:
    - Qayerga tatbiq: `getAll()` metodlari.

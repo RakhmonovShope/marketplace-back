@@ -12,6 +12,8 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  VERSION_NEUTRAL,
+  Version,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
@@ -131,6 +133,9 @@ export class FileController {
     return createdFile;
   }
 
+  // Static fayl yetkazib berish — bu API resursi emas, jismoniy fayl.
+  // URL barqaror bo'lishi uchun versiyalanmaydi: /files/... (/v1/files/... emas).
+  @Version(VERSION_NEUTRAL)
   @Get(':year/:month/:day/:name')
   @ApiOperation({ summary: 'Get a file' })
   @ApiResponse({ status: 200, description: 'File found and returned.' })
