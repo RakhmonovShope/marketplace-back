@@ -6,7 +6,7 @@ interface Filter {
   value: string | number;
 }
 
-export const getWhereOperations: any = (filter: any) => {
+export const getWhereOperations: any = (filter: Filter[] = []) => {
   const where: any = {};
 
   filter.forEach((f: Filter) => {

@@ -50,6 +50,7 @@ class FilterItem {
   })
   operation: '=';
 
+  @IsNotEmpty()
   @ApiProperty({
     description: 'Filter value, can be a string or a number',
     example: 25,
