@@ -47,6 +47,8 @@ model User {
   receivedMessages   Message[]           @relation("ReceivedMessages")
   refreshTokens      RefreshToken[]
   verificationTokens VerificationToken[]
+
+  @@index([email])
 }
 
 model Role {
