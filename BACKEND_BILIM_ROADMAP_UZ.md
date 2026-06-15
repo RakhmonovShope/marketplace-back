@@ -27,99 +27,118 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 ### Level 1 — Junior'dan mustahkam Junior/Middle boshlanishi (1-3 hafta)
 
 1. **Env validatsiya** (`Joi` yoki `Zod` bilan `ConfigModule`):
-   - Nima uchun: noto'g'ri `.env` bilan app ishga tushmasligi kerak.
-   - Qayerga tatbiq: `src/app.module.ts`.
+    - Nima uchun: noto'g'ri `.env` bilan app ishga tushmasligi kerak.
+    - Qayerga tatbiq: `src/app.module.ts`.
 
 2. **Global ExceptionFilter**:
-   - Nima uchun: xatolar yagona formatda qaytadi.
-   - Qayerga tatbiq: `src/main.ts`, `src/common/all-exceptions.filter.ts`.
+    - Nima uchun: xatolar yagona formatda qaytadi.
+    - Qayerga tatbiq: `src/main.ts`, `src/common/all-exceptions.filter.ts`.
 
 3. **Nest exceptionlar ierarxiyasi** (`BadRequestException`, `NotFoundException`, ...):
-   - Nima uchun: to'g'ri HTTP status.
-   - Qayerga tatbiq: `auth.service.ts` va boshqa servislar.
+    - Nima uchun: to'g'ri HTTP status.
+    - Qayerga tatbiq: `auth.service.ts` va boshqa servislar.
 
 4. **Rate limiting** (`@nestjs/throttler`):
-   - Nima uchun: `/auth/signin` himoyasi.
-   - Qayerga tatbiq: `AuthController`.
+    - Nima uchun: `/auth/signin` himoyasi.
+    - Qayerga tatbiq: `AuthController`.
 
 5. **Security bazasi** (`helmet`, CORS whitelist):
-   - Qayerga tatbiq: `main.ts`.
+    - Qayerga tatbiq: `main.ts`.
 
 6. **Request logging** (Pino yoki standart Logger):
-   - Qayerga tatbiq: global middleware/interceptor.
+    - Qayerga tatbiq: global middleware/interceptor.
 
 7. **Healthcheck** (`@nestjs/terminus`):
-   - Qayerga tatbiq: `/health` endpoint.
+    - Qayerga tatbiq: `/health` endpoint.
 
 8. **Refresh token + logout**:
-   - Qayerga tatbiq: `AuthService` + Prisma model.
+    - Qayerga tatbiq: `AuthService` + Prisma model.
 
 9. **Email verification + reset password** ✅:
-   - Qayerga tatbiq: Auth oqimi.
-   - Status: bajarildi (`VerificationToken` modeli + `MailService` + `verify-email`, `resend-verification`, `forgot-password`, `reset-password` endpointlari).
+    - Qayerga tatbiq: Auth oqimi.
+    - Status: bajarildi (`VerificationToken` modeli + `MailService` + `verify-email`, `resend-verification`,
+      `forgot-password`, `reset-password` endpointlari).
 
 10. **API versioning** ✅:
-   - Qayerga tatbiq: `main.ts`.
-   - Status: bajarildi (URI versioning, `defaultVersion: '1'` → barcha route'lar `/v1/...`). `root`, `health` va public fayl-berish `VERSION_NEUTRAL` (prefikssiz).
+- Qayerga tatbiq: `main.ts`.
+- Status: bajarildi (URI versioning, `defaultVersion: '1'` → barcha route'lar `/v1/...`). `root`, `health` va public
+  fayl-berish `VERSION_NEUTRAL` (prefikssiz).
 
 11. **Hamma list endpointlarga pagination** ✅:
-   - Qayerga tatbiq: `getAll()` metodlari.
+- Qayerga tatbiq: `getAll()` metodlari.
 
 12. **`class-validator`ni chuqurlashtirish** ✅:
-   - `@Min`, `@Max`, `@Matches`, `@ValidateNested`, `@Transform`.
-   - Status: `ValidationPipe` `whitelist` + `forbidNonWhitelisted` + `transform` bilan; `common.dto` da nested validatsiya (`@ValidateNested`, `@Type`, `@Min`, `@Max`, `@IsIn`).
+- `@Min`, `@Max`, `@Matches`, `@ValidateNested`, `@Transform`.
+- Status: `ValidationPipe` `whitelist` + `forbidNonWhitelisted` + `transform` bilan; `common.dto` da nested
+  validatsiya (`@ValidateNested`, `@Type`, `@Min`, `@Max`, `@IsIn`).
 
 ---
 
 ### Level 2 — Mustahkam Middle (1-2 oy)
 
-13. **Prisma transactionlar** (`$transaction`):
-   - Murakkab create/update oqimlarida atomicity.
+13. **Prisma transactionlar** (`$transaction`) ✅:
 
-14. **DB indexing + `EXPLAIN ANALYZE`**:
-   - Qidiruv va list endpointlarni tezlatish.
+- Murakkab create/update oqimlarida atomicity.
+
+14. **DB indexing + `EXPLAIN ANALYZE`** ✅:
+
+- Qidiruv va list endpointlarni tezlatish.
 
 15. **Redis caching**:
-   - `PermissionsGuard`, `Category`, `Banner` listlarida cache.
+
+- `PermissionsGuard`, `Category`, `Banner` listlarida cache.
 
 16. **Cache invalidation strategiyasi**:
-   - update/delete bo'lganda cache tozalash.
+
+- update/delete bo'lganda cache tozalash.
 
 17. **Event-driven yondashuv** (`@nestjs/event-emitter`):
-   - `signUp`dan keyin email yuborish kabi oqimlar.
+
+- `signUp`dan keyin email yuborish kabi oqimlar.
 
 18. **Queue (BullMQ)**:
-   - Email, SMS, fayl processing kabi fon vazifalar.
+
+- Email, SMS, fayl processing kabi fon vazifalar.
 
 19. **Email servis (template bilan)**:
-   - registration/forgot password oqimlari.
+
+- registration/forgot password oqimlari.
 
 20. **OTP/SMS auth**:
-   - telefon asosida kirish.
+
+- telefon asosida kirish.
 
 21. **Rasm processing (`sharp`)**:
-   - thumbnail, webp, resize.
+
+- thumbnail, webp, resize.
 
 22. **To'liq testlar**:
-   - Unit + e2e + test DB.
+
+- Unit + e2e + test DB.
 
 23. **i18n integratsiyasi**:
-   - Uz/Ru kontentni `Accept-Language` orqali boshqarish.
+
+- Uz/Ru kontentni `Accept-Language` orqali boshqarish.
 
 24. **Soft delete (`deletedAt`)**:
-   - to'liq o'chirish o'rniga tiklanadigan o'chirish.
+
+- to'liq o'chirish o'rniga tiklanadigan o'chirish.
 
 25. **Audit log**:
-   - kim, qachon, nima o'zgartirdi.
+
+- kim, qachon, nima o'zgartirdi.
 
 26. **Permissions uchun cache**:
-   - har requestda DBga borishni kamaytirish.
+
+- har requestda DBga borishni kamaytirish.
 
 27. **Cursor-based pagination**:
-   - katta data uchun barqaror pagination.
+
+- katta data uchun barqaror pagination.
 
 28. **Bulk operations** (`createMany/updateMany`):
-   - massiv import/yangilashlar.
+
+- massiv import/yangilashlar.
 
 ---
 
@@ -180,32 +199,38 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 Quyidagi tartib bilan borsang, nazariya + amaliyot birga yopiladi:
 
 ### Sprint 1 (1-hafta)
+
 - Env validatsiya
 - Global ExceptionFilter
 - `throw new Error` joylarini Nest exceptionlarga almashtirish
 - `helmet` + CORS whitelist
 
 ### Sprint 2 (2-hafta)
+
 - Throttler (`/auth/signin`)
 - Request logging
 - Healthcheck endpoint
 - `getAll()` endpointlarga pagination
 
 ### Sprint 3 (3-hafta)
+
 - Refresh token modeli va oqimi
 - Logout endpoint
 - Token rotation
 
 ### Sprint 4 (4-hafta)
+
 - Redis cache (`PermissionsGuard`, category/banner list)
 - Cache invalidation
 
 ### Sprint 5-6
+
 - Unit/e2e test bazasi
 - Prisma transactionlar
 - Email verification + forgot password
 
 ### Sprint 7-8
+
 - BullMQ queue
 - OTP/SMS
 - Audit log
@@ -234,10 +259,10 @@ Shundan keyin Level 3 mavzulariga o'tish tavsiya etiladi.
 - Bir vaqtda bitta mavzu.
 - O'rgan -> shu repo'da kodga qo'lla -> PR och.
 - Har mavzu uchun `docs/learning-log.md`ga:
-  - nima o'rganding,
-  - qayerda qo'llading,
-  - qanday xatoga duch kelding,
-  - qanday yechding.
+    - nima o'rganding,
+    - qayerda qo'llading,
+    - qanday xatoga duch kelding,
+    - qanday yechding.
 - Har PR'da minimal test yoz.
 
 ---
@@ -245,7 +270,8 @@ Shundan keyin Level 3 mavzulariga o'tish tavsiya etiladi.
 ## 6) Keyingi qadam (hozir nima qilamiz?)
 
 Tavsiya: **Sprint 1 / Task 1** dan boshlash:
-1) `ConfigModule` uchun env validatsiya sxemasini qo'shamiz,  
+
+1) `ConfigModule` uchun env validatsiya sxemasini qo'shamiz,
 2) keyin global `ExceptionFilter` qo'shamiz.
 
 Shu ikkitasi backend sifatini darhol sezilarli oshiradi.
