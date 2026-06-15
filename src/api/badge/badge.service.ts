@@ -26,16 +26,19 @@ export class BadgeService {
       filter,
     } = params;
 
-    const items = await this.prisma.badge.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.badge.count();
+    const [items, totalItems] = await this.prisma.$transaction([
+      this.prisma.badge.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.badge.count({ where }),
+    ]);
 
     return {
       data: items,

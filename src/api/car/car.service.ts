@@ -26,16 +26,19 @@ export class CarService {
       filter,
     } = params;
 
-    const cars = await this.prisma.car.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.car.count();
+    const [cars, totalItems] = await this.prisma.$transaction([
+      this.prisma.car.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.car.count({ where }),
+    ]);
 
     return {
       data: cars,

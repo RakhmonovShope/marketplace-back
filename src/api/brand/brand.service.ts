@@ -26,16 +26,19 @@ export class BrandService {
       filter,
     } = params;
 
-    const items = await this.prisma.brand.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.brand.count();
+    const [items, totalItems] = await this.prisma.$transaction([
+      this.prisma.brand.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.brand.count({ where }),
+    ]);
 
     return {
       data: items,

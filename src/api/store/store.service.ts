@@ -27,16 +27,19 @@ export class StoreService {
       filter,
     } = params;
 
-    const items = await this.prisma.store.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.store.count();
+    const [items, totalItems] = await this.prisma.$transaction([
+      this.prisma.store.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.store.count({ where }),
+    ]);
 
     return {
       data: items,

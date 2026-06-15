@@ -25,16 +25,19 @@ export class CategoryService {
       filter,
     } = params;
 
-    const items = await this.prisma.category.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.category.count();
+    const [items, totalItems] = await this.prisma.$transaction([
+      this.prisma.category.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.category.count({ where }),
+    ]);
 
     return {
       data: items,

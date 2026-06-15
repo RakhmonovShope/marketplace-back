@@ -31,16 +31,19 @@ export class RoleService {
       filter,
     } = params;
 
-    const roles = await this.prisma.role.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.role.count();
+    const [roles, totalItems] = await this.prisma.$transaction([
+      this.prisma.role.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.role.count({ where }),
+    ]);
 
     return {
       data: roles,

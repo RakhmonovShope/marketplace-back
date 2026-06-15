@@ -27,16 +27,19 @@ export class PageService {
       filter,
     } = params;
 
-    const pages = await this.prisma.page.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.page.count();
+    const [pages, totalItems] = await this.prisma.$transaction([
+      this.prisma.page.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.page.count({ where }),
+    ]);
 
     return {
       data: pages,
