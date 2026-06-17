@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Car } from '@prisma/client';
 import * as CarDTO from './car.dto';
@@ -80,10 +80,16 @@ export class CarService {
   async delete({ id }: { id: string }): Promise<boolean> {
     this.logger.log('deleteCar');
 
-    await this.prisma.car.update({
-      where: { id },
+    // Faqat hali tirik (deletedAt: null) mashinani soft-delete qilamiz.
+    // updateMany count=0 qaytarsa — mashina yo'q yoki allaqachon o'chirilgan.
+    const { count } = await this.prisma.car.updateMany({
+      where: { id, deletedAt: null },
       data: { deletedAt: new Date() },
     });
+
+    if (count === 0) {
+      throw new NotFoundException('Car not found or already deleted');
+    }
 
     return true;
   }
@@ -91,9 +97,16 @@ export class CarService {
   async restore({ id }: { id: string }): Promise<Car> {
     this.logger.log('restoreCar');
 
-    return this.prisma.car.update({
-      where: { id },
+    // Faqat o'chirilgan (deletedAt != null) mashinani tiklaymiz.
+    const { count } = await this.prisma.car.updateMany({
+      where: { id, deletedAt: { not: null } },
       data: { deletedAt: null }, // belgini olib tashlaymiz → yana tirik
     });
+
+    if (count === 0) {
+      throw new NotFoundException('Deleted car not found');
+    }
+
+    return this.prisma.car.findUniqueOrThrow({ where: { id } });
   }
 }
