@@ -60,14 +60,17 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
       `forgot-password`, `reset-password` endpointlari).
 
 10. **API versioning** ✅:
+
 - Qayerga tatbiq: `main.ts`.
 - Status: bajarildi (URI versioning, `defaultVersion: '1'` → barcha route'lar `/v1/...`). `root`, `health` va public
   fayl-berish `VERSION_NEUTRAL` (prefikssiz).
 
 11. **Hamma list endpointlarga pagination** ✅:
+
 - Qayerga tatbiq: `getAll()` metodlari.
 
 12. **`class-validator`ni chuqurlashtirish** ✅:
+
 - `@Min`, `@Max`, `@Matches`, `@ValidateNested`, `@Transform`.
 - Status: `ValidationPipe` `whitelist` + `forbidNonWhitelisted` + `transform` bilan; `common.dto` da nested
   validatsiya (`@ValidateNested`, `@Type`, `@Min`, `@Max`, `@IsIn`).
@@ -84,11 +87,11 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 
 - Qidiruv va list endpointlarni tezlatish.
 
-15. **Redis caching**:
+15. **Redis caching** ✅:
 
 - `PermissionsGuard`, `Category`, `Banner` listlarida cache.
 
-16. **Cache invalidation strategiyasi**:
+16. **Cache invalidation strategiyasi** ✅:
 
 - update/delete bo'lganda cache tozalash.
 
@@ -132,7 +135,7 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 
 - har requestda DBga borishni kamaytirish.
 
-27. **Cursor-based pagination**:
+27. **Cursor-based pagination** ✅:
 
 - katta data uchun barqaror pagination.
 

@@ -49,6 +49,7 @@ model User {
   verificationTokens VerificationToken[]
 
   @@index([email])
+  @@index([createdAt])
 }
 
 model Role {
