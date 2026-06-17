@@ -123,7 +123,7 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 
 - Uz/Ru kontentni `Accept-Language` orqali boshqarish.
 
-24. **Soft delete (`deletedAt`)**:
+24. **Soft delete (`deletedAt`)** ✅:
 
 - to'liq o'chirish o'rniga tiklanadigan o'chirish.
 
