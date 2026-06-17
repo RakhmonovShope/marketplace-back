@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -74,5 +75,14 @@ export class CategoryController {
   @Permissions(PERMISSIONS.CATEGORY__DELETE)
   async deleteAdmin(@Param('id') id: string): Promise<boolean> {
     return this.categoryService.deleteCategory({ id });
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted Category' })
+  @Permissions(PERMISSIONS.CATEGORY__RESTORE)
+  async restore(
+    @Param('id') id: string,
+  ): Promise<CategoryDTO.CategoryResponse> {
+    return this.categoryService.restoreCategory({ id });
   }
 }

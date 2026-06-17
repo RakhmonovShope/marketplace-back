@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -73,5 +74,12 @@ export class BrandController {
   @Permissions(PERMISSIONS.BRAND__DELETE)
   async deleteAdmin(@Param('id') id: string): Promise<boolean> {
     return this.brandService.deleteBrand({ id });
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted Brand' })
+  @Permissions(PERMISSIONS.BRAND__RESTORE)
+  async restore(@Param('id') id: string): Promise<BrandDTO.BrandResponse> {
+    return this.brandService.restoreBrand({ id });
   }
 }

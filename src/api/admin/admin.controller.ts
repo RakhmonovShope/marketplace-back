@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -86,5 +87,14 @@ export class AdminController {
   @Permissions(PERMISSIONS.ADMIN__DELETE)
   async deleteAdmin(@Param('id') id: string): Promise<string> {
     return this.adminService.deleteAdmin(id);
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted Admin/User' })
+  @Permissions(PERMISSIONS.ADMIN__RESTORE)
+  async restoreAdmin(
+    @Param('id') id: string,
+  ): Promise<AdminDTO.UserResponseDto> {
+    return this.adminService.restoreAdmin(id);
   }
 }

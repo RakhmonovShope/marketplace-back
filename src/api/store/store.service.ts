@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Store } from '@prisma/client';
 import * as StoreDTO from './store.dto';
@@ -27,7 +27,7 @@ export class StoreService {
       filter,
     } = params;
 
-    const where = getWhereOperations(filter);
+    const where = { ...getWhereOperations(filter), deletedAt: null };
 
     const [items, totalItems] = await this.prisma.$transaction([
       this.prisma.store.findMany({
@@ -52,11 +52,15 @@ export class StoreService {
   async getById(id): Promise<StoreDTO.StoreResponse> {
     this.logger.log('pageById');
 
-    const page = await this.prisma.store.findUnique({
-      where: { id },
+    const store = await this.prisma.store.findFirst({
+      where: { id, deletedAt: null },
     });
 
-    return page;
+    if (!store) {
+      throw new NotFoundException('Store not found');
+    }
+
+    return store;
   }
 
   async create(data: StoreDTO.Create): Promise<StoreDTO.StoreResponse> {
@@ -81,10 +85,30 @@ export class StoreService {
   async deleteStore({ id }: { id: string }): Promise<boolean> {
     this.logger.log('deleteStore');
 
-    await this.prisma.store.delete({
-      where: { id },
+    const { count } = await this.prisma.store.updateMany({
+      where: { id, deletedAt: null },
+      data: { deletedAt: new Date() },
     });
 
+    if (count === 0) {
+      throw new NotFoundException('Store not found or already deleted');
+    }
+
     return true;
+  }
+
+  async restoreStore({ id }: { id: string }): Promise<Store> {
+    this.logger.log('restoreStore');
+
+    const { count } = await this.prisma.store.updateMany({
+      where: { id, deletedAt: { not: null } },
+      data: { deletedAt: null },
+    });
+
+    if (count === 0) {
+      throw new NotFoundException('Deleted store not found');
+    }
+
+    return this.prisma.store.findUniqueOrThrow({ where: { id } });
   }
 }

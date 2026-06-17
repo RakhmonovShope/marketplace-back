@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -73,5 +74,12 @@ export class StoreController {
   @Permissions(PERMISSIONS.STORE__DELETE)
   async deleteAdmin(@Param('id') id: string): Promise<boolean> {
     return this.storeService.deleteStore({ id });
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted Store' })
+  @Permissions(PERMISSIONS.STORE__RESTORE)
+  async restore(@Param('id') id: string): Promise<StoreDTO.StoreResponse> {
+    return this.storeService.restoreStore({ id });
   }
 }

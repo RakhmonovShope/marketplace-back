@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as AdminDTO from './admin.dto';
 import * as bcrypt from 'bcrypt';
@@ -26,7 +26,7 @@ export class AdminService {
       filter,
     } = params;
 
-    const where = getWhereOperations(filter);
+    const where = { ...getWhereOperations(filter), deletedAt: null };
 
     const [items, totalItems] = await this.prisma.$transaction([
       this.prisma.user.findMany({
@@ -53,9 +53,13 @@ export class AdminService {
   async admin(id: string): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('adminById');
 
-    const user = await this.prisma.user.findUnique({
-      where: { id },
+    const user = await this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
     });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
     return user;
   }
@@ -92,10 +96,30 @@ export class AdminService {
   async deleteAdmin(id: string): Promise<string> {
     this.logger.log('deleteAdmin');
 
-    await this.prisma.user.delete({
-      where: { id },
+    const { count } = await this.prisma.user.updateMany({
+      where: { id, deletedAt: null },
+      data: { deletedAt: new Date() },
     });
 
+    if (count === 0) {
+      throw new NotFoundException('User not found or already deleted');
+    }
+
     return 'deleted';
+  }
+
+  async restoreAdmin(id: string): Promise<AdminDTO.UserResponseDto> {
+    this.logger.log('restoreAdmin');
+
+    const { count } = await this.prisma.user.updateMany({
+      where: { id, deletedAt: { not: null } },
+      data: { deletedAt: null },
+    });
+
+    if (count === 0) {
+      throw new NotFoundException('Deleted user not found');
+    }
+
+    return this.prisma.user.findUniqueOrThrow({ where: { id } });
   }
 }

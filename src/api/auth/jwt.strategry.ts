@@ -32,7 +32,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Session has been revoked');
     }
 
-    const user = await this.adminService.admin(id);
+    // Foydalanuvchini to'g'ridan-to'g'ri yuklaymiz: soft-delete qilingan
+    // (deletedAt != null) foydalanuvchi yaroqli token bilan ham kira olmasin.
+    const user = await this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+    });
 
     if (!user) {
       throw new UnauthorizedException();

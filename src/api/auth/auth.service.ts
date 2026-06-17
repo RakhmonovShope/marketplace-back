@@ -69,9 +69,10 @@ export class AuthService {
   ): Promise<AuthDTO.TokensResponseDto> {
     this.logger.log('signIn');
 
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: {
         phone: data.phone,
+        deletedAt: null, // o'chirilgan foydalanuvchi tizimga kira olmasin
       },
     });
 
@@ -115,8 +116,8 @@ export class AuthService {
       throw new UnauthorizedException('Session has been revoked');
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: decoded.id },
+    const user = await this.prisma.user.findFirst({
+      where: { id: decoded.id, deletedAt: null },
     });
 
     if (!user) {
@@ -249,7 +250,9 @@ export class AuthService {
   async resendVerification(email: string): Promise<{ success: boolean }> {
     this.logger.log('resendVerification');
 
-    const user = await this.prisma.user.findFirst({ where: { email } });
+    const user = await this.prisma.user.findFirst({
+      where: { email, deletedAt: null },
+    });
 
     if (!user) {
       return { success: true };
@@ -274,7 +277,9 @@ export class AuthService {
   async forgotPassword(email: string): Promise<{ success: boolean }> {
     this.logger.log('forgotPassword');
 
-    const user = await this.prisma.user.findFirst({ where: { email } });
+    const user = await this.prisma.user.findFirst({
+      where: { email, deletedAt: null },
+    });
 
     if (!user) {
       return { success: true };
