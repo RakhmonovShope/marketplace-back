@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -70,5 +71,12 @@ export class CarController {
   @Permissions(PERMISSIONS.CAR__DELETE)
   async delete(@Param('id') id: string): Promise<boolean> {
     return this.carService.delete({ id });
+  }
+
+  @Patch(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted Car' })
+  @Permissions(PERMISSIONS.CAR__RESTORE)
+  async restore(@Param('id') id: string): Promise<CarDTO.CarResponse> {
+    return this.carService.restore({ id });
   }
 }

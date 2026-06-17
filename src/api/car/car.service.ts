@@ -30,14 +30,14 @@ export class CarService {
 
     const [cars, totalItems] = await this.prisma.$transaction([
       this.prisma.car.findMany({
-        where,
+        where: { ...where, deletedAt: null },
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
           createdAt: order ? order.toLowerCase() : 'asc',
         },
       }),
-      this.prisma.car.count({ where }),
+      this.prisma.car.count({ where: { ...where, deletedAt: null } }),
     ]);
 
     return {
@@ -51,8 +51,8 @@ export class CarService {
   async getById(id: string): Promise<CarDTO.CarResponse> {
     this.logger.log('carById');
 
-    const car = await this.prisma.car.findUnique({
-      where: { id },
+    const car = await this.prisma.car.findFirst({
+      where: { id, deletedAt: null },
     });
 
     return car;
@@ -80,10 +80,20 @@ export class CarService {
   async delete({ id }: { id: string }): Promise<boolean> {
     this.logger.log('deleteCar');
 
-    await this.prisma.car.delete({
+    await this.prisma.car.update({
       where: { id },
+      data: { deletedAt: new Date() },
     });
 
     return true;
+  }
+
+  async restore({ id }: { id: string }): Promise<Car> {
+    this.logger.log('restoreCar');
+
+    return this.prisma.car.update({
+      where: { id },
+      data: { deletedAt: null }, // belgini olib tashlaymiz → yana tirik
+    });
   }
 }
