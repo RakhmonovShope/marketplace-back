@@ -18,7 +18,7 @@ import { BadgeModule } from './api/badge';
 import { StoreModule } from './api/store';
 import { BrandModule } from './api/brand';
 import { HealthModule } from './api/health';
-
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { envValidationSchema } from './common/env.validation.schema';
 
 import { RedisModule } from './common/redis.module';
@@ -30,6 +30,7 @@ import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: envValidationSchema,

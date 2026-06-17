@@ -95,7 +95,7 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 
 - update/delete bo'lganda cache tozalash.
 
-17. **Event-driven yondashuv** (`@nestjs/event-emitter`):
+17. **Event-driven yondashuv** (`@nestjs/event-emitter`) ✅:
 
 - `signUp`dan keyin email yuborish kabi oqimlar.
 

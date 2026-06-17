@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminService } from '../admin';
+import { AuthListener } from './auth.listener';
 
 export const passportModule = PassportModule.register({
   defaultStrategy: 'jwt',
@@ -25,7 +26,7 @@ export const passportModule = PassportModule.register({
     forwardRef(() => passportModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AdminService, JwtStrategy],
+  providers: [AuthService, AdminService, JwtStrategy, AuthListener],
   exports: [passportModule],
 })
 export class AuthModule {}

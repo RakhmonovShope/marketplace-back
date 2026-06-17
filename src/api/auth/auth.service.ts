@@ -15,6 +15,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as AuthDTO from './auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from '../../common/mail/mail.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 interface TokenPayload {
   id: string;
@@ -35,6 +36,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
     private readonly mail: MailService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async signUp(data: AuthDTO.SignUp): Promise<User> {
@@ -50,15 +52,10 @@ export class AuthService {
       },
     });
 
-    // Ro'yxatdan o'tgan zahoti email tasdiqlash xatini yuboramiz.
-    // Xato yuz bersa ham signUp muvaffaqiyatli yakunlanadi: foydalanuvchi
-    // keyinroq "resend" qila oladi.
-    await this.sendEmailVerification(createUser.id, createUser.email).catch(
-      (err) =>
-        this.logger.error(
-          `sendEmailVerification failed for ${createUser.id}: ${err.message}`,
-        ),
-    );
+    this.eventEmitter.emit('user.registered', {
+      userId: createUser.id,
+      email: createUser.email,
+    });
 
     return createUser;
   }
@@ -399,6 +396,39 @@ export class AuthService {
 
   // ===== HELPERS =====
 
+  /**
+   * Email tasdiqlash tokeni yaratadi, DB'ga hash'ini yozadi va xom tokenni email'da yuboradi.
+   * Eski ishlatilmagan tokenlarni revoke qiladi — bir vaqtda faqat bittasi amal qilsin.
+   */
+  async sendEmailVerification(userId: string, email: string): Promise<void> {
+    const rawToken = this.generateRawToken();
+    const tokenHash = this.hashToken(rawToken);
+    const expiresAt = this.calculateExpiry(
+      this.config.get('EMAIL_VERIFICATION_TTL', '15m'),
+    );
+
+    await this.prisma.$transaction([
+      this.prisma.verificationToken.updateMany({
+        where: {
+          userId,
+          type: VERIFICATION_TOKEN_TYPE.EMAIL_VERIFICATION,
+          usedAt: null,
+        },
+        data: { usedAt: new Date() },
+      }),
+      this.prisma.verificationToken.create({
+        data: {
+          userId,
+          tokenHash,
+          type: VERIFICATION_TOKEN_TYPE.EMAIL_VERIFICATION,
+          expiresAt,
+        },
+      }),
+    ]);
+
+    await this.mail.sendVerificationEmail(email, rawToken);
+  }
+
   /** 2 ta token (access + refresh) yaratib, refresh ni DB ga yozib qaytaradi */
   private async issueTokens(
     userId: string,
@@ -444,42 +474,6 @@ export class AuthService {
   /** Email/URL uchun xavfsiz tasodifiy token (32 bayt = 64 ta hex belgi) */
   private generateRawToken(): string {
     return crypto.randomBytes(32).toString('hex');
-  }
-
-  /**
-   * Email tasdiqlash tokeni yaratadi, DB'ga hash'ini yozadi va xom tokenni email'da yuboradi.
-   * Eski ishlatilmagan tokenlarni revoke qiladi — bir vaqtda faqat bittasi amal qilsin.
-   */
-  private async sendEmailVerification(
-    userId: string,
-    email: string,
-  ): Promise<void> {
-    const rawToken = this.generateRawToken();
-    const tokenHash = this.hashToken(rawToken);
-    const expiresAt = this.calculateExpiry(
-      this.config.get('EMAIL_VERIFICATION_TTL', '15m'),
-    );
-
-    await this.prisma.$transaction([
-      this.prisma.verificationToken.updateMany({
-        where: {
-          userId,
-          type: VERIFICATION_TOKEN_TYPE.EMAIL_VERIFICATION,
-          usedAt: null,
-        },
-        data: { usedAt: new Date() },
-      }),
-      this.prisma.verificationToken.create({
-        data: {
-          userId,
-          tokenHash,
-          type: VERIFICATION_TOKEN_TYPE.EMAIL_VERIFICATION,
-          expiresAt,
-        },
-      }),
-    ]);
-
-    await this.mail.sendVerificationEmail(email, rawToken);
   }
 
   /**
