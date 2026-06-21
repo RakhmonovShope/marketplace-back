@@ -1,23 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { OnEvent } from '@nestjs/event-emitter';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class AuthListener {
   private readonly logger = new Logger(AuthListener.name);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(@InjectQueue('email') private readonly emailQueue: Queue) {}
 
   @OnEvent('user.registered')
   async handleUserRegistered(payload: { userId: string; email: string }) {
     try {
-      await this.authService.sendEmailVerification(
-        payload.userId,
-        payload.email,
-      );
+      await this.emailQueue.add('send-verification', payload);
     } catch (err) {
       this.logger.error(
-        `user.registered listener failed for ${payload.userId} ${(err as Error).message}`,
+        `Failed to enqueue email job ${(err as Error).message}`,
       );
     }
   }

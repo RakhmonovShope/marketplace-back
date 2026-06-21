@@ -11,7 +11,7 @@ import { CategoryModule } from './api/category';
 import { AuthModule } from './api/auth/auth.module';
 import { RoleModule } from './api/role';
 import { FileModule } from './api/file/file.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PageModule } from './api/page';
 import { BannerModule } from './api/banner';
 import { BadgeModule } from './api/badge';
@@ -21,6 +21,7 @@ import { HealthModule } from './api/health';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { envValidationSchema } from './common/env.validation.schema';
 
+import { BullModule } from '@nestjs/bullmq';
 import { RedisModule } from './common/redis.module';
 import { MailModule } from './common/mail/mail.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -29,6 +30,15 @@ import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        connection: {
+          host: config.get('REDIS_HOST', 'localhost'),
+          port: config.get('REDIS_PORT', 6379),
+        },
+      }),
+    }),
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot({

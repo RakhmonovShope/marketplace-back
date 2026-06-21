@@ -7,6 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminService } from '../admin';
 import { AuthListener } from './auth.listener';
+import { EmailProcessor } from './email.processor';
+import { BullModule } from '@nestjs/bullmq';
 
 export const passportModule = PassportModule.register({
   defaultStrategy: 'jwt',
@@ -14,6 +16,15 @@ export const passportModule = PassportModule.register({
 
 @Module({
   imports: [
+    BullModule.registerQueue({
+      name: 'email',
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 2000 },
+        removeOnComplete: 100,
+        removeOnFail: 500,
+      },
+    }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -26,7 +37,13 @@ export const passportModule = PassportModule.register({
     forwardRef(() => passportModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AdminService, JwtStrategy, AuthListener],
+  providers: [
+    AuthService,
+    AdminService,
+    JwtStrategy,
+    AuthListener,
+    EmailProcessor,
+  ],
   exports: [passportModule],
 })
 export class AuthModule {}
