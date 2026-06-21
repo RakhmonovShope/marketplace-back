@@ -99,7 +99,7 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 
 - `signUp`dan keyin email yuborish kabi oqimlar.
 
-18. **Queue (BullMQ)**:
+18. **Queue (BullMQ)** ✅:
 
 - Email, SMS, fayl processing kabi fon vazifalar.
 
