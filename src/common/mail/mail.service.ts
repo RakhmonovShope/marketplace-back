@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import * as Handlebars from 'handlebars';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -25,6 +25,7 @@ export class MailService implements OnModuleInit {
   private layout: Handlebars.TemplateDelegate;
   private readonly bodyTemplates: Record<string, Handlebars.TemplateDelegate> =
     {};
+  private templatesDir: string;
 
   constructor(private readonly config: ConfigService) {}
 
@@ -50,6 +51,7 @@ export class MailService implements OnModuleInit {
 
     // Template'larni startup'da bir marta kompilyatsiya qilamiz (har xat uchun
     // qaytadan o'qib/kompilyatsiya qilmaslik — tezroq).
+    this.templatesDir = this.resolveTemplatesDir();
     this.layout = this.compileTemplate('layout.hbs');
     this.bodyTemplates['verify-email'] =
       this.compileTemplate('verify-email.hbs');
@@ -93,11 +95,31 @@ export class MailService implements OnModuleInit {
 
   /** `.hbs` faylni o'qib, Handlebars template'iga kompilyatsiya qiladi. */
   private compileTemplate(file: string): Handlebars.TemplateDelegate {
-    // __dirname runtime'da dist/common/mail ga ishora qiladi; .hbs fayllar
-    // nest-cli "assets" sozlamasi orqali dist'ga ko'chiriladi.
-    const fullPath = join(__dirname, 'templates', file);
-    const source = readFileSync(fullPath, 'utf-8');
+    const source = readFileSync(join(this.templatesDir, file), 'utf-8');
     return Handlebars.compile(source);
+  }
+
+  /**
+   * Template'lar papkasini aniqlaydi. App qayerdan ishga tushganiga qarab
+   * (`start:prod` → dist, `start:dev` → ba'zan src) yo'l farq qiladi,
+   * shuning uchun bir nechta ehtimoliy joyni tekshirib, mavjudini tanlaymiz.
+   */
+  private resolveTemplatesDir(): string {
+    const candidates = [
+      join(__dirname, 'templates'), // odatda dist/common/mail/templates
+      join(process.cwd(), 'dist', 'common', 'mail', 'templates'),
+      join(process.cwd(), 'src', 'common', 'mail', 'templates'),
+    ];
+
+    const found = candidates.find((dir) => existsSync(join(dir, 'layout.hbs')));
+
+    if (!found) {
+      throw new Error(
+        `Email templates topilmadi. Tekshirilgan yo'llar:\n${candidates.join('\n')}`,
+      );
+    }
+
+    return found;
   }
 
   /**
