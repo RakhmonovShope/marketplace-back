@@ -12,6 +12,10 @@ import { createReadStream, existsSync } from 'fs';
 import { File as PrismaFile } from '@prisma/client';
 import * as process from 'node:process';
 
+import { writeFile } from 'fs/promises';
+import { mkdirp } from 'mkdirp';
+import { v4 as uuidv4 } from 'uuid';
+
 @Injectable()
 export class FileService {
   constructor(
@@ -76,6 +80,8 @@ export class FileService {
         return 'image/jpeg';
       case 'png':
         return 'image/png';
+      case 'webp': // ← qo'shasiz
+        return 'image/webp'; // ← qo'shasiz
       case 'svg':
         return 'image/svg+xml';
       default:
@@ -91,5 +97,24 @@ export class FileService {
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
     };
+  }
+
+  async saveImageBuffer(
+    buffer: Buffer,
+    originalName: string,
+  ): Promise<FileDTO.FileResponseDto> {
+    const now = new Date();
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString();
+    const day = now.getDate().toString();
+
+    const uploadDir = join(process.cwd(), 'uploads', 'files', year, month, day);
+    await mkdirp(uploadDir);
+
+    const filename = `${uuidv4()}.webp`;
+    await writeFile(join(uploadDir, filename), buffer);
+
+    const url = `/${year}/${month}/${day}/${filename}`;
+    return this.createFile({ name: originalName, url });
   }
 }

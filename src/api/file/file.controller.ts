@@ -12,12 +12,12 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  VERSION_NEUTRAL,
   Version,
+  VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { Response } from 'express';
 import * as path from 'path';
@@ -39,11 +39,15 @@ import { mkdirp } from 'mkdirp';
 import { Permissions } from '../auth/permissions.decorator';
 import { PERMISSIONS } from '../auth/auth.enum';
 import * as process from 'node:process';
+import { ImageService } from './image.service';
 
 @ApiTags('File')
 @Controller('files')
 export class FileController {
-  constructor(private readonly fileService: FileService) {}
+  constructor(
+    private readonly fileService: FileService,
+    private readonly imageService: ImageService,
+  ) {}
 
   @Post('upload')
   @UseGuards(AuthGuard(), PermissionsGuard)
@@ -131,6 +135,60 @@ export class FileController {
     });
 
     return createdFile;
+  }
+
+  @Post('image')
+  @UseGuards(AuthGuard(), PermissionsGuard)
+  @Permissions(PERMISSIONS.FILE__UPLOAD)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(), // ← diskka emas, xotiraga (buffer kerak)
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB (sharp kichraytiradi)
+      fileFilter: (req, file, callback) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
+          callback(null, true);
+        } else {
+          callback(
+            new HttpException('Unsupported image type', HttpStatus.BAD_REQUEST),
+            false,
+          );
+        }
+      },
+    }),
+  )
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Image upload',
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload & process image (optimized webp + thumbnail)',
+  })
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new HttpException('Image upload failed', HttpStatus.BAD_REQUEST);
+    }
+
+    // 1) sharp bilan ikkita WebP yaratamiz (xotirada)
+    const { optimized, thumbnail } = await this.imageService.process(
+      file.buffer,
+    );
+
+    // 2) ikkalasini ham diskka yozib, DB yozuvini yaratamiz
+    const original = await this.fileService.saveImageBuffer(
+      optimized,
+      file.originalname,
+    );
+    const thumb = await this.fileService.saveImageBuffer(
+      thumbnail,
+      `thumb-${file.originalname}`,
+    );
+
+    return { original, thumbnail: thumb };
   }
 
   // Static fayl yetkazib berish — bu API resursi emas, jismoniy fayl.

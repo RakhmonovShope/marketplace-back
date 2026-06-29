@@ -103,7 +103,7 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 
 - Email, SMS, fayl processing kabi fon vazifalar.
 
-19. **Email servis (template bilan)**:
+19. **Email servis (template bilan)** ✅:
 
 - registration/forgot password oqimlari.
 
@@ -111,7 +111,7 @@ Quyidagilar bevosita koddan ko'rinadi va birinchi navbatda yopilishi kerak:
 
 - telefon asosida kirish.
 
-21. **Rasm processing (`sharp`)**:
+21. **Rasm processing (`sharp`)** ✅:
 
 - thumbnail, webp, resize.
 

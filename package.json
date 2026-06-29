@@ -67,6 +67,7 @@
     "prisma": "^5.19.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "sharp": "^0.35.2",
     "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^10.0.0"
