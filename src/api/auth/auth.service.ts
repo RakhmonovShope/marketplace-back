@@ -261,7 +261,18 @@ export class AuthService {
       return { success: true };
     }
 
-    await this.sendEmailVerification(user.id, user.email);
+    // Bu yo'l queue'siz (to'g'ridan-to'g'ri) — MailService endi xato ko'taradi,
+    // shuning uchun o'zimiz ushlaymiz: email ketmasa ham oqim buzilmasin
+    // (foydalanuvchi qayta "resend" qila oladi).
+    try {
+      await this.sendEmailVerification(user.id, user.email);
+    } catch (err) {
+      this.logger.error(
+        `resendVerification email failed for ${user.id}: ${
+          (err as Error).message
+        }`,
+      );
+    }
     return { success: true };
   }
 
@@ -307,7 +318,15 @@ export class AuthService {
       },
     });
 
-    await this.mail.sendPasswordResetEmail(user.email, rawToken);
+    // Queue'siz to'g'ridan-to'g'ri yuboramiz. Email xatosi enumeration
+    // himoyasini buzmasligi uchun ushlab, baribir 'success' qaytaramiz.
+    try {
+      await this.mail.sendPasswordResetEmail(user.email, rawToken);
+    } catch (err) {
+      this.logger.error(
+        `forgotPassword email failed for ${user.id}: ${(err as Error).message}`,
+      );
+    }
     return { success: true };
   }
 
