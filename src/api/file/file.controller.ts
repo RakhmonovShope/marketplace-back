@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Controller,
   Get,
+  Headers,
   HttpException,
   HttpStatus,
   NotFoundException,
@@ -203,6 +204,7 @@ export class FileController {
     @Param('month') month: string,
     @Param('day') day: string,
     @Param('name') name: string,
+    @Headers('x-content-disposition') dispositionHeader: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
     if (!year || !month || !day || !name) {
@@ -224,9 +226,16 @@ export class FileController {
 
     const mimeType = this.fileService.getMimeType(filePath);
 
+    // Front `X-Content-Disposition: attachment` yuborsa — yuklab olishga,
+    // aks holda (yoki `inline`) brauzerda / <img> tag'da ko'rsatamiz.
+    const disposition =
+      dispositionHeader?.toLowerCase() === 'attachment'
+        ? 'attachment'
+        : 'inline';
+
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': `attachment; filename="${fileRecord.name}"`,
+      'Content-Disposition': `${disposition}; filename="${fileRecord.name}"`,
     });
 
     return this.fileService.streamFile(filePath);
