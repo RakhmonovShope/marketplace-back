@@ -1,3 +1,11 @@
+// libuv threadpool — sharp/fs async operatsiyalari shu pool'da ishlaydi.
+// Default 4 — yuqori yukda kam. Yadrolar soniga (kamida 4) ko'taramiz.
+// MUHIM: bu boshqa importlardan OLDIN, pool yaratilmasdan turib o'rnatilishi kerak.
+import * as os from 'os';
+if (!process.env.UV_THREADPOOL_SIZE) {
+  process.env.UV_THREADPOOL_SIZE = String(Math.max(4, os.cpus().length));
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
@@ -93,6 +101,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // Graceful shutdown: SIGTERM/SIGINT'da BullMQ worker'lar to'g'ri yopiladi —
+  // ayni damdagi job'lar tugatiladi yoki navbatga qaytariladi (yo'qolmaydi).
+  app.enableShutdownHooks();
 
   const port = configService.get<number>('PORT') ?? 3000;
   await app.listen(port);

@@ -115,6 +115,31 @@ model File {
   updatedAt DateTime @updatedAt
 }
 
+enum ImageStatus {
+  PENDING // qabul qilindi, original diskka yozildi, navbatda
+  PROCESSING // worker ayni damda sharp bilan ishlayapti
+  DONE // optimized + thumbnail tayyor
+  FAILED // barcha urinishlardan keyin ham bo'lmadi
+}
+
+// Async rasm processing'ni kuzatish uchun model.
+// Original fayl darhol diskka yoziladi (durable), keyin BullMQ job qo'yiladi.
+// Server qulasa ham: original diskda, job Redis'da, holat shu yerda saqlanadi.
+model ImageUpload {
+  id           String      @id @default(uuid())
+  status       ImageStatus @default(PENDING)
+  originalName String // foydalanuvchi yuklagan fayl nomi
+  originalPath String // diskdagi xom (raw) original yo'li — durable manba
+  optimizedUrl String? // tayyor bo'lganda — optimized webp url
+  thumbnailUrl String? // tayyor bo'lganda — thumbnail webp url
+  error        String? // FAILED bo'lsa — sabab
+  attempts     Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status])
+}
+
 model Audio {
   id        String   @id @default(uuid())
   name      String

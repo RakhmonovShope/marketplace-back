@@ -3,8 +3,10 @@ import {
   Controller,
   Get,
   Headers,
+  HttpCode,
   HttpException,
   HttpStatus,
+  Logger,
   NotFoundException,
   Param,
   Post,
@@ -40,14 +42,17 @@ import { mkdirp } from 'mkdirp';
 import { Permissions } from '../auth/permissions.decorator';
 import { PERMISSIONS } from '../auth/auth.enum';
 import * as process from 'node:process';
-import { ImageService } from './image.service';
+import { ImageUploadResponseDto } from './file.dto';
+import { ImageQueueService } from './image-queue.service';
 
 @ApiTags('File')
 @Controller('files')
 export class FileController {
+  private readonly logger = new Logger(FileController.name);
+
   constructor(
     private readonly fileService: FileService,
-    private readonly imageService: ImageService,
+    private readonly imageQueue: ImageQueueService,
   ) {}
 
   @Post('upload')
@@ -166,30 +171,63 @@ export class FileController {
       properties: { file: { type: 'string', format: 'binary' } },
     },
   })
+  @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
-    summary: 'Upload & process image (optimized webp + thumbnail)',
+    summary:
+      'Upload image (async) — original darhol saqlanadi, processing fonda',
+    description:
+      'Original fayl darhol diskka yoziladi va processing BullMQ navbatiga ' +
+      "qo'yiladi. 202 + {id, status: PENDING} qaytadi. Klient natijani " +
+      "GET /v1/files/images/:id orqali poll qiladi (status DONE bo'lguncha).",
   })
-  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+  @ApiResponse({ status: 202, type: ImageUploadResponseDto })
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ImageUploadResponseDto> {
     if (!file) {
       throw new HttpException('Image upload failed', HttpStatus.BAD_REQUEST);
     }
 
-    // 1) sharp bilan ikkita WebP yaratamiz (xotirada)
-    const { optimized, thumbnail } = await this.imageService.process(
+    // 1) Original'ni DARHOL diskka yozamiz — durable manba.
+    //    Shu nuqtadan keyin server qulasa ham rasm yo'qolmaydi.
+    const originalPath = await this.fileService.saveOriginalBuffer(
       file.buffer,
-    );
-
-    // 2) ikkalasini ham diskka yozib, DB yozuvini yaratamiz
-    const original = await this.fileService.saveImageBuffer(
-      optimized,
       file.originalname,
     );
-    const thumb = await this.fileService.saveImageBuffer(
-      thumbnail,
-      `thumb-${file.originalname}`,
+
+    // 2) Tracking yozuvi (PENDING). Holat manbai — Postgres.
+    const record = await this.fileService.createImageUpload(
+      file.originalname,
+      originalPath,
     );
 
-    return { original, thumbnail: thumb };
+    // 3) Navbatga qo'yamiz. Redis tushib qolsa ham xato qaytarmaymiz:
+    //    yozuv PENDING qoladi va ImageQueueService (recovery) keyin qo'yadi.
+    try {
+      await this.imageQueue.enqueue(record.id);
+    } catch (err) {
+      this.logger.error(
+        `Enqueue failed for ${record.id}, recovery will retry: ${(err as Error).message}`,
+      );
+    }
+
+    // 4) Darhol javob — CPU bloklanmaydi, og'ir ish fonda.
+    return this.fileService.mapToImageUploadDto(record);
+  }
+
+  @Get('images/:id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard(), PermissionsGuard)
+  @Permissions(PERMISSIONS.FILE__VIEW)
+  @ApiOperation({
+    summary: 'Rasm processing holatini olish (poll qilish uchun)',
+  })
+  @ApiResponse({ status: 200, type: ImageUploadResponseDto })
+  @ApiResponse({ status: 404, description: 'Image upload not found.' })
+  async getImageStatus(
+    @Param('id') id: string,
+  ): Promise<ImageUploadResponseDto> {
+    return this.fileService.getImageUploadDto(id);
   }
 
   // Static fayl yetkazib berish — bu API resursi emas, jismoniy fayl.
