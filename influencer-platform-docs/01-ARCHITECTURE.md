@@ -118,7 +118,13 @@ WEB
     -> rate limit (Redis): 1 kod / 60s, 5 kod / soat
     -> 6 xonali kod, bcrypt hash bilan OtpCode jadvaliga (TTL 10 daqiqa)
     -> OtpChannel.send()   // default: Telegram bot
-    -> javob: {sent: true, channel: 'TELEGRAM', botDeepLink?: string, expiresIn: 600}
+    -> telefon botga MA'LUM (User.telegramId bor):
+         javob: {sent: true, channel: 'TELEGRAM', expiresIn: 600}
+       telefon NOMA'LUM (birinchi kirish):
+         javob: {sent: false, channel: 'TELEGRAM', expiresIn: 600,
+                 botDeepLink: 'https://t.me/<bot>?start=otp_<otpCodeId>'}
+         -> foydalanuvchi botni ochadi -> bot request_contact bilan kontakt so'raydi
+         -> telefon mos kelsa: User upsert (phone+telegramId) va kod chatga yuboriladi
   POST /auth/web/otp/verify {phone, code}
     -> attempts < 5 -> hash solishtiriladi -> User upsert -> JWT
 ```
@@ -170,6 +176,17 @@ export interface OtpChannel {
 
 `OtpService` `OTP_CHANNEL` env qiymatiga qarab registrydan kanal oladi.
 Kanal yetkazib berolmasa (`delivered: false`) — `OTP_FALLBACK_CHANNEL` ga o'tadi.
+
+**TelegramOtpChannel — telefon -> telegramId muammosi.** Bot faqat o'zi bilan suhbat
+boshlagan foydalanuvchiga yoza oladi va uning telefonini bilmaydi. Kanal shunday ishlaydi:
+1. `User.phone == target` yozuvdan `telegramId` qidiriladi
+2. Topilsa — kod yuboriladi (`delivered: true`)
+3. Topilmasa — `{delivered: false, botDeepLink: 't.me/<bot>?start=otp_<otpCodeId>'}`
+   qaytadi (deep link payload sifatida `OtpCode.id` ishlatiladi)
+4. Bot `/start otp_<id>` da `request_contact` tugmasi bilan kontakt so'raydi,
+   telefonni `OtpCode.target` bilan solishtiradi; mos bo'lsa `User` upsert qilib
+   (phone + telegramId) kodni chatga yuboradi; mos bo'lmasa tushunarli xabar beradi
+5. Keyingi kirishlarda telefon allaqachon bog'langan — kod darhol keladi
 
 **Xavfsizlik qoidalari (buzilmaydi):**
 - Kod bazada **ochiq saqlanmaydi** — faqat bcrypt hash
@@ -279,13 +296,17 @@ postFrequency = postsLast30Days / 30      // kuniga o'rtacha post
 
 ### popularityScore (dashboard reytingi uchun)
 ```ts
-// har bir komponent 0..1 ga normalizatsiya qilinadi (min-max, log shkala followers uchun)
-popularityScore =
-    0.40 * norm(log10(totalFollowers))
-  + 0.35 * norm(maxEngagementRate)
-  + 0.25 * norm(growthRate30d)
+// DIQQAT: min-max normalizatsiya ISHLATILMAYDI — u butun baza bo'ylab min/max'ni
+// talab qiladi va bitta influencerni recalculate qilishni nodeterministik qiladi.
+// Har bir komponent QAT'IY shkala bilan 0..1 ga keltiriladi:
+followersScore = clamp(log10(max(totalFollowers, 1)) / 7, 0, 1)  // 10M follower = 1.0
+erScore        = clamp(maxEngagementRate / 15, 0, 1)             // 15%+ ER = 1.0
+growthScore    = clamp((growthRate30d + 10) / 40, 0, 1)          // -10%..+30% oralig'i
+
+popularityScore = 0.40 * followersScore + 0.35 * erScore + 0.25 * growthScore
 ```
-Koeffitsientlar `Setting` jadvalida saqlanadi — kodda hardcode qilinmaydi.
+Koeffitsientlar VA shkala chegaralari `Setting` jadvalida saqlanadi — kodda
+hardcode qilinmaydi. Shkala o'zgartirilsa `recalculateAll()` ishga tushiriladi.
 
 ### Trending
 ```

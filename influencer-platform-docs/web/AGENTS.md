@@ -87,9 +87,14 @@ src/
 ```ts
 // src/shared/api/client.ts
 import type { paths } from './schema';
-// createClient(baseUrl) — accessToken'ni httpOnly cookie'dan oladi,
-// 401 da /auth/refresh ga bir marta uriniladi (bir vaqtda bitta refresh — mutex),
-// muvaffaqiyatsiz bo'lsa /login ga yo'naltiradi.
+// TOKEN MODELI (httpOnly cookie'ni JS o'qiy olmaydi — shunga mos qurilgan):
+//  - refreshToken — httpOnly cookie (faqat Next Route Handler o'rnatadi/o'qiydi)
+//  - accessToken — klientda FAQAT xotirada (localStorage TAQIQLANADI);
+//    SSR uchun qisqa muddatli (15 daq) httpOnly cookie'ga ham yoziladi
+//  - ilova yuklanganda: POST /api/auth/refresh -> yangi accessToken xotiraga
+//  - 401 da bir marta refresh (mutex bilan), muvaffaqiyatsiz -> /login
+// Auth oqimlari (otp/refresh/logout) — Next Route Handler orqali (cookie uchun);
+// qolgan so'rovlar to'g'ridan-to'g'ri backendga Bearer bilan.
 ```
 
 Server Component'lardan so'rov `fetch` bilan (cookie forward qilinadi),

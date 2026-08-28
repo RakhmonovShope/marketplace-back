@@ -144,6 +144,10 @@ model OtpCode {
 }
 ```
 
+> `OtpCode.id` — Telegram bot deep link'ida start payload sifatida ishlatiladi
+> (`t.me/<bot>?start=otp_<id>`, ADR-004): bot shu id orqali qaysi kirish so'rovi
+> uchun kontakt so'ralayotganini biladi.
+
 ---
 
 ## 3-BO'LAK — Ma'lumotnomalar va kategoriyalar  (STEP-B-20, B-21)

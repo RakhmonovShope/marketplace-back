@@ -129,8 +129,15 @@ yuboriladi** — bepul, bir soniyada yetadi, spam yo'q.
 
 Kanal `OTP_CHANNEL` env o'zgaruvchisi bilan tanlanadi. Kod almashtirilmaydi.
 
-Foydalanuvchi botni ishga tushirmagan bo'lsa — javobda `botDeepLink` qaytariladi
-("Botni oching va /start bosing" oqimi).
+**Muhim nozik joy — bot telefon raqamini bilmaydi.** Birinchi kirishda telefon
+botga noma'lum bo'ladi, shuning uchun oqim quyidagicha:
+1. `otp/request` — bu telefon uchun `User.telegramId` topilmadi -> kod yuborilmaydi,
+   javobda `botDeepLink: t.me/<bot>?start=otp_<otpCodeId>` qaytadi
+2. Foydalanuvchi botni ochadi -> bot `request_contact` tugmasi bilan telefonini so'raydi
+3. Kontakt telefoni so'rovdagi raqamga mos kelsa -> `User` upsert (phone + telegramId
+   bog'lanadi) va kod chatga yuboriladi
+4. Foydalanuvchi kodni web'ga kiritadi. Keyingi kirishlarda kod darhol keladi.
+(Batafsil: `01-ARCHITECTURE.md` §3.3)
 
 ---
 
@@ -267,3 +274,22 @@ qilingan API tiplari.
 Ijtimoiy tarmoqlardan ma'lumot olishda **imkon qadar rasmiy API yoki qonuniy ma'lumot
 provayderlaridan** foydalaniladi. Scraping ToS buzilishi va IP bloklanish riski tug'diradi —
 uni oxirgi chora sifatida va faqat huquqiy tekshiruvdan keyin ko'rib chiqiladi.
+
+---
+
+## 6. Reviziyalar jurnali
+
+**2026-08-28 — arxitektura ko'rigi (v1.1).** Hujjatlar qayta ko'rib chiqildi,
+uchta aniq muammo tuzatildi:
+1. **ADR-004 aniqlashtirildi:** bot telefon raqamini bilmaydi — birinchi kirishda
+   `botDeepLink` + `request_contact` orqali phone->telegramId bog'lash oqimi qo'shildi.
+2. **popularityScore:** min-max normalizatsiya (butun baza bo'ylab qayta hisoblashni
+   talab qiladi, deterministik emas) o'rniga **qat'iy shkalalar** — bitta influencerni
+   `recalculate` qilish endi mustaqil ishlaydi (`01-ARCHITECTURE.md` §5).
+3. **Web token modeli:** httpOnly cookie'ni JS o'qiy olmaydi — model aniqlashtirildi:
+   refresh cookie'da, access xotirada + SSR uchun qisqa muddatli cookie
+   (`web/AGENTS.md`, STEP-W-08).
+
+Qo'shimcha: `GET /app/plans` kontraktga qo'shildi; `applyStats` uchun tarixiy
+`measuredAt` qoidasi (backfill joriy holatni buzmaydi) yozildi; suggest qidiruvi
+`username` bo'yicha ham ishlashi belgilandi.

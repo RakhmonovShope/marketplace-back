@@ -208,6 +208,11 @@ Profil javobi:
 }
 ```
 
+### 3.9 Tariflar
+| Metod | Path | Izoh |
+|---|---|---|
+| GET | `/app/plans` | Tarif ro'yxati va limitlar (pricing sahifasi uchun, public) |
+
 ---
 
 ## 4. Admin — `/admin/**`
@@ -268,6 +273,8 @@ POST   /admin/<resource>/:id/restore
 }
 ```
 > `engagementRate`, `viewRate`, `growth*` — **backend hisoblaydi**, admin kiritmaydi.
+> `measuredAt` o'tmishdagi sana bo'lishi mumkin — bu holda faqat o'sha kunning
+> snapshot'i yoziladi (tarixiy backfill), joriy holat va aggregatlar tegilmaydi.
 
 ### 4.5 Import (ikki bosqichli)
 | Metod | Path | Izoh |

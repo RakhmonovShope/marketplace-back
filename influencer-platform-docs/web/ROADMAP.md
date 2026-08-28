@@ -67,10 +67,14 @@ mavzu tugmasi, kirish/profil tugmasi. Mobil uchun `Sheet` menyu. Footer: statik 
 
 ### - [ ] STEP-W-08 — Sessiya boshqaruvi
 **Bajarish.**
-1. Tokenlar httpOnly cookie'da (Route Handler `/api/auth/session` orqali o'rnatiladi)
-2. `middleware.ts` — himoyalangan yo'llar (`/favorites`, `/compare`, `/profile`)
-3. Avtomatik refresh: 401 -> `/auth/refresh` -> qayta urinish (bir marta, mutex bilan)
-4. `useAuth()` hook — `user`, `plan`, `isAuthenticated`
+1. Route Handlerlar `/api/auth/*` (otp, refresh, logout) — backendga proksi qiladi:
+   refreshToken httpOnly cookie'ga, accessToken qisqa muddatli (15 daq) httpOnly
+   cookie'ga yoziladi (SSR shu cookie'ni backendga forward qiladi)
+2. Klientda accessToken FAQAT xotirada; ilova yuklanganda `/api/auth/refresh`
+   chaqirilib xotiraga olinadi (localStorage TAQIQLANADI)
+3. `middleware.ts` — himoyalangan yo'llar (`/favorites`, `/compare`, `/profile`)
+4. Avtomatik refresh: 401 -> `/api/auth/refresh` -> qayta urinish (bir marta, mutex bilan)
+5. `useAuth()` hook — `user`, `plan`, `isAuthenticated`
 **DoD.** Sahifa yangilanganda sessiya saqlanadi; token muddati tugasa avtomatik yangilanadi.
 
 ### - [ ] STEP-W-09 — Profil sahifasi

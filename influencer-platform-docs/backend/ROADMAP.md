@@ -139,9 +139,13 @@ Test uchun uchta bo'sh kontroller: `/admin/ping`, `/app/ping`, `/auth/telegram/p
 2. `TelegramService.sendMessage(chatId, text)`
 3. Bot `/start` handleri: `telegramId` -> `User` upsert (telefon so'ralmaydi)
 4. `/start` da `startapp` parametri bo'lsa (deep link) — Mini App tugmasi ko'rsatiladi
-5. `TelegramOtpChannel`: foydalanuvchi `telegramId` bo'lsa bot orqali yuboradi;
-   bo'lmasa `{delivered:false, botDeepLink:'https://t.me/<bot>?start=otp_<hash>'}` qaytaradi
-6. `OTP_CHANNEL=TELEGRAM` default, yetkazilmasa `OTP_FALLBACK_CHANNEL` ga o'tadi
+5. `TelegramOtpChannel`: telefon bo'yicha `User.telegramId` qidiriladi:
+   - topilsa — kod bot orqali yuboriladi (`delivered: true`)
+   - topilmasa — `{delivered:false, botDeepLink:'https://t.me/<bot>?start=otp_<otpCodeId>'}`
+6. Bot `/start otp_<id>` handleri: `request_contact` tugmasi bilan kontakt so'raydi ->
+   kontakt telefoni `OtpCode.target` bilan solishtiriladi -> mos bo'lsa `User` upsert
+   (phone + telegramId bog'lanadi) va kod chatga yuboriladi; mos bo'lmasa xabar beriladi
+7. `OTP_CHANNEL=TELEGRAM` default, yetkazilmasa `OTP_FALLBACK_CHANNEL` ga o'tadi
 **DoD.** Bot'ga `/start` yozgan foydalanuvchi OTP so'rasa — kod Telegram'ga keladi.
 **Tekshirish.** Qo'lda: real bot token bilan test.
 
@@ -350,6 +354,8 @@ async applyStats(accountId: string, dto: ApplyStatsDto, source: DATA_SOURCE) {
   });
 }
 ```
+**Qoida.** `dto.measuredAt` joriy `stats.measuredAt` dan ESKI bo'lsa — faqat snapshot
+yoziladi (tarixiy backfill), joriy holat va aggregatlar YANGILANMAYDI.
 **Endpoint.** `PUT /admin/social-accounts/:id/stats`
 **DoD.** Qo'lda kiritilgan statistika -> snapshot yoziladi -> aggregat yangilanadi.
 **Tekshirish.** Statistika kiritib, `SocialAccountSnapshot` da bugungi yozuv borligini tekshirish.
@@ -460,6 +466,8 @@ subscribers, avgViews, ER. Kalit yo'q bo'lsa `isAvailable()` -> `false`.
    - `INFLUENCER`: `fullName, categorySlug, countryCode, city, gender, bioUz, bioRu, contactPhone, contactTelegram`
    - `SOCIAL_ACCOUNT`: `influencerSlug, platform, username, url`
    - `STATS`: `influencerSlug, platform, username, followers, avgLikes, avgComments, avgViews, postsCount, measuredAt`
+8. STATS importida `measuredAt` o'tmish sanasi bo'lishi mumkin — tarixiy snapshot'lar
+   shu orqali ommaviy to'ldiriladi (o'sish grafigi uchun backfill, B-27 qoidasi amal qiladi)
 **DoD.** 100 qatorli fayl yuklanadi, preview ko'rinadi, apply'dan keyin ma'lumot bazada.
 **Tekshirish.** Xato ustunli fayl yuklab, `errors` to'ldirilishini va apply bloklanishini tekshirish.
 
@@ -477,7 +485,8 @@ subscribers, avgViews, ER. Kalit yo'q bo'lsa `isAvailable()` -> `false`.
 3. `query` bo'lsa: `fullName ILIKE` + trigram similarity, natijalar `similarity` bo'yicha
 4. `filters` endpointi: kategoriyalar, davlatlar, shaharlar, tillar + `MIN/MAX` aggregatlar
    (1 soat kesh)
-5. `suggest`: 10 ta natija, faqat `id, slug, fullName, avatarUrl, totalFollowers`
+5. `suggest`: `fullName` VA `socialAccounts.username` bo'yicha qidiradi;
+   10 ta natija, faqat `id, slug, fullName, avatarUrl, totalFollowers`
 6. Har bir natija `InfluencerCardDto` (`03-API-CONTRACT.md` §3.1)
 7. `isFavorite` — auth bo'lsa bitta qo'shimcha so'rov bilan (N+1 emas)
 8. `isFeatured` influencerlar birinchi 3 o'rinda (`FeaturedPlacement` aktiv bo'lsa)
