@@ -260,7 +260,7 @@ Frontend `Accept-Language` yoki `?lang=` orqali tanlaydi.
 |---|---|---|
 | Web | Next.js 15 App Router, RSC, Tailwind, shadcn/ui | Influencer profillari Google'dan organik trafik beradi -> SSR/SEO majburiy |
 | Mini App | Vite + React 19 + `@telegram-apps/sdk-react` + Tailwind | Bundle hajmi va cold start kritik; SSR keraksiz |
-| Admin | Vite + React 19 + Ant Design + TanStack Query | Tez CRUD, tayyor jadval/forma komponentlari, SEO yo'q |
+| Admin | Vite + React 19 + **Mantine** + TanStack Query | AntD darajasida boy, lekin runtime CSS-in-JS'siz (native CSS) — yengil va tez; mantine-datatable; RHF+zodResolver (v1.3 da AntD'dan almashtirildi) |
 
 Barchasida: TypeScript strict, TanStack Query, Zod, `openapi-typescript` bilan generatsiya
 qilingan API tiplari.
@@ -359,3 +359,8 @@ Qo'shimcha: `GET /app/plans` kontraktga qo'shildi; `applyStats` uchun tarixiy
    DSL faqat admin jadvallarida qoldi.
 3. **ADR-015:** `⏸ MVP-KEYIN` teglari — SavedSearch, FeaturedPlacement,
    Comparison-saqlash birinchi relizdan keyinga surildi.
+
+**2026-08-28 — v1.3.** Admin UI kutubxonasi: AntD -> **Mantine** (foydalanuvchi tanlovi).
+Sabab: AntD/MUI runtime og'irligi; Mantine — boylik jihatdan yaqin, lekin native CSS
+(Emotion/token-engine yo'q). Struktura andazasi: `frontend-ticket-core` moduli patterni
+(api/types/mappers/constants/hooks/forms, namespaced barrel, services/http axios+refresh).

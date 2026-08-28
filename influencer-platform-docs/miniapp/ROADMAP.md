@@ -7,7 +7,7 @@
 
 ## FAZA 0 — Skelet va Telegram integratsiyasi (M-01 … M-07)
 
-### - [ ] STEP-M-01 — Loyiha skeleti
+### - [x] STEP-M-01 — Loyiha skeleti
 **Bajarish.**
 1. `pnpm create vite influencer-miniapp --template react-ts`
 2. Port 3002, `strict: true`, `paths: { "@/*": ["./src/*"] }`
@@ -37,7 +37,7 @@
 `Accept-Language` — Telegram `languageCode` dan), `ApiError`.
 **DoD.** `pnpm api:gen` ishlaydi.
 
-### - [ ] STEP-M-05 — Auth (ADR-004) ⚠️ kritik
+### - [x] STEP-M-05 — Auth (ADR-004) ⚠️ kritik
 **Talab qilinadi:** B-15
 **Bajarish.**
 1. Ilova ochilganda `POST /auth/telegram/init { initData }`
@@ -49,7 +49,7 @@
 5. `INVALID_INIT_DATA` / `INIT_DATA_EXPIRED` — qayta urinish ekrani
 **DoD.** Telegram'da ochilganda foydalanuvchi avtomatik kiradi, hech qanday forma to'ldirmaydi.
 
-### - [ ] STEP-M-06 — Routing va navigatsiya
+### - [x] STEP-M-06 — Routing va navigatsiya
 **Bajarish.**
 1. `HashRouter`, sahifalar: `/`, `/catalog`, `/category/:slug`, `/influencer/:slug`,
    `/search`, `/favorites`, `/compare`, `/profile`
@@ -58,7 +58,7 @@
 4. `startapp=inf_<slug>` -> `/influencer/<slug>` ga yo'naltirish
 **DoD.** Telegram orqaga tugmasi to'g'ri ishlaydi, deep link profilni ochadi.
 
-### - [ ] STEP-M-07 — Bazaviy UI komponentlari
+### - [x] STEP-M-07 — Bazaviy UI komponentlari
 **Bajarish.** `Button, Card, Sheet, Chip, Skeleton, Avatar, Badge, Input, Slider, Tabs, EmptyState`
 — o'z komponentlarimiz, Telegram mavzusiga moslashgan, minimal CSS.
 **DoD.** Bundle hajmi tekshiriladi (`pnpm build` -> dist hajmi < 200KB gzip).
@@ -67,7 +67,7 @@
 
 ## FAZA 1 — Asosiy ekranlar (M-08 … M-14)
 
-### - [ ] STEP-M-08 — `InfluencerCard` (mobil variant)
+### - [x] STEP-M-08 — `InfluencerCard` (mobil variant)
 **Talab qilinadi:** B-37
 **Bajarish.** Kompakt karta: avatar, ism + tasdiqlangan belgisi, kategoriya,
 platforma ikonalari, followers, ER, o'sish. Bosilganda haptic + profilga o'tish.

@@ -7,21 +7,26 @@
 
 ## FAZA 0 — Skelet (A-01 … A-06)
 
-### - [ ] STEP-A-01 — Loyiha skeleti
+### - [x] STEP-A-01 — Loyiha skeleti (Mantine, ticket-core andazasi)
 **Bajarish.**
 1. `pnpm create vite influencer-admin --template react-ts`, port 3003
-2. `strict: true`, `paths: { "@/*": ["./src/*"] }`, Prettier, ESLint
-3. `pnpm add antd @ant-design/icons @tanstack/react-query react-router-dom`
-4. `docs/` va `CLAUDE.md`
-**DoD.** `pnpm build` xatosiz.
+2. `strict: true`, `paths: { "@/*": ["./src/*"] }`, Prettier (+sort-imports), ESLint
+3. Deps: `@mantine/core @mantine/hooks @mantine/dates @mantine/notifications
+   @mantine/modals mantine-datatable dayjs react-hook-form zod @hookform/resolvers
+   @tanstack/react-query react-router axios axios-auth-refresh zustand clsx radash`
+4. MantineProvider + theme + Notifications + ModalsProvider; postcss-preset-mantine
+5. ticket-core papka strukturasi (assets/common/components/containers/helpers/
+   hooks/layouts/modules/pages/services)
+6. `docs/` va `CLAUDE.md`
+**DoD.** `pnpm build` xatosiz, bosh sahifada Mantine tema ishlaydi.
 
-### - [ ] STEP-A-02 — API klient va tiplar
+### - [x] STEP-A-02 — API klient va tiplar
 **Talab qilinadi:** B-05
 **Bajarish.** `api:gen` skripti, `apiFetch` (`X-Client: admin`), `ApiError`,
 `query-keys.ts`, TanStack Query provayderi.
 **DoD.** `pnpm api:gen` ishlaydi.
 
-### - [ ] STEP-A-03 — Kirish va sessiya
+### - [x] STEP-A-03 — Kirish va sessiya
 **Talab qilinadi:** B-11
 **Bajarish.**
 1. `/login` — email + parol formasi
@@ -30,37 +35,38 @@
 4. `INVALID_CREDENTIALS` uchun aniq xabar
 **DoD.** Seed super-admin bilan kirish ishlaydi, sahifa yangilanganda sessiya saqlanadi.
 
-### - [ ] STEP-A-04 — Layout va permission asosidagi menyu
+### - [x] STEP-A-04 — Layout va permission asosidagi menyu
 **Bajarish.**
-1. AntD `Layout`: yon menyu (yig'iladigan), header (foydalanuvchi, chiqish, til)
+1. Mantine `AppShell`: yon menyu (yig'iladigan), header (foydalanuvchi, chiqish, til)
 2. Menyu elementlari `permissions` bo'yicha filtrlanadi
 3. `ProtectedRoute` — ruxsat yo'q bo'lsa 403 sahifasi
 4. `usePermission(code)` hook
 **DoD.** Cheklangan rolli admin faqat o'ziga ruxsat berilgan bo'limlarni ko'radi.
 
-### - [ ] STEP-A-05 — `CrudTable` universal komponenti ⚠️ kritik
+### - [ ] STEP-A-05 — `CrudTable` universal komponenti (mantine-datatable) ⚠️ kritik
 **Talab qilinadi:** B-18
 **Bajarish.**
-1. `POST /admin/<resource>/search` bilan server tomonda sahifalash/tartiblash
-2. Ustun konfiguratsiyasi, qidiruv maydoni, filter paneli
+1. `mantine-datatable` asosida: `POST /admin/<resource>/search` server-side
+   sahifalash/tartiblash (useList hook bilan)
+2. Ustun konfiguratsiyasi, qidiruv maydoni (debounce), filter paneli
 3. Amallar ustuni: ko'rish / tahrirlash / o'chirish / tiklash — permission bo'yicha
-4. Ommaviy amallar (checkbox), `Popconfirm` bilan tasdiqlash
-5. URL bilan sinxron holat (`?page=2&sort=createdAt:desc`)
-6. Bo'sh holat va yuklanish skeletoni
+4. Ommaviy amallar (checkbox), `modals.openConfirmModal` bilan tasdiqlash
+5. URL bilan sinxron holat (`useQueryParams`: `?page=2&sort=createdAt:desc`)
+6. Bo'sh holat va `fetching` skeleti
 **DoD.** Bitta komponent bilan istalgan resurs jadvali quriladi.
 
 ### - [ ] STEP-A-06 — `FormDrawer` va umumiy forma maydonlari
-**Bajarish.** Yon panel (Drawer) forma, `zod`/AntD validatsiyasi,
-backend `details` xatolarini maydonlarga taqsimlash,
+**Bajarish.** Mantine `Drawer` forma, RHF + `zodResolver`,
+backend `details` xatolarini `setError` bilan maydonlarga taqsimlash,
 umumiy maydonlar: `ImageUpload` (`POST /admin/files/upload`), `LocalizedInput` (uz/ru ikki ustun),
-`EntitySelect` (server qidiruvi bilan), `DecimalInput`.
+`EntitySelect` (server qidiruvi bilan), `NumberInput` wrapper.
 **DoD.** Forma xatolari to'g'ri maydonda ko'rinadi.
 
 ---
 
 ## FAZA 1 — Boshqaruv asoslari (A-07 … A-12)
 
-### - [ ] STEP-A-07 — Rollar va permissionlar
+### - [x] STEP-A-07 — Rollar va permissionlar
 **Talab qilinadi:** B-16
 **Bajarish.** Rol CRUD; permission tanlash — guruhlangan checkbox daraxti
 (`GET /admin/roles/permissions`); `isSystem` rollar tahrirlanmaydi/o'chirilmaydi.
@@ -87,7 +93,7 @@ Bloklash/blokdan chiqarish (sabab bilan).
 
 ### - [ ] STEP-A-11 — Kategoriyalar (daraxt)
 **Talab qilinadi:** B-21
-**Bajarish.** AntD `Tree` yoki daraxtli jadval, drag&drop bilan tartib
+**Bajarish.** Daraxtli jadval (mantine-datatable nested yoki custom Tree), drag&drop bilan tartib
 (`PUT /admin/categories/reorder`), forma: uz/ru nom, tavsif, slug, emoji, cover,
 `isPopular`. O'chirishda bog'liqlik xatosi (`409`) tushunarli ko'rsatiladi.
 **DoD.** Ikki darajali daraxt ko'rinadi va tartibi o'zgartiriladi.
@@ -103,7 +109,7 @@ foydalanuvchilar grafigi, oxirgi importlar, eng ko'p ko'rilgan influencerlar.
 
 ## FAZA 2 — Influencer boshqaruvi (A-13 … A-19)
 
-### - [ ] STEP-A-13 — Influencerlar ro'yxati
+### - [x] STEP-A-13 — Influencerlar ro'yxati
 **Talab qilinadi:** B-22
 **Bajarish.** `CrudTable`: avatar, ism, kategoriya, holat (`DRAFT/PUBLISHED/...`),
 tasdiqlangan, jami followers, ER, o'sish, sinxronizatsiya holati, yangilangan vaqti.

@@ -1,91 +1,125 @@
 # AGENTS.md — influencer-admin
 
-> Ish boshlashdan oldin `docs/00-CONTEXT-AND-DECISIONS.md` (ayniqsa **ADR-005**),
+> Ish boshlashdan oldin `docs/00-CONTEXT-AND-DECISIONS.md` (ayniqsa **ADR-005, v1.3**),
 > `docs/03-API-CONTRACT.md` §4 va §5 o'qilishi shart.
+> Struktura andazasi — `frontend-ticket-core` loyihasi patterni.
 
 ## Stack
 
 - **Vite 6** + **React 19** + TypeScript strict
-- **Ant Design 5** (Table, Form, Upload, DatePicker — tayyor komponentlar)
-- **TanStack Query v5**
-- `react-router-dom` v7
-- `openapi-typescript` — tiplar generatsiya qilinadi
-- `@ant-design/plots` yoki Recharts — grafiklar
+- **Mantine** (core, hooks, dates, notifications, modals) — v1.3 da AntD o'rniga
+  tanlangan: boy komponentlar, lekin runtime CSS-in-JS yo'q (native CSS)
+- **mantine-datatable** — server-side jadval
+- **react-hook-form + zod** (`@hookform/resolvers/zod`) — barcha formalar
+- **TanStack Query v5** — server holati
+- **Zustand** — lokal global holat (auth store)
+- **axios + axios-auth-refresh** — HTTP (`services/http`)
+- **react-router v7**, **dayjs**, **clsx**, **radash**
+- `openapi-typescript` — API tiplari generatsiya qilinadi
 - Paket menejeri: **pnpm**
 
 ## Buyruqlar
 
 ```bash
 pnpm dev                 # localhost:3003
-pnpm build && pnpm preview
-pnpm typecheck
-pnpm api:gen             # openapi-typescript .../admin-json -o src/shared/api/schema.d.ts
+pnpm typecheck           # tsc -b
+pnpm build               # typecheck + vite build
+pnpm lint                # eslint
+pnpm api:gen             # openapi-typescript .../admin-json -o src/common/api-schema.d.ts
 ```
 
-## Papka strukturasi
+## Papka strukturasi (ticket-core andazasi)
 
 ```
 src/
-  app/          { App.tsx, router.tsx, providers.tsx, layout/ }
-  pages/
-    dashboard/
-    influencers/    { list, form, detail/{profile,socials,stats,prices,analytics} }
-    categories/
-    users/
-    admins/  roles/
-    imports/
-    sync/
-    references/     { countries, cities, languages }
-    plans/  featured/  banners/  pages/  settings/
-    login/
-  features/
-    auth/  crud/  filters/
-  shared/
-    api/        { client.ts, schema.d.ts, query-keys.ts }
-    ui/         { CrudTable, FilterBar, FormDrawer, ImageUpload, StatCard, ... }
-    lib/        { format.ts, permissions.ts }
+  main.tsx, App.tsx, config.ts
+  assets/               # statika, global stillar
+  common/
+    types.ts            # IMeta, Params, ListResponse<T> ...
+    api-schema.d.ts     # openapi-typescript generatsiyasi (QO'LDA TAHRIRLANMAYDI)
+  components/           # dizayn-tizim ustidagi umumiy komponentlar
+    CrudTable/          # mantine-datatable asosidagi universal jadval (A-05)
+    FormDrawer/  LocalizedInput/  ImageUpload/  EntitySelect/  StatCard/ ...
+  containers/           # sborka bloklari (Filters, PageHeader, ...)
+  helpers/              # sof utilitalar (format.ts, ...)
+  hooks/                # umumiy hooklar (useQueryParams, usePermission, ...)
+  layouts/              # Main (AppShell), Auth, ProtectedRoute
+  modules/              # domen modullari (quyida)
+  pages/                # sahifalar — modullardan yig'iladi
+  services/
+    http/               # axios instance + interceptors + refresh
+    storage/            # localStorage o'rami
+    i18n/               # i18next (A-27)
 ```
 
-## Asosiy naqsh: universal CRUD
+Alias: `@/*` -> `./src/*`.
 
-Backend barcha resurslarda bir xil kontraktga ega (`03-API-CONTRACT.md` §4.1),
-shuning uchun **bitta `CrudTable` komponenti** yoziladi va har bir resurs
-faqat konfiguratsiya beradi:
+## Modul patterni (ticket-core'dan)
 
-```ts
-<CrudTable
-  resource="influencers"
-  columns={influencerColumns}
-  filters={influencerFilters}
-  permissions={{ view: 'INFLUENCER__VIEW', create: 'INFLUENCER__CREATE', ... }}
-  form={InfluencerForm}
-/>
+Har bir domen moduli `src/modules/<kebab-name>/`:
+
+```
+api.ts          # List, Single, Create, Update, Delete — PascalCase, AxiosPromise
+types.ts        # zod schemalar + ICreateValues/IUpdateValues + IEntity namespace
+mappers.ts      # backend javobi -> IEntity (kerak bo'lsa)
+constants.ts    # query-key konstantalar (LIST, SINGLE, ...)
+hooks/          # useList/useSingle/useDelete (mutationlarning delete qismi)
+forms/          # Create.tsx, Update.tsx — FAQAT LOGIKA (quyida)
+index.ts        # namespaced barrel: export * as Hooks/Types/Mappers/Constants/Forms
 ```
 
-Har bir resurs uchun jadval va formani noldan yozish **taqiqlanadi**.
+### Forma patterni (ticket-core, MAJBURIY)
+
+Modul formasi = **logika-wrapper** (UI YO'Q): `FormProvider` + `useForm(zodResolver)` +
+`useMutation` (invalidate + notification + `applyServerErrors`) + render-props:
+
+```tsx
+<Role.Forms.Update id={id} values={row} onSuccess={close}>
+  {({ isSubmitting }) => (
+    <>
+      <Form />                    {/* sahifaning components/Form.tsx — faqat maydonlar */}
+      <FormActions loading={isSubmitting} onCancel={close} />
+    </>
+  )}
+</Role.Forms.Update>
+```
+
+Maydonlar — `containers/Fields` (RHF context orqali, `name` bilan):
+`Fields.Input/Password/Textarea/NumberInput/Switch/Select/EntitySelect/Localized/Image`.
+Sahifa `pages/<name>/components/Form.tsx` da maydonlarni yig'adi.
+Domenga xos maydon (masalan `PermissionsField`) — modulning `forms/` ichida qoladi.
+`FormDrawer` — faqat Drawer o'rami (`<form>` modul formasida).
+Sahifada `useForm`/`useMutation`(create/update) yozish TAQIQLANADI.
+
+Qoida: **yangi modul yozishdan oldin mavjud eng o'xshash modulni top va strukturasini ko'chir.**
+Etalon: `src/modules/role/` (A-07 dan keyin).
+
+## Backend kontrakt eslatmalari
+
+- Admin ro'yxatlar: `POST /admin/<resource>/search` + `QueryRequestDto`
+  (`{page, perPage, query?, filters[], sort[]}` — generic DSL, ADR-003)
+- Xatolar: `{statusCode, code, message, details?}` — **`code` bo'yicha ushlanadi**
+- Auth: access 15 daqiqa + refresh rotatsiyasi (`axios-auth-refresh` bilan 401 da)
+- Statistika kiritishda hisoblanadigan maydonlar (`engagementRate`, `growth*`,
+  `viewRate`, `popularityScore`, `tier`) **formada bo'lmaydi** — backend hisoblaydi
+- `manualLock`/`manualFields` — qulf ikonasi bilan ko'rsatiladi (ADR-005)
+- Import faqat 2 bosqichli: yuklash -> preview -> tasdiqlash
 
 ## Qat'iy qoidalar
 
-1. **Permission bo'yicha UI**: `usePermission('INFLUENCER__CREATE')` — ruxsat bo'lmasa
-   tugma **ko'rsatilmaydi** (faqat `disabled` emas). Menyu ham shunga qarab quriladi.
-2. **API tiplari qo'lda yozilmaydi** — `pnpm api:gen`.
-3. **Hisoblanadigan maydonlar formada bo'lmaydi**: `engagementRate`, `viewRate`,
-   `growth*`, `popularityScore`, `tier` — bularni backend hisoblaydi, admin kiritmaydi
-   (faqat `followers`, `avgLikes`, `avgComments`, `avgViews`, `postsCount` kiritiladi).
-4. **`manualLock` aniq ko'rsatiladi**: qulflangan maydon yonida qulf ikonasi va
-   "Bu qiymat avtomatik yangilanmaydi" tooltip'i (ADR-005).
-5. **Import faqat ikki bosqichli**: yuklash -> preview -> tasdiqlash.
-   "Yuklab darhol yozish" tugmasi bo'lmaydi.
-6. Xatolar `code` bo'yicha ushlanadi; validatsiya xatolari (`details`) forma
-   maydonlariga taqsimlanadi.
-7. Barcha ro'yxatlar server tomonda sahifalanadi va filtrlanadi
-   (`POST /admin/<resource>/search`) — frontendda `filter()` qilinmaydi.
-8. Matnlar uz/ru — forma har ikkala tilni yonma-yon ko'rsatadi (tab emas, ikki ustun).
+1. **Permission bo'yicha UI**: `usePermission('X')` — ruxsat bo'lmasa element
+   **ko'rsatilmaydi** (disabled emas); menyu ham shunga qarab quriladi.
+2. API tiplari qo'lda yozilmaydi — `pnpm api:gen`.
+3. Barcha formalar: `useForm` + `zodResolver` + Mantine `Controller`-wrapper
+   komponentlari; backend `details` xatolari `setError` bilan maydonlarga taqsimlanadi.
+4. Barcha ro'yxatlar server-side (`POST search`) — frontendda `filter()` yo'q.
+5. Uz/Ru matn maydonlari — `LocalizedInput` (ikkala til yonma-yon).
+6. Jadval holati URL'da (`useQueryParams`): `?page=2&sort=createdAt:desc`.
+7. `CrudTable` bor ekan — resurs jadvalini noldan yozish taqiqlanadi.
 
 ## Nima qilinmaydi
 
-- Client-side sahifalash yoki filtrlash
-- Hisoblanadigan metrikalarni qo'lda kiritish maydonlari
-- Permission tekshiruvini faqat frontendda qilish (backend ham tekshiradi, lekin
-  UI'da yashirish majburiy)
+- Client-side sahifalash/filtrlash
+- Hisoblanadigan metrikalarni kiritish maydonlari
+- AntD/MUI import qilish (Mantine tanlangan — v1.3)
 - Bir bosqichli import

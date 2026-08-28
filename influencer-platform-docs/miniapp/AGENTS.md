@@ -23,20 +23,32 @@ pnpm api:gen             # openapi-typescript .../miniapp-json -o src/shared/api
 pnpm tunnel              # cloudflared/ngrok — Telegram HTTPS talab qiladi
 ```
 
-## Papka strukturasi
+## Papka strukturasi (ticket-core andazasi — admin bilan bir xil pattern)
 
 ```
 src/
-  app/            { App.tsx, router.tsx, providers.tsx }
-  pages/          { Home, Catalog, Category, Influencer, Search, Favorites, Compare, Profile }
-  features/       { auth, catalog, influencer, favorites, compare }
-  shared/
-    api/          { client.ts, schema.d.ts, query-keys.ts }
-    telegram/     { init.ts, useTelegram.ts, theme.ts, haptics.ts }
-    ui/           # o'z komponentlarimiz (og'ir UI kutubxona ishlatilmaydi)
-    lib/          { format.ts }
-  i18n/
+  main.tsx, App.tsx, config.ts
+  assets/styles/            # Tailwind + tg-theme o'zgaruvchilari
+  common/
+    types.ts                # ListResponse, ApiError ...
+    api-schema.d.ts         # openapi-typescript (miniapp-json) — QO'LDA TAHRIRLANMAYDI
+  components/               # o'z yengil UI komponentlarimiz (Card, Chip, Skeleton...)
+  helpers/                  # format.ts (formatCompact...), confirm...
+  hooks/                    # umumiy hooklar
+  layouts/                  # TelegramGate (initData auth), TabBar layout
+  modules/                  # ticket-core patterni: api/types/constants/hooks[/forms]
+    auth/  search/  profile/  favorite/  comparison/  dashboard/  share/
+  pages/                    # sahifalar — modullardan yig'iladi
+  services/
+    http/                   # axios + Bearer + refresh (adminnikiga o'xshash)
+    storage/                # sessionStorage o'rami
+    telegram/               # SDK init, useTelegram, haptics, theme binding
+  i18n/                     # uz/ru (M-20)
 ```
+
+Modul patterni admin AGENTS'dagi bilan bir xil: `api.ts` (PascalCase, AxiosPromise),
+`types.ts` (zod + IEntity), `constants.ts`, `hooks/`, namespaced `index.ts`.
+Formalar kam (qidiruv filtri) — kerak bo'lsa o'sha render-props patterni.
 
 ## Telegram-ga xos qat'iy qoidalar
 
