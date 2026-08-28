@@ -144,9 +144,10 @@ model OtpCode {
 }
 ```
 
-> `OtpCode.id` — Telegram bot deep link'ida start payload sifatida ishlatiladi
-> (`t.me/<bot>?start=otp_<id>`, ADR-004): bot shu id orqali qaysi kirish so'rovi
-> uchun kontakt so'ralayotganini biladi.
+> **⏸ MVP-KEYIN (ADR-013):** `OtpCode` jadvali va `User.otpCodes` relatsiyasi MVP
+> migratsiyasiga KIRITILMAYDI — web kirish Telegram Login Widget orqali. SMS/OTP
+> kanali qo'shilganda alohida migratsiya bilan qaytadi (o'shanda `OtpCode.id` bot
+> deep link payload sifatida ishlatiladi: `t.me/<bot>?start=otp_<id>`).
 
 ---
 
@@ -587,7 +588,7 @@ model SavedSearch {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   name      String
-  filters   Json                    // QueryRequestDto ko'rinishida
+  filters   Json                    // InfluencerSearchDto ko'rinishida (ADR-014)
   notifyNew Boolean  @default(false) // Phase 2: yangi mos influencer chiqsa xabar
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

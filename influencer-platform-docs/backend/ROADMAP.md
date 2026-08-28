@@ -6,6 +6,8 @@
 > 3. Har qadam oxirida `Tekshirish` buyrug'i ishga tushiriladi.
 > 4. `DoD` (tugadi mezoni) bajarilmasa — keyingi qadamga o'tilmaydi.
 > 5. Qadamda noaniqlik bo'lsa — `docs/00-CONTEXT-AND-DECISIONS.md` dagi ADR'ga qaraladi.
+> 6. `⏸ MVP-KEYIN` tegli qadam birinchi reliz uchun BAJARILMAYDI — o'tkazib yuboriladi
+>    (ADR-013 / ADR-015); keyingi bosqichda qaytiladi.
 
 ---
 
@@ -121,7 +123,9 @@ Test uchun uchta bo'sh kontroller: `/admin/ping`, `/app/ping`, `/auth/telegram/p
 **DoD.** Seed qilingan super-admin bilan kirish ishlaydi, token `/auth/me` da tekshiriladi.
 **Tekshirish.** `curl -X POST localhost:3000/api/v1/auth/admin/login -d '{"email":"...","password":"..."}' -H 'Content-Type: application/json'`
 
-### - [ ] STEP-B-12 — OTP infratuzilmasi
+### - [ ] STEP-B-12 — ⏸ MVP-KEYIN — OTP infratuzilmasi (ADR-013)
+**⏸ Birinchi relizda bajarilmaydi** — web kirish Login Widget orqali (B-14).
+SMS kanali kerak bo'lganda shu qadam va B-13 dagi kontakt oqimi bajariladi.
 **Fayllar.** `src/api/auth/otp/{otp.service.ts, otp-channel.interface.ts, channels/*}`
 **Bajarish.** `01-ARCHITECTURE.md` §3.3 bo'yicha:
 1. `OtpChannel` interfeysi + `ConsoleOtpChannel` + `EmailOtpChannel`
@@ -132,33 +136,32 @@ Test uchun uchta bo'sh kontroller: `/admin/ping`, `/app/ping`, `/auth/telegram/p
 **DoD.** Kod DB'da ochiq ko'rinmaydi; 5 marta xato kiritishda kod bekor bo'ladi.
 **Tekshirish.** Unit test: `otp.service.spec.ts` — expiry, attempts, rate limit.
 
-### - [ ] STEP-B-13 — Telegram bot servisi va TelegramOtpChannel
-**Fayllar.** `src/common/telegram/{telegram.service.ts, telegram.module.ts}`, `src/api/auth/otp/channels/telegram.channel.ts`
+### - [ ] STEP-B-13 — Telegram bot servisi
+**Fayllar.** `src/common/telegram/{telegram.service.ts, telegram.module.ts}`
 **Bajarish.**
 1. `grammy` (yoki `telegraf`) o'rnatish, `TELEGRAM_BOT_TOKEN`
 2. `TelegramService.sendMessage(chatId, text)`
-3. Bot `/start` handleri: `telegramId` -> `User` upsert (telefon so'ralmaydi)
-4. `/start` da `startapp` parametri bo'lsa (deep link) — Mini App tugmasi ko'rsatiladi
-5. `TelegramOtpChannel`: telefon bo'yicha `User.telegramId` qidiriladi:
-   - topilsa — kod bot orqali yuboriladi (`delivered: true`)
-   - topilmasa — `{delivered:false, botDeepLink:'https://t.me/<bot>?start=otp_<otpCodeId>'}`
-6. Bot `/start otp_<id>` handleri: `request_contact` tugmasi bilan kontakt so'raydi ->
-   kontakt telefoni `OtpCode.target` bilan solishtiriladi -> mos bo'lsa `User` upsert
-   (phone + telegramId bog'lanadi) va kod chatga yuboriladi; mos bo'lmasa xabar beriladi
-7. `OTP_CHANNEL=TELEGRAM` default, yetkazilmasa `OTP_FALLBACK_CHANNEL` ga o'tadi
-**DoD.** Bot'ga `/start` yozgan foydalanuvchi OTP so'rasa — kod Telegram'ga keladi.
+3. Bot `/start` handleri: `telegramId` -> `User` upsert + salomlashish + Mini App tugmasi
+4. `/start` da deep link parametri bo'lsa — Mini App to'g'ri sahifada ochiladi (B-49 bilan)
+5. ⏸ MVP-KEYIN (ADR-013): `TelegramOtpChannel` va `/start otp_<id>` kontakt oqimi —
+   B-12 bilan birga bajariladi
+**DoD.** Bot ishga tushadi, `/start` javob beradi, Mini App tugmasi ko'rinadi.
 **Tekshirish.** Qo'lda: real bot token bilan test.
 
-### - [ ] STEP-B-14 — Web auth (telefon + OTP)
-**Fayllar.** `src/api/auth/auth.web.controller.ts`
-**Endpointlar.** `POST /auth/web/otp/request`, `POST /auth/web/otp/verify`
+### - [ ] STEP-B-14 — Web auth (Telegram Login Widget, ADR-013)
+**Fayllar.** `src/api/auth/{auth.web.controller.ts, telegram/validate-widget-payload.ts}`
+**Endpointlar.** `POST /auth/web/telegram`
 **Bajarish.**
-1. Telefon normalizatsiyasi: `+998XXXXXXXXX` formatiga keltirish (`libphonenumber-js`)
-2. `verify` muvaffaqiyatli bo'lsa `User` upsert (`type=BUSINESS`, `phoneVerified=true`,
-   `registeredFrom=WEB`), FREE plan `Subscription` yaratiladi
-3. Javobda `isNew: boolean` — frontend onboarding ko'rsatadi
-**DoD.** Yangi telefon bilan to'liq oqim ishlaydi va foydalanuvchi yaratiladi.
-**Tekshirish.** `OTP_CHANNEL=CONSOLE` bilan: request -> logdan kod -> verify -> token.
+1. `validate-widget-payload.ts` — `01-ARCHITECTURE.md` §3.2 dagi algoritm.
+   **DIQQAT:** widget'da `secret = SHA256(botToken)` (raw digest) — Mini App'dagi
+   `HMAC("WebAppData", token)` EMAS. Adashtirish = ishlamaydigan auth
+2. `auth_date` 5 daqiqa tekshiruvi
+3. `User` upsert `telegramId` bo'yicha (Mini App bilan BITTA akkaunt),
+   `type=BUSINESS`, `registeredFrom=WEB`, FREE plan `Subscription` yaratiladi
+4. Javobda `isNew: boolean` — frontend onboarding ko'rsatadi
+5. BotFather'da `/setdomain` bilan web domen bog'lanadi (README'ga yozib qo'yiladi)
+**DoD.** Widget payload bilan kirish ishlaydi; buzilgan `hash` -> `401 INVALID_WIDGET_DATA`.
+**Tekshirish.** Unit test: to'g'ri/buzilgan payload; qo'lda: real widget bilan.
 
 ### - [ ] STEP-B-15 — Telegram Mini App auth (ADR-004)
 **Fayllar.** `src/api/auth/telegram/{validate-init-data.ts, auth.telegram.controller.ts}`
@@ -202,9 +205,11 @@ endpointlarga kira oladi.
 
 ## FAZA 2 — Katalog asosi (B-18 … B-26)
 
-### - [ ] STEP-B-18 — Query/filter kontrakti v2 (ADR-003) ⚠️ kritik
+### - [ ] STEP-B-18 — Query/filter kontrakti v2 — ADMIN uchun (ADR-003 + ADR-014) ⚠️ kritik
 **Fayllar.** `src/common/dto/query.dto.ts`, `src/common/query/{query-builder.ts, filterable.ts}`
 **Bajarish.**
+0. Eslatma (ADR-014): bu generic DSL faqat `/admin/**` jadvallari uchun;
+   public qidiruv aniq tipli `InfluencerSearchDto` ishlatadi (B-37)
 1. `QueryRequestDto`: `page, perPage, query?, filters[], sort[]`
 2. `FilterItemDto`: `{field: string, op: FilterOp, value: any}`;
    `FilterOp = eq|ne|gt|gte|lt|lte|in|nin|contains|between|isNull`
@@ -480,7 +485,8 @@ subscribers, avgViews, ER. Kalit yo'q bo'lsa `isAvailable()` -> `false`.
 **Endpointlar.** `POST /app/influencers/search`, `GET /app/influencers/filters`, `GET /app/influencers/suggest`
 **Bajarish.**
 1. Migratsiya: `pg_trgm` extension + GIN indekslar (`02-DATA-MODEL.md` oxiri)
-2. `search`: `QueryRequestDto` -> `buildWhere(INFLUENCER_FILTERABLE)`;
+2. `search`: aniq tipli `InfluencerSearchDto` (ADR-014, `01-ARCHITECTURE.md` §7.1) ->
+   server ichida `INFLUENCER_FILTERABLE` xaritasi orqali Prisma `where` ga o'giriladi;
    baza filtri doim `status=PUBLISHED, active=true, deletedAt=null`
 3. `query` bo'lsa: `fullName ILIKE` + trigram similarity, natijalar `similarity` bo'yicha
 4. `filters` endpointi: kategoriyalar, davlatlar, shaharlar, tillar + `MIN/MAX` aggregatlar
@@ -529,13 +535,13 @@ subscribers, avgViews, ER. Kalit yo'q bo'lsa `isAvailable()` -> `false`.
 2. Javob `rows` formatida (`best` indeksi hisoblanadi — qaysi qiymat yaxshiroq)
 3. Metrikalar: totalFollowers, maxEngagementRate, avgViews, growthRate30d, tier,
    socialCount, minPrice, postFrequency
-4. Saqlangan taqqoslashlar CRUD
+4. ⏸ MVP-KEYIN (ADR-015): saqlangan taqqoslashlar CRUD — preview MVP'da yetarli
 **DoD.** Ikkita influencer taqqoslanadi, `best` to'g'ri belgilanadi.
 
-### - [ ] STEP-B-42 — Saqlangan qidiruvlar
+### - [ ] STEP-B-42 — ⏸ MVP-KEYIN — Saqlangan qidiruvlar (ADR-015)
 **Fayllar.** `src/api/saved-search/*`
-**Bajarish.** CRUD; `filters` JSON `QueryRequestDto` ko'rinishida saqlanadi va
-qayta yuborilganda ishlaydi.
+**Bajarish.** CRUD; `filters` JSON `InfluencerSearchDto` (ADR-014) ko'rinishida
+saqlanadi va qayta yuborilganda ishlaydi.
 **DoD.** Saqlangan filterni qayta ishlatish mumkin.
 
 ### - [ ] STEP-B-43 — Ko'rish va qidiruv statistikasi
@@ -577,7 +583,7 @@ limit oshsa `429 QUOTA_EXCEEDED`. `FEATURE_GATING_ENABLED` bilan boshqariladi.
 `GET /auth/me` javobiga `usage: {searchesToday, limit}` qo'shiladi.
 **DoD.** Gating yoqilganda FREE user 21-qidiruvda `429` oladi.
 
-### - [ ] STEP-B-47 — Featured placement
+### - [ ] STEP-B-47 — ⏸ MVP-KEYIN — Featured placement (ADR-015)
 **Fayllar.** `src/api/featured/*`
 **Bajarish.** CRUD + aktiv joylashtirishlarni qidiruv va dashboard'ga ulash
 (`isFeatured` va `featuredUntil` cron bilan yangilanadi).

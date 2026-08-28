@@ -54,20 +54,22 @@ mavzu tugmasi, kirish/profil tugmasi. Mobil uchun `Sheet` menyu. Footer: statik 
 
 ## FAZA 1 — Auth (W-07 … W-09)
 
-### - [ ] STEP-W-07 — Kirish sahifasi (telefon + OTP)
+### - [ ] STEP-W-07 — Kirish sahifasi (Telegram Login Widget, ADR-013)
 **Talab qilinadi:** B-14
 **Bajarish.**
-1. Ikki bosqichli forma: telefon -> kod
-2. Telefon maskasi `+998 (__) ___-__-__`, `zod` validatsiyasi
-3. 6 xonali kod inputi (avtomatik keyingi katakka o'tish, paste qo'llab-quvvatlash)
-4. 60 soniyalik "Qayta yuborish" taymeri
-5. `botDeepLink` qaytsa — "Telegram botni oching" tugmasi va yo'riqnoma
-6. Xatolar: `OTP_INVALID`, `OTP_EXPIRED`, `OTP_RATE_LIMITED` (`retryAfter` bilan)
-**DoD.** To'liq kirish oqimi ishlaydi.
+1. `telegram-widget.js` yuklovchi `TelegramLoginButton` komponenti
+   (`data-telegram-login`, `data-onauth` callback)
+2. Callback payload -> `POST /api/auth/telegram` (Next Route Handler -> backend
+   `/auth/web/telegram`) -> cookie'lar o'rnatiladi
+3. `isNew` bo'lsa onboarding (kompaniya nomi so'raladi, ixtiyoriy)
+4. Xatolar: `INVALID_WIDGET_DATA`, `WIDGET_DATA_EXPIRED` — qayta urinish tugmasi
+5. Widget faqat `/setdomain` qilingan domenda ishlaydi — dev uchun mock kirish
+   tugmasi (`NODE_ENV !== 'production'`)
+**DoD.** Widget orqali kirish ishlaydi; foydalanuvchi Mini App'dagi bilan bitta akkaunt.
 
 ### - [ ] STEP-W-08 — Sessiya boshqaruvi
 **Bajarish.**
-1. Route Handlerlar `/api/auth/*` (otp, refresh, logout) — backendga proksi qiladi:
+1. Route Handlerlar `/api/auth/*` (telegram, refresh, logout) — backendga proksi qiladi:
    refreshToken httpOnly cookie'ga, accessToken qisqa muddatli (15 daq) httpOnly
    cookie'ga yoziladi (SSR shu cookie'ni backendga forward qiladi)
 2. Klientda accessToken FAQAT xotirada; ilova yuklanganda `/api/auth/refresh`
@@ -185,7 +187,7 @@ Ma'lumot yetarli bo'lmasa — "Ma'lumot to'planmoqda" holati.
 mobilda gorizontal scroll, ustunni olib tashlash.
 **DoD.** 2–4 influencer taqqoslanadi.
 
-### - [ ] STEP-W-23 — Saqlangan qidiruvlar
+### - [ ] STEP-W-23 — ⏸ MVP-KEYIN — Saqlangan qidiruvlar (ADR-015)
 **Talab qilinadi:** B-42
 **Bajarish.** Katalogda "Qidiruvni saqlash", `/saved-searches` sahifasi, qayta qo'llash.
 **DoD.** Saqlangan filter bir bosishda qayta qo'llanadi.

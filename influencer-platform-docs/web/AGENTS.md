@@ -93,7 +93,7 @@ import type { paths } from './schema';
 //    SSR uchun qisqa muddatli (15 daq) httpOnly cookie'ga ham yoziladi
 //  - ilova yuklanganda: POST /api/auth/refresh -> yangi accessToken xotiraga
 //  - 401 da bir marta refresh (mutex bilan), muvaffaqiyatsiz -> /login
-// Auth oqimlari (otp/refresh/logout) — Next Route Handler orqali (cookie uchun);
+// Auth oqimlari (telegram/refresh/logout) — Next Route Handler orqali (cookie uchun);
 // qolgan so'rovlar to'g'ridan-to'g'ri backendga Bearer bilan.
 ```
 

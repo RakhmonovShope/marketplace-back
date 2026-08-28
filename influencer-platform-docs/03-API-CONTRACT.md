@@ -19,8 +19,9 @@ X-Client: web | miniapp | admin   # analitika uchun
 | Metod | Path | Audience | Body | Javob |
 |---|---|---|---|---|
 | POST | `/auth/admin/login` | admin | `{email, password}` | `{accessToken, refreshToken, user}` |
-| POST | `/auth/web/otp/request` | web | `{phone}` | `{sent, channel, expiresIn, botDeepLink?}` |
-| POST | `/auth/web/otp/verify` | web | `{phone, code}` | `{accessToken, refreshToken, user, isNew}` |
+| POST | `/auth/web/telegram` | web | Login Widget payload `{id, first_name, username?, photo_url?, auth_date, hash}` | `{accessToken, refreshToken, user, isNew}` |
+| POST | `/auth/web/otp/request` ⏸ | web | `{phone}` — MVP-keyin (ADR-013) | `{sent, channel, expiresIn}` |
+| POST | `/auth/web/otp/verify` ⏸ | web | `{phone, code}` — MVP-keyin | `{accessToken, refreshToken, user, isNew}` |
 | POST | `/auth/telegram/init` | miniapp | `{initData}` | `{accessToken, refreshToken, user, needsPhone}` |
 | POST | `/auth/telegram/bind-phone` | miniapp | `{initData, contact}` | `{user}` |
 | POST | `/auth/refresh` | hammasi | `{refreshToken}` | `{accessToken, refreshToken}` |
@@ -95,7 +96,7 @@ X-Client: web | miniapp | admin   # analitika uchun
 ### 3.3 Qidiruv va katalog
 | Metod | Path | Body | Izoh |
 |---|---|---|---|
-| POST | `/app/influencers/search` | `QueryRequestDto` | Asosiy katalog (ADR-003) |
+| POST | `/app/influencers/search` | `InfluencerSearchDto` | Asosiy katalog — aniq tipli DTO (ADR-014, `01-ARCHITECTURE.md` §7.1) |
 | GET | `/app/influencers/filters` | — | Mavjud filter variantlari + min/max qiymatlar |
 | GET | `/app/influencers/suggest?q=` | — | Autocomplete (10 ta, 200ms debounce) |
 
@@ -172,7 +173,7 @@ Profil javobi:
 | Metod | Path | Izoh |
 |---|---|---|
 | POST | `/app/comparison/preview` | `{influencerIds: string[]}` -> saqlamasdan taqqoslash jadvali |
-| GET | `/app/comparison` | Saqlangan taqqoslashlar |
+| GET | `/app/comparison` | Saqlangan taqqoslashlar ⏸ MVP-KEYIN (ADR-015) |
 | POST | `/app/comparison` | `{name, influencerIds}` |
 | DELETE | `/app/comparison/:id` |
 
@@ -190,7 +191,7 @@ Profil javobi:
 ```
 `best` — eng yaxshi qiymat indeksi (frontend uni yashil qiladi).
 
-### 3.7 Saqlangan qidiruvlar
+### 3.7 Saqlangan qidiruvlar ⏸ MVP-KEYIN (ADR-015)
 | Metod | Path |
 |---|---|
 | GET / POST / DELETE | `/app/saved-searches` |
@@ -353,7 +354,7 @@ export enum PERMISSIONS {
 
 | Endpoint | Limit |
 |---|---|
-| `/auth/web/otp/request` | 1 / 60s / telefon, 5 / soat / telefon, 20 / soat / IP |
+| `/auth/web/otp/request` ⏸ | 1 / 60s / telefon, 5 / soat / telefon, 20 / soat / IP |
 | `/auth/*/login`, `/verify` | 10 / daqiqa / IP |
 | `/app/influencers/search` | 60 / daqiqa / user |
 | Qolganlar | 120 / daqiqa / IP |
@@ -381,6 +382,8 @@ Backend **raqamni** qaytaradi, frontend formatlaydi:
 | `INVALID_CREDENTIALS` | 401 | Email/parol xato |
 | `INVALID_INIT_DATA` | 401 | Telegram imzosi noto'g'ri |
 | `INIT_DATA_EXPIRED` | 401 | `auth_date` 5 daqiqadan eski |
+| `INVALID_WIDGET_DATA` | 401 | Login Widget imzosi noto'g'ri (web, ADR-013) |
+| `WIDGET_DATA_EXPIRED` | 401 | Widget `auth_date` 5 daqiqadan eski |
 | `OTP_INVALID` | 401 | Kod noto'g'ri |
 | `OTP_EXPIRED` | 401 | Kod muddati tugagan |
 | `OTP_TOO_MANY_ATTEMPTS` | 429 | 5 marta xato |

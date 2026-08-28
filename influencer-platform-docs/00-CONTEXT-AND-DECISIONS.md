@@ -93,6 +93,9 @@ Message/chat gateway, Audio, marketplace Banner.
 ---
 
 ### ADR-003 — Pageable/filter kontrakti qayta yoziladi
+> **v1.2:** bu generic DSL endi faqat `/admin/**` jadvallari uchun — public qidiruv
+> aniq tipli DTO ishlatadi (ADR-014).
+
 **Qaror.** Eski `PaginationFilterOrderRequest` (faqat `operation: '='`) yetarli emas.
 Yangi `QueryRequestDto` yoziladi: `eq, ne, gt, gte, lt, lte, in, nin, contains, between, isNull`.
 
@@ -105,13 +108,17 @@ foydalanuvchi ixtiyoriy maydonga filter qo'yolmasligi kerak (xavfsizlik).
 ---
 
 ### ADR-004 — Auth strategiyasi
+> **⚠️ v1.2 da qisman eskirgan:** Web kirish oqimi **ADR-013** bilan almashtirildi —
+> telefon+OTP o'rniga Telegram Login Widget. Quyidagi OTP tafsilotlari endi
+> **deferred** (SMS kanali kerak bo'lganda qaytadi). Admin va Mini App qismlari kuchda.
+
 **Qaror.** Uchta kirish yo'li, bitta JWT:
 
 | Kim | Usul | Endpoint |
 |---|---|---|
 | **Admin** | Email + parol (bcrypt) | `POST /api/v1/auth/admin/login` |
 | **Telegram Mini App** | `initData` HMAC-SHA256 validatsiya -> avtomatik kirish. Telefon raqam `requestContact()` orqali (Telegram tasdiqlagan) | `POST /api/v1/auth/telegram/init` |
-| **Web** | Telefon raqam + 6 xonali OTP | `POST /api/v1/auth/web/otp/request` -> `/verify` |
+| **Web** | ~~Telefon + OTP~~ -> **Telegram Login Widget** (ADR-013) | `POST /api/v1/auth/web/telegram` |
 
 **Sabab (Mini App'da OTP yo'qligi).** Telegram `initData` ni bot token bilan imzolaydi —
 bu kriptografik tasdiqlangan identifikatsiya. Ustiga `requestContact()` Telegram'ning o'zi
@@ -260,6 +267,57 @@ qilingan API tiplari.
 
 ---
 
+### ADR-013 — Web kirish: Telegram Login Widget (v1.2)
+**Qaror.** Web ilovada telefon + OTP o'rniga **rasmiy Telegram Login Widget**
+ishlatiladi: `POST /auth/web/telegram` widget payload'ini qabul qiladi.
+ADR-004 ning "Web" qatori shu bilan almashtirildi; OTP infratuzilmasi
+(`OtpCode`, `OtpChannel`, bot-kontakt oqimi) **deferred**.
+
+**Sabab.** Eski oqimda default OTP kanali baribir Telegram edi — foydalanuvchidan
+baribir Telegram talab qilinardi, lekin ustiga kod kiritish va bot bilan kontakt
+ulashish qadamlari qo'shilardi. Widget shu talabni bir bosishga tushiradi,
+yetkazishni Telegram o'zi hal qiladi, va web + Mini App **bitta identity**
+(`telegramId`) bo'ladi — favorites/taqqoslash ikkala joyda sinxron.
+
+**Oqibat.**
+- Validatsiya farqi (adashtirmaslik SHART): widget'da `secret = SHA256(bot_token)`
+  (raw digest); Mini App `initData` da `secret = HMAC_SHA256("WebAppData", bot_token)`.
+- BotFather'da `/setdomain` bilan web domen bog'lanadi.
+- `OtpChannel` interfeysi va `OtpCode` modeli hujjatlarda qoladi, lekin MVP
+  migratsiyasi va roadmap'dan chiqarildi (B-12 ⏸) — Telegram'siz auditoriya
+  paydo bo'lganda SMS (Eskiz) shu interfeys orqali qo'shiladi.
+- Xato kodlari: `INVALID_WIDGET_DATA`, `WIDGET_DATA_EXPIRED`.
+
+---
+
+### ADR-014 — Public qidiruv: aniq tipli DTO (v1.2)
+**Qaror.** `POST /app/influencers/search` generic `{field, op, value}` DSL emas,
+**aniq tipli `InfluencerSearchDto`** qabul qiladi (`followersMin`, `erMin`,
+`categoryIds`, ... — `01-ARCHITECTURE.md` §7.1). Generic DSL (`QueryRequestDto`)
+faqat `/admin/**` jadvallarida ishlatiladi.
+
+**Sabab.** Typed DTO Swagger'da har bir filterni aniq ko'rsatadi ->
+`openapi-typescript` frontendga aniq tiplar beradi -> filter paneli va validatsiya
+soddalashadi. Public tomonda oq-ro'yxat infratuzilmasi ham kerak bo'lmay qoladi.
+
+**Oqibat.** B-18 (DSL) admin uchun qoladi va kuchda; B-37 typed DTO bilan yoziladi;
+server ichida DTO `INFLUENCER_FILTERABLE` xaritasi orqali Prisma `where` ga o'giriladi.
+
+---
+
+### ADR-015 — MVP chegarasi: ⏸ teglari (v1.2)
+**Qaror.** Quyidagi oqimlar birinchi relizdan keyinga surildi va roadmap'larda
+`⏸ MVP-KEYIN` tegi bilan belgilandi: SavedSearch (B-42, W-23), FeaturedPlacement
+(B-47, A-25), Comparison'ni saqlash (B-41.4) — preview MVP'da qoladi.
+
+**Sabab.** Bozorga chiqish vaqtini qisqartirish; bu funksiyalar asosiy qiymat
+zanjiriga (topish -> tahlil -> tanlash) kirmaydi.
+
+**Oqibat.** Ularning schema bo'laklari migratsiyalarda qoladi (arzon), oqimlari
+yozilmaydi. `⏸` tegli qadam birinchi reliz "Definition of Done" ga kirmaydi.
+
+---
+
 ## 4. Ochiq savollar (keyinroq hal qilinadi)
 
 - [ ] Instagram ma'lumotlari uchun aniq provayder va byudjet (Modash / HypeAuditor / RapidAPI)
@@ -293,3 +351,11 @@ uchta aniq muammo tuzatildi:
 Qo'shimcha: `GET /app/plans` kontraktga qo'shildi; `applyStats` uchun tarixiy
 `measuredAt` qoidasi (backfill joriy holatni buzmaydi) yozildi; suggest qidiruvi
 `username` bo'yicha ham ishlashi belgilandi.
+
+**2026-08-28 — v1.2 (chuqur optimallashtirish).** Uchta yangi qaror:
+1. **ADR-013:** web kirish telefon+OTP o'rniga **Telegram Login Widget** — OTP
+   infratuzilmasi (B-12, TelegramOtpChannel, OtpCode) MVP'dan chiqarildi (deferred).
+2. **ADR-014:** public qidiruv **aniq tipli `InfluencerSearchDto`** — generic
+   DSL faqat admin jadvallarida qoldi.
+3. **ADR-015:** `⏸ MVP-KEYIN` teglari — SavedSearch, FeaturedPlacement,
+   Comparison-saqlash birinchi relizdan keyinga surildi.

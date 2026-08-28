@@ -207,7 +207,7 @@ kategoriya biriktirish, sinxronizatsiyaga qo'yish.
 ogohlantirish sifatida ko'rsatiladi ("Cheklovlar hozir o'chirilgan").
 **DoD.** Limitlar tahrirlanadi.
 
-### - [ ] STEP-A-25 — Featured placement
+### - [ ] STEP-A-25 — ⏸ MVP-KEYIN — Featured placement (ADR-015)
 **Talab qilinadi:** B-47
 **Bajarish.** Joylashtirish CRUD: influencer, tur, kategoriya, davr, pozitsiya, narx.
 Kalendar ko'rinishida aktiv joylashtirishlar.

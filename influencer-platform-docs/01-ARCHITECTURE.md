@@ -113,20 +113,18 @@ TELEGRAM MINI APP
   POST /auth/telegram/bind-phone {initData, contact}
     -> imzo tekshiriladi -> User.phone yoziladi, phoneVerified=true
 
-WEB
-  POST /auth/web/otp/request {phone}
-    -> rate limit (Redis): 1 kod / 60s, 5 kod / soat
-    -> 6 xonali kod, bcrypt hash bilan OtpCode jadvaliga (TTL 10 daqiqa)
-    -> OtpChannel.send()   // default: Telegram bot
-    -> telefon botga MA'LUM (User.telegramId bor):
-         javob: {sent: true, channel: 'TELEGRAM', expiresIn: 600}
-       telefon NOMA'LUM (birinchi kirish):
-         javob: {sent: false, channel: 'TELEGRAM', expiresIn: 600,
-                 botDeepLink: 'https://t.me/<bot>?start=otp_<otpCodeId>'}
-         -> foydalanuvchi botni ochadi -> bot request_contact bilan kontakt so'raydi
-         -> telefon mos kelsa: User upsert (phone+telegramId) va kod chatga yuboriladi
-  POST /auth/web/otp/verify {phone, code}
-    -> attempts < 5 -> hash solishtiriladi -> User upsert -> JWT
+WEB (ADR-013 — Telegram Login Widget)
+  Frontend: rasmiy widget (telegram.org/js/telegram-widget.js)
+    -> "Log in with Telegram" -> Telegram o'zi tasdiqlaydi
+    -> callback: {id, first_name, last_name?, username?, photo_url?, auth_date, hash}
+  POST /auth/web/telegram {widget payload}
+    -> validateWidgetPayload(payload, BOT_TOKEN)  // DIQQAT: secret = SHA256(bot_token)!
+    -> auth_date < 5 daqiqa
+    -> User upsert (telegramId bo'yicha — Mini App bilan BITTA akkaunt), type=BUSINESS
+    -> {accessToken, refreshToken, user, isNew}
+
+  ⏸ MVP-KEYIN (ADR-013): telefon + OTP oqimi (Telegram'siz auditoriya uchun)
+  POST /auth/web/otp/request | /verify — OtpChannel abstraksiyasi orqali (§3.3)
 ```
 
 ### 3.2 Telegram `initData` validatsiyasi (aniq algoritm)
@@ -164,7 +162,37 @@ export function validateInitData(initData: string, botToken: string) {
 > Diqqat: `secret` va `computed` tartibi ko'p implementatsiyalarda adashtiriladi.
 > Yuqoridagi tartib — Telegram rasmiy hujjatidagi tartib. O'zgartirmang.
 
-### 3.3 OTP kanal abstraksiyasi
+**Login Widget validatsiyasi (web, ADR-013) — secret BOSHQACHA hisoblanadi:**
+
+```ts
+// src/api/auth/telegram/validate-widget-payload.ts
+import { createHash, createHmac } from 'crypto';
+
+export function validateWidgetPayload(data: Record<string, string>, botToken: string) {
+  const { hash, ...fields } = data;
+  const dataCheckString = Object.entries(fields)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}=${v}`)
+    .join('\n');
+
+  // Widget: secret = SHA256(botToken) raw digest — HMAC EMAS (Mini App'dan farqi shu!)
+  const secret = createHash('sha256').update(botToken).digest();
+  const computed = createHmac('sha256', secret).update(dataCheckString).digest('hex');
+  if (computed !== hash) throw new UnauthorizedException('INVALID_WIDGET_DATA');
+
+  if (Date.now() - Number(fields.auth_date) * 1000 > 5 * 60 * 1000)
+    throw new UnauthorizedException('WIDGET_DATA_EXPIRED');
+  return fields;
+}
+```
+
+Widget ishlashi uchun BotFather'da `/setdomain` bilan web domen bog'lanadi.
+
+### 3.3 OTP kanal abstraksiyasi — ⏸ MVP-KEYIN (ADR-013)
+
+> Web kirish endi Telegram Login Widget orqali — bu bo'lim SMS/email OTP kerak
+> bo'lganda (Telegram'siz auditoriya paydo bo'lsa) implementatsiya qilinadi.
+> Interfeys dizayni kuchda qoladi.
 
 ```ts
 export interface OtpChannel {
@@ -394,10 +422,36 @@ npx openapi-typescript http://localhost:3000/api/docs/admin-json -o src/shared/a
 
 ---
 
-## 7. Query / filter kontrakti (ADR-003)
+## 7. Qidiruv va filter kontraktlari (ADR-003 + ADR-014)
+
+### 7.1 Public qidiruv — aniq tipli DTO (ADR-014)
 
 ```ts
-// POST /api/v1/app/influencers/search
+// POST /api/v1/app/influencers/search  (web + mini app)
+{
+  "query": "food",                        // matnli qidiruv (ixtiyoriy)
+  "categoryIds": ["uuid1"],
+  "platforms": ["INSTAGRAM", "TELEGRAM"],
+  "followersMin": 100000, "followersMax": 500000,
+  "erMin": 5, "viewsMin": 10000, "growthMin": 0,
+  "priceMin": 500000, "priceMax": 5000000,
+  "tiers": ["MID", "MACRO"],
+  "countryId": "uuid", "cityIds": [], "languageIds": [],
+  "verifiedOnly": true,
+  "sort": "popularityScore:desc",         // INFLUENCER_SORTABLE dan
+  "page": 1, "perPage": 20
+}
+```
+
+Nega generic DSL emas: Swagger'da har bir filter aniq ko'rinadi ->
+`openapi-typescript` frontendga aniq tiplar beradi -> filter paneli soddalashadi.
+Server ichida DTO `INFLUENCER_FILTERABLE` xaritasiga tayangan holda Prisma
+`where` ga o'giriladi.
+
+### 7.2 Admin jadvallari — generic DSL (ADR-003)
+
+```ts
+// POST /api/v1/admin/<resource>/search
 {
   "page": 1,
   "perPage": 20,
@@ -527,6 +581,7 @@ TELEGRAM_BOT_TOKEN=
 TELEGRAM_BOT_USERNAME=
 TELEGRAM_MINIAPP_URL=https://t.example.uz
 
+# ⏸ OTP — MVP-KEYIN (ADR-013), SMS kanali qo'shilganda ishlatiladi
 OTP_CHANNEL=TELEGRAM          # TELEGRAM | EMAIL | SMS | CONSOLE
 OTP_FALLBACK_CHANNEL=EMAIL
 OTP_TTL_SECONDS=600
