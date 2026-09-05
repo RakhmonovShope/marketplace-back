@@ -27,7 +27,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** `roleId` yuborilsa 400; yangi user `subType=CUSTOMER`, `roleId=CUSTOMER`.
 **Tekshirish.** e2e `auth.e2e-spec.ts` → "signup ignores roleId" (STEP-21 dan oldin — qo'lda curl).
 
-### - [ ] STEP-03 — Parol hash'i javoblardan olib tashlanadi
+### - [x] STEP-03 — Parol hash'i javoblardan olib tashlanadi ✅ 2026-09-05
 **Manba.** `01-SECURITY` S2, `04-API` §3. **Fayllar.** `admin.dto.ts`, `admin.service.ts`, `auth.service.ts`, `auth.controller.ts`, `transform.interceptor.ts`
 **Bajarish.** `UserResponseDto.password` o'chirish; `toUserResponse()` mapper (yoki Prisma `omit` — Prisma 6 dan keyin); `signUp/getMe/admin/*` mapper orqali.
 **DoD.** Hech qaysi javobda `password` yo'q.

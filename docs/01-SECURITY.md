@@ -43,6 +43,8 @@ bilan ro'yxatdan o'tadi (email tasdiqlash — yagona to'siq, u ham o'z emailiga 
 
 ## S2. Parol hash'i API javoblarida (KRITIK)
 
+> ✅ Bajarildi (2026-09-05, STEP-03): `toUserResponse` mapper (`admin.mapper.ts`, oq ro'yxat) — `signUp`, `getMe`, admin CRUD/pageable/restore shu orqali qaytaradi; `UserResponseDto.password` o'chirildi, `deletedAt` qo'shildi. Tekshirildi: 4 ta endpoint javobida `password` yo'q.
+
 **Muammo.** `signUp`, `getMe`, `GET /v1/admin/:id`, `POST /v1/admin/pageable`, `restore`
 Prisma `User` obyektini to'liq qaytaradi — `password` bilan. `AdminDTO.UserResponseDto` da
 `password` maydoni hatto Swagger'da hujjatlangan.

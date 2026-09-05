@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { PaginationFilterOrderRequest } from 'common/common.dto';
 import { getWhereOperations } from '../../helpers';
+import { toUserResponse } from './admin.mapper';
 
 @Injectable()
 export class AdminService {
@@ -43,7 +44,7 @@ export class AdminService {
     ]);
 
     return {
-      data: items,
+      data: items.map(toUserResponse),
       totalItems,
       totalPages: Math.ceil(totalItems / perPage),
       currentPage: page,
@@ -61,7 +62,7 @@ export class AdminService {
       throw new NotFoundException('User not found');
     }
 
-    return user;
+    return toUserResponse(user);
   }
 
   async createAdmin(
@@ -76,7 +77,7 @@ export class AdminService {
       data: { ...payload, password: hashedPassword },
     });
 
-    return createAdmin;
+    return toUserResponse(createAdmin);
   }
 
   async updateAdmin(
@@ -90,7 +91,8 @@ export class AdminService {
       },
       data: payload,
     });
-    return updateAdmin;
+
+    return toUserResponse(updateAdmin);
   }
 
   async deleteAdmin(id: string): Promise<string> {
@@ -120,6 +122,10 @@ export class AdminService {
       throw new NotFoundException('Deleted user not found');
     }
 
-    return this.prisma.user.findUniqueOrThrow({ where: { id } });
+    const restored = await this.prisma.user.findUniqueOrThrow({
+      where: { id },
+    });
+
+    return toUserResponse(restored);
   }
 }

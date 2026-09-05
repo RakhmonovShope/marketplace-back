@@ -157,9 +157,12 @@ export class UserResponseDto {
   active: boolean;
 
   @ApiProperty({
-    description: 'password',
+    description: 'Soft-delete timestamp (null while the user is active)',
+    example: null,
+    required: false,
+    nullable: true,
   })
-  password: string;
+  deletedAt: Date | null;
 
   @ApiProperty({
     description: 'Timestamp when the user was created',

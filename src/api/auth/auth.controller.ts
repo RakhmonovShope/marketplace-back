@@ -12,7 +12,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User as UserModel } from '@prisma/client';
 import * as AuthDTO from './auth.dto';
 import {
   ApiBearerAuth,
@@ -50,7 +49,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Registration (Sign Up)' })
   @ApiResponse({ status: 201, type: AdminDTO.UserResponseDto })
   @Throttle({ long: { limit: 3, ttl: 3_600_000 } })
-  async signUp(@Body() userData: AuthDTO.SignUp): Promise<UserModel> {
+  async signUp(
+    @Body() userData: AuthDTO.SignUp,
+  ): Promise<AdminDTO.UserResponseDto> {
     return this.authService.signUp(userData);
   }
 

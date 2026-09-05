@@ -9,8 +9,10 @@ import {
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SUB_TYPE, User, VERIFICATION_TOKEN_TYPE } from '@prisma/client';
+import { SUB_TYPE, VERIFICATION_TOKEN_TYPE } from '@prisma/client';
 import { ROLE_CODE } from '../role/role.enum';
+import * as AdminDTO from '../admin/admin.dto';
+import { toUserResponse } from '../admin/admin.mapper';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
@@ -41,7 +43,7 @@ export class AuthService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async signUp(data: AuthDTO.SignUp): Promise<User> {
+  async signUp(data: AuthDTO.SignUp): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('signUp');
 
     const salt = await bcrypt.genSalt(10);
@@ -74,7 +76,7 @@ export class AuthService {
       email: createUser.email,
     });
 
-    return createUser;
+    return toUserResponse(createUser);
   }
 
   async signIn(
@@ -108,7 +110,7 @@ export class AuthService {
     return this.issueTokens(user.id, meta);
   }
 
-  async getMe(accessToken: string): Promise<User> {
+  async getMe(accessToken: string): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('getMe');
 
     let decoded: TokenPayload;
@@ -138,7 +140,7 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    return user;
+    return toUserResponse(user);
   }
 
   async refresh(
