@@ -36,7 +36,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login (Sign In)' })
   @ApiResponse({ status: 200, type: AuthDTO.TokensResponseDto })
-  @Throttle({ short: { limit: 5, ttl: 10_000 } })
+  @Throttle({ default: { limit: 5, ttl: 60_000 } }) // brute-force: 5 urinish / daqiqa / IP
   async signIn(
     @Body() userData: AuthDTO.SignIn,
     @Headers('user-agent') userAgent: string,
@@ -48,7 +48,7 @@ export class AuthController {
   @Post('signup')
   @ApiOperation({ summary: 'Registration (Sign Up)' })
   @ApiResponse({ status: 201, type: AdminDTO.UserResponseDto })
-  @Throttle({ long: { limit: 3, ttl: 3_600_000 } })
+  @Throttle({ default: { limit: 3, ttl: 3_600_000 } }) // 3 ta / soat / IP
   async signUp(
     @Body() userData: AuthDTO.SignUp,
   ): Promise<AdminDTO.UserResponseDto> {
@@ -113,7 +113,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify email by token' })
   @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
-  @Throttle({ medium: { limit: 10, ttl: 10_000 } })
+  @Throttle({ default: { limit: 10, ttl: 60_000 } }) // token brute-force: 10 / daqiqa / IP
   async verifyEmail(
     @Body() body: AuthDTO.VerifyEmailDto,
   ): Promise<AuthDTO.MessageResponseDto> {
@@ -125,7 +125,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Resend email verification link' })
   @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
-  @Throttle({ long: { limit: 3, ttl: 3_600_000 } })
+  @Throttle({ default: { limit: 3, ttl: 3_600_000 } }) // 3 ta / soat / IP
   async resendVerification(
     @Body() body: AuthDTO.ResendVerificationDto,
   ): Promise<AuthDTO.MessageResponseDto> {
@@ -140,7 +140,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Request password reset link' })
   @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
-  @Throttle({ long: { limit: 3, ttl: 3_600_000 } })
+  @Throttle({ default: { limit: 3, ttl: 3_600_000 } }) // 3 ta / soat / IP
   async forgotPassword(
     @Body() body: AuthDTO.ForgotPasswordDto,
   ): Promise<AuthDTO.MessageResponseDto> {
@@ -155,7 +155,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset password using emailed token' })
   @ApiResponse({ status: 200, type: AuthDTO.MessageResponseDto })
-  @Throttle({ medium: { limit: 10, ttl: 10_000 } })
+  @Throttle({ default: { limit: 10, ttl: 60_000 } }) // token brute-force: 10 / daqiqa / IP
   async resetPassword(
     @Body() body: AuthDTO.ResetPasswordDto,
   ): Promise<AuthDTO.MessageResponseDto> {

@@ -39,6 +39,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { mkdirp } from 'mkdirp';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Permissions } from '../auth/permissions.decorator';
 import { PERMISSIONS } from '../auth/auth.enum';
 import * as process from 'node:process';
@@ -232,6 +233,8 @@ export class FileController {
 
   // Static fayl yetkazib berish — bu API resursi emas, jismoniy fayl.
   // URL barqaror bo'lishi uchun versiyalanmaydi: /files/... (/v1/files/... emas).
+  // Bitta sahifa o'nlab rasm so'raydi — rate limit qo'llanmaydi.
+  @SkipThrottle()
   @Version(VERSION_NEUTRAL)
   @Get(':year/:month/:day/:name')
   @ApiOperation({ summary: 'Get a file' })

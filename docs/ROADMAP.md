@@ -33,7 +33,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** Hech qaysi javobda `password` yo'q.
 **Tekshirish.** `curl /v1/auth/get-me -H "Authorization: Bearer …" | jq 'has("password")'` → `false`
 
-### - [ ] STEP-04 — Throttler va `trust proxy`
+### - [x] STEP-04 — Throttler va `trust proxy` ✅ 2026-09-05
 **Manba.** `02-BUGS` B2, `01-SECURITY` S9. **Fayllar.** `app.module.ts`, `main.ts`, `auth.controller.ts`, `health.controller.ts`, `file.controller.ts`
 **Bajarish.** Bitta `default` throttler (300/min, env), auth route'larida `@Throttle({default:{…}})`, `@SkipThrottle()` health/files; `trust proxy`.
 **DoD.** Admin panel 1 daqiqada 50 so'rov yuborsa 429 yo'q; `signin` 6-urinishda 429.

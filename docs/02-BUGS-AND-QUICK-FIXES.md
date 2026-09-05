@@ -35,6 +35,8 @@ TypeScript `rootDir` ni umumiy ildiz (`.`) deb oladi. `MailService.resolveTempla
 
 ## B2. Throttler: barcha endpointlar 10 req/min
 
+> ✅ Bajarildi (2026-09-05, STEP-04): bitta `default` throttler (`THROTTLE_LIMIT`=300/min, `THROTTLE_TTL_MS`), auth route'larida `@Throttle({ default })` (signin 5/min, signup/forgot/resend 3/soat, verify/reset 10/min), `/health` va static `/files` `@SkipThrottle()`, `TRUST_PROXY` env (default 'false'). Tekshirildi: signin 6-urinish → 429, 60 ta boshqa so'rov → 429 yo'q. Redis storage — STEP-44.
+
 **Tasdiq.** `app.module.ts`: `ThrottlerModule.forRoot([{name:'default', ttl:60_000, limit:10}, short, medium, long])`
 + `APP_GUARD: ThrottlerGuard`. `@nestjs/throttler` v6 da guard **har bir** named throttler'ni alohida
 tekshiradi; `@Throttle({ short: … })` faqat `short` ni override qiladi, `default` (10/min) qoladi.

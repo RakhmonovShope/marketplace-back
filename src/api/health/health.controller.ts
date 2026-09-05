@@ -2,10 +2,12 @@ import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 import { PrismaHealthIndicator } from './prisma.health';
 import { ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
 // Healthcheck monitoring vositalari uchun barqaror /health URL'ida qoladi,
-// versiyalanmaydi.
+// versiyalanmaydi. Monitoring tez-tez so'raydi — rate limit qo'llanmaydi.
 @ApiTags('Health')
+@SkipThrottle()
 @Controller({ path: 'health', version: VERSION_NEUTRAL })
 export class HealthController {
   constructor(

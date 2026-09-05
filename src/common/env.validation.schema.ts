@@ -27,6 +27,15 @@ export const envValidationSchema = Joi.object({
   AWS_REGION: Joi.string().required(),
   AWS_S3_BUCKET_NAME: Joi.string().required(),
 
+  // Rate limiting (IP bo'yicha, barcha route'lar uchun umumiy "default" limit).
+  // Qat'iy limitlar route darajasida @Throttle() bilan beriladi (auth).
+  THROTTLE_TTL_MS: Joi.number().integer().min(1000).default(60_000),
+  THROTTLE_LIMIT: Joi.number().integer().min(1).default(300),
+
+  // Reverse proxy ortida real IP (X-Forwarded-For). 'false' | '1' | 'loopback' | CIDR.
+  // Proxy'siz muhitda 'false' qoldiring — aks holda IP'ni soxtalashtirish mumkin.
+  TRUST_PROXY: Joi.string().default('false'),
+
   // CORS whitelist — vergul bilan ajratilgan origin'lar ro'yxati.
   // Misol: "http://localhost:3000,https://app.example.com"
   // Bo'sh qoldirilsa: development'da hammasiga ruxsat, production'da rad etiladi.

@@ -24,6 +24,21 @@ async function bootstrap() {
   const nodeEnv = configService.get<string>('NODE_ENV') ?? 'development';
   const isProd = nodeEnv === 'production';
 
+  // Reverse proxy (nginx / load balancer) ortida real mijoz IP'sini
+  // X-Forwarded-For'dan olish — throttler va loglar uchun. Proxy'siz muhitda
+  // YOQILMAYDI (aks holda mijoz sarlavhani soxtalashtirib limitni chetlab o'tadi).
+  // TRUST_PROXY: 'false' (default) | '1' (bitta proxy) | 'loopback' | CIDR.
+  const trustProxy = configService.get<string>('TRUST_PROXY', 'false');
+  if (trustProxy !== 'false') {
+    app
+      .getHttpAdapter()
+      .getInstance()
+      .set(
+        'trust proxy',
+        /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy,
+      );
+  }
+
   // Swagger UI uchun inline script/style talab qilinadi,
   // shuning uchun development'da CSP'ni o'chirib qo'yamiz.
   app.use(

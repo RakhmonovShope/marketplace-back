@@ -49,28 +49,23 @@ import { APP_GUARD } from '@nestjs/core';
         abortEarly: false,
       },
     }),
-    ThrottlerModule.forRoot([
-      {
-        name: 'default', // 👈 default qo'shildi
-        ttl: 60_000,
-        limit: 10,
-      },
-      {
-        name: 'short', // qisqa muddat — 1 soniya
-        ttl: 1000,
-        limit: 5, // 1 soniyada 5 ta so'rov
-      },
-      {
-        name: 'medium', // o'rta muddat — 10 soniya
-        ttl: 10_000,
-        limit: 30, // 10 soniyada 30 ta so'rov
-      },
-      {
-        name: 'long', // uzoq muddat — 1 daqiqa
-        ttl: 60_000,
-        limit: 100, // 1 daqiqada 100 ta so'rov
-      },
-    ]),
+    // Rate limiting. MUHIM: @nestjs/throttler v6 da ro'yxatdagi HAR BIR named
+    // throttler HAR BIR route'ga alohida qo'llanadi va @Throttle() faqat o'z nomdoshini
+    // override qiladi. Shuning uchun bitta, keng "default" limit (IP bo'yicha) qoldirildi;
+    // qat'iy limitlar route darajasida @Throttle({ default: {...} }) bilan beriladi
+    // (auth.controller.ts), health/static fayllar @SkipThrottle() bilan.
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        throttlers: [
+          {
+            name: 'default',
+            ttl: config.get<number>('THROTTLE_TTL_MS', 60_000),
+            limit: config.get<number>('THROTTLE_LIMIT', 300),
+          },
+        ],
+      }),
+    }),
     RedisModule,
     MailModule,
     PrismaModule,
