@@ -2,13 +2,15 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma/prisma.service';
-import { User, VERIFICATION_TOKEN_TYPE } from '@prisma/client';
+import { SUB_TYPE, User, VERIFICATION_TOKEN_TYPE } from '@prisma/client';
+import { ROLE_CODE } from '../role/role.enum';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
@@ -45,10 +47,25 @@ export class AuthService {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
+    // Rol va tur mijozdan EMAS, serverda qat'iy belgilanadi: public signup
+    // faqat CUSTOMER yaratadi (privilege escalation'ning oldini olish).
+    const customerRole = await this.prisma.role.findUnique({
+      where: { code: ROLE_CODE.CUSTOMER },
+      select: { id: true },
+    });
+
+    if (!customerRole) {
+      this.logger.error('CUSTOMER role is missing — run `pnpm seed`');
+      throw new InternalServerErrorException('Registration is unavailable');
+    }
+
     const createUser = await this.prisma.user.create({
       data: {
         ...data,
         password: hashedPassword,
+        subType: SUB_TYPE.CUSTOMER,
+        roleId: customerRole.id,
+        active: true,
       },
     });
 

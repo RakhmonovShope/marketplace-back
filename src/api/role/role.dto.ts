@@ -1,8 +1,19 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PageableDto } from 'common/common.dto';
 
 export class Create {
+  @IsString()
+  @IsNotEmpty()
+  @Matches(/^[A-Z][A-Z0-9_]*$/, {
+    message: 'code must be UPPER_SNAKE_CASE (A-Z, 0-9, _)',
+  })
+  @ApiProperty({
+    description: 'Stable role code used in code (UPPER_SNAKE_CASE, unique)',
+    example: 'CONTENT_MANAGER',
+  })
+  code: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -45,6 +56,18 @@ export class RoleResponse {
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
   })
   id: string;
+
+  @ApiProperty({
+    description: 'Stable role code (UPPER_SNAKE_CASE, unique)',
+    example: 'SUPER_ADMIN',
+  })
+  code: string;
+
+  @ApiProperty({
+    description: 'System role — cannot be deleted via API',
+    example: false,
+  })
+  isSystem: boolean;
 
   @ApiProperty({
     description: 'Name of the role in Uzbek',

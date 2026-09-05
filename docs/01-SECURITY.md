@@ -6,6 +6,10 @@
 
 ## S1. Public signup orqali super-admin bo'lish (KRITIK)
 
+> ✅ Bajarildi (2026-09-05, STEP-02): `SignUp` DTO'dan `roleId/subType/active` olib tashlandi, `Role.code @unique` + `isSystem`
+> (migratsiya `role_code`, backfill bilan), `ROLE_CODE` enum, seed `upsert` (SUPER_ADMIN barcha permission'lar bilan, CUSTOMER bo'sh).
+> `signUp` serverda `CUSTOMER` rolini qo'yadi. Tekshirildi: `roleId` yuborilsa 400.
+
 **Muammo.** `AuthDTO.SignUp` da `roleId`, `subType`, `active` majburiy maydon sifatida
 mijozdan qabul qilinadi, `AuthService.signUp` esa `{ ...data, password }` ni to'g'ridan-to'g'ri
 `user.create` ga uzatadi. Super-admin `roleId` (`bfdc30ce-…`) `prisma/seed.ts` da ochiq.

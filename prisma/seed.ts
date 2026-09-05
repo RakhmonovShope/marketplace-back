@@ -1,78 +1,80 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, SUB_TYPE } from '@prisma/client';
+import { PERMISSIONS } from '../src/api/auth/auth.enum';
+import { ROLE_CODE } from '../src/api/role/role.enum';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  const existingRole = await prisma.role.findUnique({
-    where: { id: 'bfdc30ce-9442-4729-9f2c-4513d851052c' },
+// Barqaror ID'lar — mavjud muhitlardagi yozuvlar bilan mos kelishi uchun.
+const SUPER_ADMIN_ROLE_ID = 'bfdc30ce-9442-4729-9f2c-4513d851052c';
+const SUPER_ADMIN_USER_ID = 'ce22df22-85a2-45e8-a33a-3884f47aad4f';
+
+/**
+ * Seed IDEMPOTENT: `upsert` ishlatiladi, ikki marta ishga tushirilsa dublikat bo'lmaydi.
+ * Super-admin roli har safar BARCHA permission'larni oladi (yangi modul qo'shilganda
+ * qo'lda ro'yxatni yangilash shart emas).
+ */
+async function seedRoles() {
+  const allPermissions = Object.values(PERMISSIONS);
+
+  const superAdmin = await prisma.role.upsert({
+    where: { code: ROLE_CODE.SUPER_ADMIN },
+    update: { permissions: allPermissions, isSystem: true, active: true },
+    create: {
+      id: SUPER_ADMIN_ROLE_ID,
+      code: ROLE_CODE.SUPER_ADMIN,
+      nameUz: 'Super admin',
+      nameRu: 'Супер администратор',
+      isSystem: true,
+      active: true,
+      permissions: allPermissions,
+    },
   });
 
-  if (!existingRole) {
-    const superAdminRole = await prisma.role.create({
-      data: {
-        id: 'bfdc30ce-9442-4729-9f2c-4513d851052c',
-        nameUz: 'Super admin Uz',
-        nameRu: 'Super Admin Ru',
-        active: true,
-        permissions: [
-          'ADMIN__CREATE',
-          'ADMIN__VIEW',
-          'ADMIN__UPDATE',
-          'ADMIN__DELETE',
-          'ROLE__CREATE',
-          'ROLE__VIEW',
-          'ROLE__UPDATE',
-          'ROLE__DELETE',
-          'ROLE__PERMISSION__VIEW',
-          'CATEGORY__CREATE',
-          'CATEGORY__VIEW',
-          'CATEGORY__UPDATE',
-          'CATEGORY__DELETE',
-          'FILE__UPLOAD',
-          'FILE__VIEW',
-          'PAGE__CREATE',
-          'PAGE__VIEW',
-          'PAGE__UPDATE',
-          'PAGE__DELETE',
-          'BADGE__CREATE',
-          'BADGE__VIEW',
-          'BADGE__UPDATE',
-          'BADGE__DELETE',
-          'BANNER__CREATE',
-          'BANNER__VIEW',
-          'BANNER__UPDATE',
-          'BANNER__DELETE',
-          'STORE__CREATE',
-          'STORE__VIEW',
-          'STORE__UPDATE',
-          'STORE__DELETE',
-        ],
-      },
-    });
+  const customer = await prisma.role.upsert({
+    where: { code: ROLE_CODE.CUSTOMER },
+    update: { isSystem: true, active: true },
+    create: {
+      code: ROLE_CODE.CUSTOMER,
+      nameUz: 'Mijoz',
+      nameRu: 'Клиент',
+      isSystem: true,
+      active: true,
+      permissions: [], // mijozga admin permission'lar kerak emas
+    },
+  });
 
-    await prisma.user.create({
-      data: {
-        id: 'ce22df22-85a2-45e8-a33a-3884f47aad4f',
-        firstName: 'Shohboz',
-        lastName: 'Rahmonov',
-        phone: '998995107444',
-        email: 'shahbozbek10199701@gmail.com',
-        gender: 'MALE',
-        birthday: '01.11.1997',
-        password:
-          '$2b$10$Lh.0oN.tAwKRQIqTgyDa0upe0dyDtr5/kT5uy/VyHuRNvqyj2ue12',
-        subType: 'ADMIN',
-        roleId: superAdminRole.id,
-        active: true,
-        emailVerified: true,
-        emailVerifiedAt: new Date(),
-      },
-    });
+  console.log(`Roles: SUPER_ADMIN=${superAdmin.id}, CUSTOMER=${customer.id}`);
 
-    console.log('Created Super Admin user');
-  } else {
-    console.log('Super Admin role already exists');
-  }
+  return { superAdmin, customer };
+}
+
+async function seedSuperAdminUser(roleId: string) {
+  const user = await prisma.user.upsert({
+    where: { phone: '998995107444' },
+    update: { roleId, subType: SUB_TYPE.ADMIN, active: true },
+    create: {
+      id: SUPER_ADMIN_USER_ID,
+      firstName: 'Shohboz',
+      lastName: 'Rahmonov',
+      phone: '998995107444',
+      email: 'shahbozbek10199701@gmail.com',
+      gender: 'MALE',
+      birthday: '01.11.1997',
+      password: '$2b$10$Lh.0oN.tAwKRQIqTgyDa0upe0dyDtr5/kT5uy/VyHuRNvqyj2ue12',
+      subType: SUB_TYPE.ADMIN,
+      roleId,
+      active: true,
+      emailVerified: true,
+      emailVerifiedAt: new Date(),
+    },
+  });
+
+  console.log(`Super admin user: ${user.id}`);
+}
+
+async function main() {
+  const { superAdmin } = await seedRoles();
+  await seedSuperAdminUser(superAdmin.id);
 }
 
 main()

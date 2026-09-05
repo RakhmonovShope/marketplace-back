@@ -21,7 +21,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** `dist/main.js` mavjud, `dist/src` yo'q, `dist/common/mail/templates/*.hbs` bor.
 **Tekshirish.** `rm -rf dist && pnpm build && node -e "require('fs').accessSync('dist/main.js')" && ls dist/common/mail/templates`
 
-### - [ ] STEP-02 — Signup privilege escalation
+### - [x] STEP-02 — Signup privilege escalation ✅ 2026-09-05
 **Manba.** `01-SECURITY` S1, `03-DATA-MODEL` D7. **Fayllar.** `auth.dto.ts`, `auth.service.ts`, `prisma/schema.prisma` (`Role.code`), `prisma/seed.ts`
 **Bajarish.** `SignUp` dan `roleId/subType/active` olib tashlash; `Role.code @unique` + migratsiya `role_code`; seed `upsert` (`SUPER_ADMIN`, `CUSTOMER`); `signUp` serverda `CUSTOMER` rolini qo'yadi.
 **DoD.** `roleId` yuborilsa 400; yangi user `subType=CUSTOMER`, `roleId=CUSTOMER`.

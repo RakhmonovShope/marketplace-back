@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -9,8 +8,13 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { GENDER, SUB_TYPE } from '@prisma/client';
+import { GENDER } from '@prisma/client';
 
+/**
+ * Public ro'yxatdan o'tish. `roleId`, `subType`, `active` ATAYIN yo'q:
+ * ular serverda qat'iy belgilanadi (CUSTOMER roli), mijoz tanlay olmaydi.
+ * Admin foydalanuvchilar faqat `POST /admin` (ADMIN__CREATE) orqali yaratiladi.
+ */
 export class SignUp {
   @ApiProperty({ description: 'phone' })
   @IsString()
@@ -42,25 +46,11 @@ export class SignUp {
   @IsString()
   birthday: string;
 
-  @ApiProperty({ description: `SubType`, enum: SUB_TYPE })
-  @IsEnum(SUB_TYPE)
-  @IsNotEmpty()
-  subType: SUB_TYPE;
-
-  @ApiProperty({ description: `active` })
-  @IsBoolean()
-  active: boolean;
-
   @ApiProperty({ description: `password` })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
   password: string;
-
-  @ApiProperty({ description: `roleId` })
-  @IsString()
-  @IsNotEmpty()
-  roleId: string;
 }
 
 export class SignIn {

@@ -55,8 +55,10 @@ model User {
 
 model Role {
   id          String   @id @default(uuid())
+  code        String   @unique // Kod ichida ishlatiladigan barqaror identifikator: SUPER_ADMIN, ADMIN, CUSTOMER
   nameUz      String
   nameRu      String
+  isSystem    Boolean  @default(false) // Tizim roli — API orqali o'chirib bo'lmaydi
   active      Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
