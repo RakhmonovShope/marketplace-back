@@ -73,26 +73,26 @@
 platforma ikonalari, followers, ER, o'sish. Bosilganda haptic + profilga o'tish.
 **DoD.** 360px ekranda ham chiroyli ko'rinadi.
 
-### - [ ] STEP-M-09 — Bosh sahifa (Dashboard)
+### - [x] STEP-M-09 — Bosh sahifa (Dashboard)
 **Talab qilinadi:** B-39
 **Bajarish.** `GET /app/dashboard` — gorizontal scroll bloklar:
 tavsiya etilgan, eng mashhur, trending, tez o'sayotgan, yangi.
 Yuqorida qidiruv maydoni va kategoriya plitalari.
 **DoD.** Bitta so'rov bilan yuklanadi, skeleton ko'rsatiladi.
 
-### - [ ] STEP-M-10 — Kategoriyalar
+### - [x] STEP-M-10 — Kategoriyalar
 **Talab qilinadi:** B-21
 **Bajarish.** Kategoriya ro'yxati (emoji + nom + influencer soni),
 bosilganda subkategoriyalar, keyin katalog.
 **DoD.** Ikki darajali navigatsiya ishlaydi.
 
-### - [ ] STEP-M-11 — Katalog va cheksiz scroll
+### - [x] STEP-M-11 — Katalog va cheksiz scroll
 **Talab qilinadi:** B-37
 **Bajarish.** `useInfiniteQuery`, 20 tadan yuklash, pastga yetganda avtomatik,
 tartiblash tanlagichi (Sheet ichida).
 **DoD.** 100+ natijada ham silliq scroll.
 
-### - [ ] STEP-M-12 — Filter paneli (Sheet + MainButton)
+### - [x] STEP-M-12 — Filter paneli (Sheet + MainButton)
 **Talab qilinadi:** B-37
 **Bajarish.**
 1. Pastdan chiquvchi `Sheet`, `GET /app/influencers/filters` dan dinamik
@@ -102,12 +102,12 @@ tartiblash tanlagichi (Sheet ichida).
 5. Filter holati URL hash'da (`#/catalog?followers=100000-500000`)
 **DoD.** MainButton bosilganda Sheet yopiladi va natijalar yangilanadi.
 
-### - [ ] STEP-M-13 — Qidiruv
+### - [x] STEP-M-13 — Qidiruv
 **Bajarish.** Alohida qidiruv ekrani, `suggest` bilan 250ms debounce,
 oxirgi qidiruvlar (localStorage), natija bosilganda profilga.
 **DoD.** Yozganda takliflar chiqadi.
 
-### - [ ] STEP-M-14 — Influencer profili
+### - [x] STEP-M-14 — Influencer profili
 **Talab qilinadi:** B-38
 **Bajarish.**
 1. Hero: cover, avatar, ism, tasdiqlangan, kategoriyalar, shahar, bio (ko'proq/kamroq)
@@ -122,36 +122,36 @@ oxirgi qidiruvlar (localStorage), natija bosilganda profilga.
 
 ## FAZA 2 — Interaktiv funksiyalar (M-15 … M-20)
 
-### - [ ] STEP-M-15 — O'sish grafigi
+### - [x] STEP-M-15 — O'sish grafigi
 **Talab qilinadi:** B-29
 **Bajarish.** `recharts` — **faqat `lazy` import** (bundle uchun).
 Davr tanlagich (30d/90d/1y), metrika tanlagich. Ma'lumot yo'q bo'lsa — bo'sh holat.
 **DoD.** Grafik yuklanadi va boshlang'ich bundle hajmi oshmaydi.
 
-### - [ ] STEP-M-16 — Favorites
+### - [x] STEP-M-16 — Favorites
 **Talab qilinadi:** B-40
 **Bajarish.** Yurak tugmasi (optimistik + haptic), `/favorites` ekrani,
 telefon tasdiqlanmagan bo'lsa — `requestContact` so'rovi.
 **DoD.** Saqlangan influencerlar ro'yxati ishlaydi.
 
-### - [ ] STEP-M-17 — Taqqoslash
+### - [x] STEP-M-17 — Taqqoslash
 **Talab qilinadi:** B-41
 **Bajarish.** Kartadan "taqqoslashga qo'shish", pastdagi suzuvchi indikator (2/4),
 `/compare` ekrani — gorizontal scroll jadval, eng yaxshi qiymat ajratilgan.
 **DoD.** 2–4 influencer taqqoslanadi.
 
-### - [ ] STEP-M-18 — Telegram'ga ulashish
+### - [x] STEP-M-18 — Telegram'ga ulashish
 **Talab qilinadi:** B-49
 **Bajarish.** `GET /app/share/influencer/:slug` -> `shareURL()` yoki
 `openTelegramLink(shareUrl)`. Do'stga yoki guruhga yuborish.
 **DoD.** Telegram'da ulashish oynasi ochiladi, havola Mini App'ni to'g'ri sahifada ochadi.
 
-### - [ ] STEP-M-19 — Profil ekrani
+### - [x] STEP-M-19 — Profil ekrani
 **Bajarish.** Foydalanuvchi ma'lumoti (Telegram'dan), til tanlash,
 joriy tarif, telefon bog'lash (agar bog'lanmagan bo'lsa), statistika (saqlanganlar soni).
 **DoD.** Til o'zgarsa butun ilova tili almashadi.
 
-### - [ ] STEP-M-20 — i18n (uz / ru)
+### - [x] STEP-M-20 — i18n (uz / ru)
 **Bajarish.** Yengil yechim (`react-i18next` yoki oddiy kontekst),
 boshlang'ich til Telegram `languageCode` dan, o'zgartirish mumkin.
 **DoD.** Ikkala til to'liq ishlaydi.
@@ -160,12 +160,12 @@ boshlang'ich til Telegram `languageCode` dan, o'zgartirish mumkin.
 
 ## FAZA 3 — Sifat va deploy (M-21 … M-24)
 
-### - [ ] STEP-M-21 — Xatolik va yuklanish holatlari
+### - [x] STEP-M-21 — Xatolik va yuklanish holatlari
 **Bajarish.** `ErrorBoundary`, tarmoq yo'q holati, `ApiError.code` bo'yicha xabarlar,
 barcha ro'yxatlar uchun skeleton, bo'sh holatlar (illustratsiya + taklif).
 **DoD.** Backend o'chirilganda ilova oq ekran bermaydi.
 
-### - [ ] STEP-M-22 — Performance
+### - [x] STEP-M-22 — Performance
 **Bajarish.**
 1. `rollup-plugin-visualizer` bilan bundle tahlili
 2. Sahifalar `React.lazy` bilan bo'linadi
@@ -173,7 +173,7 @@ barcha ro'yxatlar uchun skeleton, bo'sh holatlar (illustratsiya + taklif).
 4. `useInfiniteQuery` da eski sahifalar DOM'dan olinadi
 **DoD.** Boshlang'ich JS < 200KB gzip, 3G'da ochilish < 3s.
 
-### - [ ] STEP-M-23 — Telegram nozikliklari
+### - [x] STEP-M-23 — Telegram nozikliklari
 **Bajarish.**
 1. `closingConfirmation` — filter to'ldirilgan yoki taqqoslash bo'sh emas holatda
 2. iOS safe area, klaviatura ochilganda viewport o'zgarishi
@@ -182,7 +182,7 @@ barcha ro'yxatlar uchun skeleton, bo'sh holatlar (illustratsiya + taklif).
 5. Scroll pozitsiyasi orqaga qaytganda saqlanadi
 **DoD.** iOS va Android Telegram'da bir xil to'g'ri ishlaydi.
 
-### - [ ] STEP-M-24 — Deploy
+### - [x] STEP-M-24 — Deploy
 **Bajarish.** Statik build (`dist/`) -> nginx/CDN, HTTPS majburiy,
 BotFather'da `/newapp` yoki `/setmenubutton` bilan URL sozlanadi,
 GitHub Actions (typecheck -> build -> deploy).

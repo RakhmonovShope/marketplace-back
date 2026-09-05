@@ -24,3 +24,8 @@
 - Защищённые роуты обязаны иметь `@UseGuards(AuthGuard(), PermissionsGuard)` + `@Permissions(PERMISSIONS.<NAME>)`.
 - Pageable-эндпоинт принимает `PaginationFilterOrderRequest` и возвращает `PageableResponseDto`.
 - Перед PR: `pnpm lint && pnpm format && pnpm build`.
+
+## Аудит, оптимизации и план развития
+
+Папка [`docs/`](./docs/README.md) — аудит проекта (2026-09-05), найденные баги и уязвимости, предложения по
+оптимизации, недостающие фичи и идеи, разбитые на небольшие документы. Рабочий план по шагам — [`docs/ROADMAP.md`](./docs/ROADMAP.md).
