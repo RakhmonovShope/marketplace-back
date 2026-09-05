@@ -70,8 +70,11 @@ export class AdminService {
   ): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('createAdmin');
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(payload.password, salt);
+    // bcrypt cost — BCRYPT_ROUNDS env (default 12), AuthService.hashPassword bilan bir xil.
+    const hashedPassword = await bcrypt.hash(
+      payload.password,
+      this.config.get<number>('BCRYPT_ROUNDS', 12),
+    );
 
     const createAdmin = await this.prisma.user.create({
       data: { ...payload, password: hashedPassword },

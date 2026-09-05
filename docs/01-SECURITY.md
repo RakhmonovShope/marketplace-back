@@ -137,6 +137,8 @@ bilan qaytaradi. `<script>` li SVG brauzerda backend origin'ida bajariladi.
 
 ## S5. Swagger production'da ochiq (O'RTA)
 
+> ✅ Bajarildi (2026-09-05, STEP-08): `SWAGGER_ENABLED` (prod default false) + `express-basic-auth` (`SWAGGER_USER/PASS`, prod'da majburiy) — `/api`, `/api-json`, `/api-yaml`. S6 ham: `signIn` bir xil `401 Invalid credentials` + dummy-hash compare (timing) + `active` tekshiruvi; `BCRYPT_ROUNDS` (12) — `AuthService.hashPassword` va admin create; `JWT_SESSION_EXPIRATION` default 15m (`.env` da hali 1d — o'zgartiring). Eslatma: eski cost-10 hash'li userlar login'da rehash qilinmaydi (keyingi yaxshilash).
+
 **Yechim.** `main.ts`:
 ```ts
 if (!isProd || configService.get('SWAGGER_ENABLED') === 'true') {

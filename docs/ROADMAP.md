@@ -57,7 +57,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** `.svg` `<script>` bilan yuklansa 400 yoki `attachment`; `.png` nomli matn fayli 400.
 **Tekshirish.** `curl -F file=@evil.svg /v1/files/upload` → 400; `curl -I /files/2026/6/30/<uuid>.webp | grep -i cache-control`
 
-### - [ ] STEP-08 — Swagger prod'da yopiq, login enumeration, bcrypt
+### - [x] STEP-08 — Swagger prod'da yopiq, login enumeration, bcrypt ✅ 2026-09-05
 **Manba.** `01-SECURITY` S5, S6. **Fayllar.** `main.ts`, `auth.service.ts`
 **Bajarish.** `SWAGGER_ENABLED` + basic auth; `signIn` bir xil 401 + dummy compare + `active` tekshiruvi; `BCRYPT_ROUNDS=12`; `JWT_SESSION_EXPIRATION=15m` (`.env.example`).
 **DoD.** `NODE_ENV=production` da `/api` 404/401; noto'g'ri telefon va noto'g'ri parol bir xil javob.

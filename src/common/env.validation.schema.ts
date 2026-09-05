@@ -13,7 +13,8 @@ export const envValidationSchema = Joi.object({
 
   // JWT
   JWT_SECRET: Joi.string().min(16).required(),
-  JWT_SESSION_EXPIRATION: Joi.string().default('1d'),
+  // Access token qisqa (15m): refresh rotation bor, o'g'irlangan token tez eskiradi.
+  JWT_SESSION_EXPIRATION: Joi.string().default('15m'),
   JWT_REFRESH_SECRET: Joi.string().min(16).required(),
   JWT_REFRESH_EXPIRATION: Joi.string().default('7d'),
 
@@ -35,8 +36,13 @@ export const envValidationSchema = Joi.object({
   // Bo'sh qoldirilsa — CPU yadrolari soni.
   IMAGE_CONCURRENCY: Joi.number().integer().min(1).optional(),
 
-  // Swagger UI (/api). Production'da default yopiq; ochilsa basic auth majburiy.
-  SWAGGER_ENABLED: Joi.boolean().default(true),
+  // Swagger UI (/api). Development'da default ochiq, production'da default YOPIQ;
+  // production'da ochilsa SWAGGER_USER/SWAGGER_PASS (basic auth) majburiy.
+  SWAGGER_ENABLED: Joi.boolean().when('NODE_ENV', {
+    is: 'production',
+    then: Joi.boolean().default(false),
+    otherwise: Joi.boolean().default(true),
+  }),
   SWAGGER_USER: Joi.string().allow('').default(''),
   SWAGGER_PASS: Joi.string().allow('').default(''),
 

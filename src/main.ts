@@ -11,6 +11,7 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
+import basicAuth from 'express-basic-auth';
 import { TransformInterceptor } from './transform.interceptor';
 import { AllExceptionsFilter } from './common/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -112,14 +113,35 @@ async function bootstrap() {
     new TransformInterceptor(),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('The API description for your application')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  // Swagger UI (/api). Development'da ochiq; production'da default YOPIQ
+  // (SWAGGER_ENABLED=false). Ochilsa — faqat basic auth (SWAGGER_USER/PASS) bilan.
+  if (configService.get<boolean>('SWAGGER_ENABLED')) {
+    const swaggerUser = configService.get<string>('SWAGGER_USER');
+    const swaggerPass = configService.get<string>('SWAGGER_PASS');
+
+    if (isProd && !(swaggerUser && swaggerPass)) {
+      logger.warn(
+        "SWAGGER_ENABLED=true, lekin SWAGGER_USER/SWAGGER_PASS berilmagan — production'da Swagger o'chirildi",
+      );
+    } else {
+      if (isProd) {
+        app.use(
+          ['/api', '/api-json', '/api-yaml'],
+          basicAuth({ users: { [swaggerUser]: swaggerPass }, challenge: true }),
+        );
+      }
+
+      const config = new DocumentBuilder()
+        .setTitle('API Documentation')
+        .setDescription('The API description for your application')
+        .setVersion('1.0')
+        .addBearerAuth()
+        .build();
+      const document = SwaggerModule.createDocument(app, config);
+      SwaggerModule.setup('api', app, document);
+      logger.log(`Swagger UI: /api${isProd ? ' (basic auth)' : ''}`);
+    }
+  }
 
   // Graceful shutdown: SIGTERM/SIGINT'da BullMQ worker'lar to'g'ri yopiladi —
   // ayni damdagi job'lar tugatiladi yoki navbatga qaytariladi (yo'qolmaydi).

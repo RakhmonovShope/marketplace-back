@@ -4,7 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotFoundException,
+  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -32,8 +32,14 @@ interface AuthMeta {
 }
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private logger = new Logger('Auth service');
+
+  /**
+   * Mavjud bo'lmagan foydalanuvchi uchun ham `bcrypt.compare` bajarish uchun
+   * hash — login javob vaqti user bor/yo'qligiga bog'liq bo'lmasin.
+   */
+  private dummyHash: string;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -43,11 +49,19 @@ export class AuthService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  async onModuleInit(): Promise<void> {
+    this.dummyHash = await this.hashPassword(crypto.randomUUID());
+  }
+
+  /** bcrypt cost — `BCRYPT_ROUNDS` env (default 12). Barcha parol hash'lari shu orqali. */
+  hashPassword(plain: string): Promise<string> {
+    return bcrypt.hash(plain, this.config.get<number>('BCRYPT_ROUNDS', 12));
+  }
+
   async signUp(data: AuthDTO.SignUp): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('signUp');
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(data.password, salt);
+    const hashedPassword = await this.hashPassword(data.password);
 
     // Rol va tur mijozdan EMAS, serverda qat'iy belgilanadi: public signup
     // faqat CUSTOMER yaratadi (privilege escalation'ning oldini olish).
@@ -90,15 +104,24 @@ export class AuthService {
         phone: data.phone,
         deletedAt: null, // o'chirilgan foydalanuvchi tizimga kira olmasin
       },
+      select: { id: true, password: true, emailVerified: true, active: true },
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
+    // Foydalanuvchi topilmasa ham bcrypt.compare bajaramiz (dummy hash bilan) —
+    // javob vaqti bir xil bo'lsin: timing orqali telefon raqam mavjudligini bilib bo'lmasin.
+    const passwordMatch = await bcrypt.compare(
+      data.password,
+      user?.password ?? this.dummyHash,
+    );
+
+    if (!user || !passwordMatch) {
+      // Bir xil status va xabar: "user yo'q" va "parol xato" farqlanmaydi
+      // (user enumeration himoyasi).
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    const passwordMatch = await bcrypt.compare(data.password, user.password);
-    if (!passwordMatch) {
-      throw new UnauthorizedException('Please check your login credentials');
+    if (!user.active) {
+      throw new ForbiddenException('Account is disabled');
     }
 
     // Email tasdiqlanmagan bo'lsa token bermaymiz: foydalanuvchi avval
@@ -379,8 +402,7 @@ export class AuthService {
       VERIFICATION_TOKEN_TYPE.PASSWORD_RESET,
     );
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const hashedPassword = await this.hashPassword(newPassword);
 
     await this.prisma.$transaction([
       this.prisma.user.update({
