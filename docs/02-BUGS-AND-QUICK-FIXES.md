@@ -6,6 +6,9 @@
 
 ## B1. `pnpm start:prod` ishlamaydi — `dist/src/main.js`
 
+> ✅ Bajarildi (2026-09-05, STEP-01): `tsconfig.build.json` `include: ["src/**/*"]` + `prisma` exclude,
+> `multer-s3.d.ts` → `src/types/`, `MailService` faqat `__dirname/templates`. `node dist/main` → `/health` 200.
+
 **Tasdiq.** `pnpm build` → `dist/` tarkibi: `dist/src/...`, `dist/prisma/seed.js`, `dist/common/mail/templates/`.
 `package.json`: `"start:prod": "node dist/main"` → fayl yo'q.
 

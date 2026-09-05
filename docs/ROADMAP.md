@@ -15,7 +15,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 
 ## FAZA 0 — Kritik tuzatishlar (production'dan oldin)
 
-### - [ ] STEP-01 — Build chiqishini tuzatish (`dist/main.js`)
+### - [x] STEP-01 — Build chiqishini tuzatish (`dist/main.js`) ✅ 2026-09-05
 **Manba.** `02-BUGS` B1. **Fayllar.** `tsconfig.build.json`, `src/types/multer-s3.d.ts`, `src/common/mail/mail.service.ts`
 **Bajarish.** `include: ["src/**/*"]`, `exclude` ga `prisma`; `multer-s3.d.ts` ni `src/types/` ga; `resolveTemplatesDir` → faqat `join(__dirname, 'templates')`.
 **DoD.** `dist/main.js` mavjud, `dist/src` yo'q, `dist/common/mail/templates/*.hbs` bor.
