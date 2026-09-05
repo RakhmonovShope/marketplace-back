@@ -15,6 +15,7 @@ import { TransformInterceptor } from './transform.interceptor';
 import { AllExceptionsFilter } from './common/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/logging.interceptor';
+import { ConfiguredIoAdapter } from './common/socket-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -85,6 +86,9 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     maxAge: 86400,
   });
+
+  // WebSocket (Socket.IO) CORS — HTTP bilan bir xil whitelist.
+  app.useWebSocketAdapter(new ConfiguredIoAdapter(app, corsOrigins, !isProd));
 
   // URI-based API versioning: barcha route'lar /v1/... prefiksini oladi.
   // Versiya ko'rsatilmagan controller'lar avtomatik defaultVersion'ni oladi.

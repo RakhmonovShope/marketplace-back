@@ -45,7 +45,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** `.env` da `PAGE_SIZE` bo'lmasa ham pageable ishlaydi (default 20).
 **Tekshirish.** `PAGE_SIZE= pnpm start:dev` → pageable 200; `Ctrl+C` → "Redis connection closed" logi.
 
-### - [ ] STEP-06 — WebSocket auth
+### - [x] STEP-06 — WebSocket auth ✅ 2026-09-05
 **Manba.** `01-SECURITY` S3. **Fayllar.** `chat.gateway.ts`, `message.dto.ts` (`SendMessageDto`), `message.controller.ts`
 **Bajarish.** Handshake JWT + sessiya tekshiruvi, `client.data.userId`, xonalar `user:<id>`, `senderId` payload'dan emas, `ValidationPipe`, `deleteMessage` faqat ikki xonaga.
 **DoD.** Tokensiz ulanish uziladi; boshqa user xabarini olib bo'lmaydi.

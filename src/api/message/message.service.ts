@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Message } from '@prisma/client';
 import * as MessageDTO from './message.dto';
@@ -26,16 +26,19 @@ export class MessageService {
       filter,
     } = params;
 
-    const messages = await this.prisma.message.findMany({
-      where: getWhereOperations(filter),
-      skip: (page - 1) * perPage,
-      take: perPage,
-      orderBy: {
-        createdAt: order ? order.toLowerCase() : 'asc',
-      },
-    });
+    const where = getWhereOperations(filter);
 
-    const totalItems = await this.prisma.message.count();
+    const [messages, totalItems] = await this.prisma.$transaction([
+      this.prisma.message.findMany({
+        where,
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          createdAt: order ? order.toLowerCase() : 'asc',
+        },
+      }),
+      this.prisma.message.count({ where }), // filter bilan — totalPages to'g'ri bo'lsin
+    ]);
 
     return {
       data: messages,
@@ -51,6 +54,10 @@ export class MessageService {
     const message = await this.prisma.message.findUnique({
       where: { id },
     });
+
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
 
     return message;
   }

@@ -13,10 +13,12 @@ import * as MessageDTO from './message.dto';
 import { PERMISSIONS } from '../auth/auth.enum';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { Permissions } from '../auth/permissions.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -36,7 +38,7 @@ export class MessageController {
   @Post('/pageable')
   @ApiOperation({ summary: 'Message get all by page' })
   @ApiBody({ type: PaginationFilterOrderRequest })
-  @ApiResponse({ type: [MessageDTO.MessageResponse] })
+  @ApiResponse({ type: MessageDTO.PageableResponseDto })
   @Permissions(PERMISSIONS.MESSAGE__VIEW)
   async getAllByPage(
     @Body() params: PaginationFilterOrderRequest,
@@ -46,31 +48,43 @@ export class MessageController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiBody({ type: MessageDTO.MessageResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: MessageDTO.MessageResponse })
+  @ApiResponse({ status: 404, description: 'Message not found' })
   @Permissions(PERMISSIONS.MESSAGE__VIEW)
   async getById(@Param('id') id: string): Promise<MessageDTO.MessageResponse> {
     return this.messageService.getById(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create Message' })
-  @ApiBody({ type: MessageDTO.CreateMessage })
+  @ApiOperation({ summary: 'Send message (sender = current user)' })
+  @ApiBody({ type: MessageDTO.SendMessage })
+  @ApiResponse({ status: 201, type: MessageDTO.MessageResponse })
   @Permissions(PERMISSIONS.MESSAGE__CREATE)
   async create(
-    @Body() payload: MessageDTO.CreateMessage,
+    @Body() payload: MessageDTO.SendMessage,
+    @CurrentUser('id') senderId: string,
   ): Promise<MessageDTO.MessageResponse> {
-    const newMessage = this.messageService.create(payload);
+    const message = await this.messageService.create({ ...payload, senderId });
 
-    return newMessage;
+    // HTTP orqali yuborilgan xabar ham WS mijozlarga real vaqtda yetadi.
+    this.chatGateway.emitNewMessage(message);
+
+    return message;
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete Message' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 404, description: 'Message not found' })
   @Permissions(PERMISSIONS.MESSAGE__DELETE)
   async delete(@Param('id') id: string): Promise<boolean> {
+    const message = await this.messageService.getById(id); // 404 bo'lsa shu yerda
+
     const result = await this.messageService.delete({ id });
 
-    this.chatGateway.server.emit('deleteMessage', { id });
+    // Faqat ikki tomonga (hammaga emas).
+    this.chatGateway.emitMessageDeleted(message);
 
     return result;
   }

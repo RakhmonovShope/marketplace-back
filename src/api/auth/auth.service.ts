@@ -113,11 +113,32 @@ export class AuthService {
   async getMe(accessToken: string): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('getMe');
 
+    const { userId } = await this.validateAccessToken(accessToken);
+
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return toUserResponse(user);
+  }
+
+  /**
+   * Access tokenni tekshiradi: imzo, muddat va sessiya (`sid`) revoke qilinmaganligi.
+   * HTTP so'rovlarda buni `JwtStrategy` qiladi; passport ishlamaydigan joylar
+   * (WebSocket handshake) shu metoddan foydalanadi — mantiq bir joyda.
+   */
+  async validateAccessToken(
+    accessToken: string,
+  ): Promise<{ userId: string; sid: string }> {
     let decoded: TokenPayload;
     try {
       decoded = this.jwtService.verify<TokenPayload>(accessToken);
-    } catch (error) {
-      throw new UnauthorizedException('Invalid or expired token', error);
+    } catch {
+      throw new UnauthorizedException('Invalid or expired token');
     }
 
     if (!decoded.sid) {
@@ -126,21 +147,14 @@ export class AuthService {
 
     const session = await this.prisma.refreshToken.findUnique({
       where: { id: decoded.sid },
+      select: { userId: true, revokedAt: true },
     });
 
-    if (!session || session.revokedAt) {
+    if (!session || session.revokedAt || session.userId !== decoded.id) {
       throw new UnauthorizedException('Session has been revoked');
     }
 
-    const user = await this.prisma.user.findFirst({
-      where: { id: decoded.id, deletedAt: null },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-
-    return toUserResponse(user);
+    return { userId: decoded.id, sid: decoded.sid };
   }
 
   async refresh(

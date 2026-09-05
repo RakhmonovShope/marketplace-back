@@ -44,6 +44,7 @@ export const passportModule = PassportModule.register({
     AuthListener,
     EmailProcessor,
   ],
-  exports: [passportModule],
+  // AuthService eksport qilinadi: WebSocket gateway handshake'da tokenni shu orqali tekshiradi.
+  exports: [passportModule, AuthService],
 })
 export class AuthModule {}

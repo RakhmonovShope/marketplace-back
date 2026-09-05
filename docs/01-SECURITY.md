@@ -67,6 +67,8 @@ Prisma `User` obyektini to'liq qaytaradi — `password` bilan. `AdminDTO.UserRes
 
 ## S3. WebSocket'da auth va identifikatsiya yo'q (KRITIK)
 
+> ✅ Bajarildi (2026-09-05, STEP-06): socket.io middleware (`server.use`) handshake'da `AuthService.validateAccessToken` (imzo + sessiya) — o'tmasa `connect_error: UNAUTHORIZED`; xonalar `user:<id>`; `senderId` socket'dan; `SendMessage` DTO + `ValidationPipe` (WsException); HTTP `POST /messages` ham `@CurrentUser('id')`; `deleteMessage` faqat ikki xonaga; CORS — `ConfiguredIoAdapter` (`CORS_ORIGINS`). Tekshirildi: `test/manual/ws.js` (4 holat). B4/B5 message uchun ham bajarildi.
+
 **Muammo.** `ChatGateway` (`@WebSocketGateway({ cors: true })`):
 - `handleConnection` tokenni tekshirmaydi;
 - `client.join(receiverId)` — `receiverId` query'dan, istalgan foydalanuvchi xonasiga kirish mumkin;

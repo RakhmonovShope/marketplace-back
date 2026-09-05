@@ -1,18 +1,13 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PageableDto } from 'common/common.dto';
 
-export class CreateMessage {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The ID of the sender',
-    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  })
-  senderId: string;
-
-  @IsString()
-  @IsNotEmpty()
+/**
+ * Mijozdan keladigan payload (HTTP POST /messages va WS `sendMessage`).
+ * `senderId` ATAYIN yo'q — u har doim autentifikatsiyadan olinadi.
+ */
+export class SendMessage {
+  @IsUUID()
   @ApiProperty({
     description: 'The ID of the receiver',
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -21,11 +16,18 @@ export class CreateMessage {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(4000)
   @ApiProperty({
     description: 'The content of the message',
     example: 'Hello, how are you?',
+    maxLength: 4000,
   })
   content: string;
+}
+
+/** Servis kirishi: `senderId` server tomonidan to'ldiriladi (req.user / socket.data). */
+export class CreateMessage extends SendMessage {
+  senderId: string;
 }
 
 export class UpdateMessage extends CreateMessage {
