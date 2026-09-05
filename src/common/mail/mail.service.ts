@@ -100,26 +100,22 @@ export class MailService implements OnModuleInit {
   }
 
   /**
-   * Template'lar papkasini aniqlaydi. App qayerdan ishga tushganiga qarab
-   * (`start:prod` → dist, `start:dev` → ba'zan src) yo'l farq qiladi,
-   * shuning uchun bir nechta ehtimoliy joyni tekshirib, mavjudini tanlaymiz.
+   * Template'lar papkasi — har doim shu fayl yonidagi `templates/`.
+   * Build'da (`nest-cli.json` → `assets: ["**\/*.hbs"]`) `.hbs` fayllar
+   * `dist/common/mail/templates` ga ko'chiriladi, ts-node/jest'da esa
+   * `src/common/mail/templates` ishlatiladi — ikkalasida ham `__dirname` to'g'ri.
    */
   private resolveTemplatesDir(): string {
-    const candidates = [
-      join(__dirname, 'templates'), // odatda dist/common/mail/templates
-      join(process.cwd(), 'dist', 'common', 'mail', 'templates'),
-      join(process.cwd(), 'src', 'common', 'mail', 'templates'),
-    ];
+    const dir = join(__dirname, 'templates');
 
-    const found = candidates.find((dir) => existsSync(join(dir, 'layout.hbs')));
-
-    if (!found) {
+    if (!existsSync(join(dir, 'layout.hbs'))) {
       throw new Error(
-        `Email templates topilmadi. Tekshirilgan yo'llar:\n${candidates.join('\n')}`,
+        `Email templates topilmadi: ${dir}. ` +
+          `Build'da .hbs fayllar ko'chirilganini tekshiring (nest-cli.json assets).`,
       );
     }
 
-    return found;
+    return dir;
   }
 
   /**
