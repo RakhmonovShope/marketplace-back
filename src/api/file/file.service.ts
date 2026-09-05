@@ -15,6 +15,22 @@ import * as process from 'node:process';
 import { readFile, unlink, writeFile } from 'fs/promises';
 import { mkdirp } from 'mkdirp';
 import { v4 as uuidv4 } from 'uuid';
+import * as FileType from 'file-type';
+
+/**
+ * Qabul qilinadigan rasm turlari: magic-byte bo'yicha aniqlangan `ext` → mime.
+ * SVG yo'q (XML — <script> bo'lishi mumkin). Kengaytirish kerak bo'lsa shu jadval.
+ */
+const ALLOWED_IMAGE_TYPES: Readonly<Record<string, string>> = {
+  jpg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  avif: 'image/avif',
+};
+
+/** Brauzerda `inline` ko'rsatish xavfsiz bo'lgan turlar (skript bajarilmaydi). */
+const INLINE_SAFE_MIME = new Set(Object.values(ALLOWED_IMAGE_TYPES));
 
 @Injectable()
 export class FileService {
@@ -22,6 +38,71 @@ export class FileService {
     private prisma: PrismaService,
     private configService: ConfigService,
   ) {}
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Xavfsizlik: tur aniqlash va javob sarlavhalari
+  // ──────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Faylning HAQIQIY turini magic-byte (sarlavha baytlari) bo'yicha aniqlaydi.
+   * Mijoz yuborgan `mimetype`/kengaytmaga ishonilmaydi: "x.png" nomli matn
+   * fayli yoki PNG deb yuborilgan SVG shu yerda rad etiladi.
+   */
+  async detectImageType(
+    buffer: Buffer,
+  ): Promise<{ ext: string; mime: string }> {
+    const detected = await FileType.fromBuffer(buffer);
+
+    if (!detected || !ALLOWED_IMAGE_TYPES[detected.ext]) {
+      throw new BadRequestException(
+        detected
+          ? `Unsupported file type: ${detected.mime}`
+          : 'Unsupported or corrupted file (not a recognized image)',
+      );
+    }
+
+    return { ext: detected.ext, mime: ALLOWED_IMAGE_TYPES[detected.ext] };
+  }
+
+  /** `inline` (brauzerda ko'rsatish) uchun xavfsizmi — aks holda `attachment`. */
+  isInlineSafe(mimeType: string): boolean {
+    return INLINE_SAFE_MIME.has(mimeType);
+  }
+
+  /**
+   * RFC 6266 bo'yicha xavfsiz Content-Disposition: foydalanuvchi bergan nomdagi
+   * qo'shtirnoq/yangi qator header injection'ga olib kelmasin; unicode nom
+   * `filename*` orqali, ASCII fallback `filename` orqali.
+   */
+  contentDisposition(type: 'inline' | 'attachment', name: string): string {
+    const clean = (name || 'file').replace(/[\r\n"\\]/g, '_').slice(0, 200);
+    const ascii = clean.replace(/[^\x20-\x7e]/g, '_');
+    return `${type}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(clean)}`;
+  }
+
+  /**
+   * Buffer'ni yyyy/mm/dd ostiga ANIQLANGAN kengaytma bilan yozadi va File yozuvini yaratadi.
+   * (`/files/upload` — optimizatsiyasiz saqlash.)
+   */
+  async saveBuffer(
+    buffer: Buffer,
+    originalName: string,
+    ext: string,
+  ): Promise<FileDTO.FileResponseDto> {
+    const now = new Date();
+    const year = now.getFullYear().toString();
+    const month = (now.getMonth() + 1).toString();
+    const day = now.getDate().toString();
+
+    const uploadDir = join(process.cwd(), 'uploads', 'files', year, month, day);
+    await mkdirp(uploadDir);
+
+    const filename = `${uuidv4()}.${ext}`;
+    await writeFile(join(uploadDir, filename), buffer);
+
+    const url = `/${year}/${month}/${day}/${filename}`;
+    return this.createFile({ name: originalName, url });
+  }
 
   async createFile(data: {
     name: string;
@@ -72,21 +153,17 @@ export class FileService {
     return new StreamableFile(fileStream);
   }
 
+  /**
+   * Kengaytma bo'yicha mime. Fayllar aniqlangan kengaytma bilan saqlanadi
+   * (detectImageType), shuning uchun bu yerda kengaytmaga ishonish mumkin.
+   * Eski SVG'lar `image/svg+xml` — lekin `isInlineSafe` false → attachment.
+   */
   getMimeType(filePath: string): string {
     const ext = filePath.split('.').pop()?.toLowerCase();
-    switch (ext) {
-      case 'jpg':
-      case 'jpeg':
-        return 'image/jpeg';
-      case 'png':
-        return 'image/png';
-      case 'webp': // ← qo'shasiz
-        return 'image/webp'; // ← qo'shasiz
-      case 'svg':
-        return 'image/svg+xml';
-      default:
-        return 'application/octet-stream';
-    }
+    if (ext === 'jpeg') return ALLOWED_IMAGE_TYPES.jpg;
+    if (ext && ALLOWED_IMAGE_TYPES[ext]) return ALLOWED_IMAGE_TYPES[ext];
+    if (ext === 'svg') return 'image/svg+xml';
+    return 'application/octet-stream';
   }
 
   mapToFileResponseDto(file: PrismaFile): FileDTO.FileResponseDto {
@@ -138,11 +215,11 @@ export class FileService {
     return join(this.originalsRoot(), ...rel.split('/'));
   }
 
-  /** Original buffer'ni yyyy/mm/dd ostiga DARHOL diskka yozadi (durable manba). */
-  async saveOriginalBuffer(
-    buffer: Buffer,
-    originalName: string,
-  ): Promise<string> {
+  /**
+   * Original buffer'ni yyyy/mm/dd ostiga DARHOL diskka yozadi (durable manba).
+   * `ext` — magic-byte bo'yicha ANIQLANGAN kengaytma (detectImageType), fayl nomidan emas.
+   */
+  async saveOriginalBuffer(buffer: Buffer, ext: string): Promise<string> {
     const now = new Date();
     const year = now.getFullYear().toString();
     const month = (now.getMonth() + 1).toString();
@@ -151,7 +228,6 @@ export class FileService {
     const dir = join(this.originalsRoot(), year, month, day);
     await mkdirp(dir);
 
-    const ext = (originalName.split('.').pop() || 'bin').toLowerCase();
     const filename = `${uuidv4()}.${ext}`;
     await writeFile(join(dir, filename), buffer);
 

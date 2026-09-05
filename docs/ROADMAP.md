@@ -51,7 +51,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** Tokensiz ulanish uziladi; boshqa user xabarini olib bo'lmaydi.
 **Tekshirish.** `node test/manual/ws.js` (kichik skript: tokensiz → `disconnect`; token bilan → `receiveMessage`).
 
-### - [ ] STEP-07 — Fayl upload xavfsizligi
+### - [x] STEP-07 — Fayl upload xavfsizligi ✅ 2026-09-05
 **Manba.** `01-SECURITY` S4, `07-FILES` §1. **Fayllar.** `file.controller.ts`, `file.service.ts`
 **Bajarish.** `file-type` bilan magic-byte; SVG → rad yoki `attachment`; javob header'lari (`nosniff`, `CSP sandbox`, `Cache-Control immutable`).
 **DoD.** `.svg` `<script>` bilan yuklansa 400 yoki `attachment`; `.png` nomli matn fayli 400.

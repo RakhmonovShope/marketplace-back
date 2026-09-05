@@ -113,6 +113,8 @@ faqat ikki tomon xonasiga yuborish kerak. Ko'p instans uchun `@socket.io/redis-a
 
 ## S4. SVG orqali stored XSS (YUQORI)
 
+> ✅ Bajarildi (2026-09-05, STEP-07): `file-type@16` magic-byte tekshiruvi (`FileService.detectImageType`: jpg/png/webp/gif/avif), fayl ANIQLANGAN kengaytma bilan saqlanadi, SVG rad etiladi; `/files/upload` memoryStorage'ga o'tdi; GET javobida `Cache-Control: immutable`, `nosniff`, `CSP sandbox`, xavfsiz `Content-Disposition` (header injection'siz), rasm bo'lmagan turlar har doim `attachment`. Tekshirildi: 7 holat. SVG sanitizatsiya kerak bo'lsa — 07-FILES §1.
+
 **Muammo.** `POST /v1/files/upload` `fileFilter` faqat `file.mimetype` (mijoz e'lon qiladi) ni
 tekshiradi va `svg` ni o'tkazadi. `GET /files/:y/:m/:d/:name` faylni `Content-Disposition: inline`
 bilan qaytaradi. `<script>` li SVG brauzerda backend origin'ida bajariladi.

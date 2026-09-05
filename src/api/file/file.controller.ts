@@ -20,11 +20,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
-import { diskStorage, memoryStorage } from 'multer';
-import { v4 as uuidv4 } from 'uuid';
+import { memoryStorage } from 'multer';
 import { Response } from 'express';
-import * as path from 'path';
-import { extname, join } from 'path';
 import { AuthGuard } from '@nestjs/passport';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import * as FileDTO from './file.dto';
@@ -38,13 +35,36 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { mkdirp } from 'mkdirp';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Permissions } from '../auth/permissions.decorator';
 import { PERMISSIONS } from '../auth/auth.enum';
-import * as process from 'node:process';
 import { ImageUploadResponseDto } from './file.dto';
 import { ImageQueueService } from './image-queue.service';
+
+// Mijoz e'lon qilgan mimetype bo'yicha ARZON birinchi filtr (multer, buffer'gacha).
+// Haqiqiy tekshiruv — magic-byte (FileService.detectImageType). SVG ATAYIN yo'q:
+// u XML/matn, ichida <script> bo'lishi mumkin (stored XSS) — sanitizatsiyasiz qabul qilinmaydi.
+const IMAGE_MIME_RE = /^image\/(jpe?g|png|webp|gif|avif)$/;
+
+const imageMimeFilter = (
+  _req: unknown,
+  file: Express.Multer.File,
+  callback: (error: Error | null, accept: boolean) => void,
+) => {
+  if (IMAGE_MIME_RE.test(file.mimetype)) {
+    callback(null, true);
+  } else {
+    callback(
+      new HttpException('Unsupported file type', HttpStatus.BAD_REQUEST),
+      false,
+    );
+  }
+};
+
+const uploadSchema = {
+  type: 'object',
+  properties: { file: { type: 'string', format: 'binary' } },
+};
 
 @ApiTags('File')
 @Controller('files')
@@ -61,87 +81,35 @@ export class FileController {
   @Permissions(PERMISSIONS.FILE__UPLOAD)
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: async (req, file, callback) => {
-          try {
-            const now = new Date();
-            const year = now.getFullYear().toString();
-            const month = (now.getMonth() + 1).toString();
-            const day = now.getDate().toString();
-
-            const uploadPath = join(
-              process.cwd(),
-              'uploads',
-              'files',
-              year,
-              month,
-              day,
-            );
-
-            await mkdirp(uploadPath);
-
-            callback(null, uploadPath);
-          } catch (error) {
-            callback(error, '');
-          }
-        },
-        filename: (req, file, callback) => {
-          const uniqueSuffix = uuidv4();
-          const ext = extname(file.originalname);
-          const filename = `${uniqueSuffix}${ext}`;
-          callback(null, filename);
-        },
-      }),
+      storage: memoryStorage(), // avval tekshiramiz, keyin diskka yozamiz
       limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-      fileFilter: (req, file, callback) => {
-        if (file.mimetype.match(/\/(jpg|jpeg|png|svg)$/)) {
-          callback(null, true);
-        } else {
-          callback(
-            new HttpException('Unsupported file type', HttpStatus.BAD_REQUEST),
-            false,
-          );
-        }
-      },
+      fileFilter: imageMimeFilter,
     }),
   )
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'File upload',
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
+    description: 'File upload (jpg, png, webp, gif, avif)',
+    schema: uploadSchema,
   })
-  @ApiOperation({ summary: 'Upload a file' })
+  @ApiOperation({
+    summary: 'Upload an image as-is (no optimization)',
+    description:
+      "Fayl magic-byte bo'yicha tekshiriladi va ANIQLANGAN kengaytma bilan saqlanadi " +
+      "(nom/mimetype soxtalashtirilsa ham). Optimizatsiya kerak bo'lsa POST /files/image.",
+  })
   @ApiResponse({ status: 201, type: FileResponseDto })
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  @ApiResponse({ status: 400, description: 'Unsupported or corrupted file' })
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<FileDTO.FileResponseDto> {
     if (!file) {
-      throw new HttpException('File upload failed', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('File upload failed');
     }
 
-    const uploadDir = file.destination;
-    const baseUploadPath = join(process.cwd(), 'uploads', 'files');
-    const relativePath = uploadDir
-      .replace(baseUploadPath, '')
-      .split(path.sep)
-      .filter(Boolean);
-    const [year, month, day] = relativePath;
+    const { ext } = await this.fileService.detectImageType(file.buffer);
 
-    const fileUrl = `/${year}/${month}/${day}/${file.filename}`;
-
-    const createdFile = await this.fileService.createFile({
-      name: file.originalname,
-      url: fileUrl,
-    });
-
-    return createdFile;
+    return this.fileService.saveBuffer(file.buffer, file.originalname, ext);
   }
 
   @Post('image')
@@ -151,27 +119,12 @@ export class FileController {
     FileInterceptor('file', {
       storage: memoryStorage(), // ← diskka emas, xotiraga (buffer kerak)
       limits: { fileSize: 10 * 1024 * 1024 }, // 10MB (sharp kichraytiradi)
-      fileFilter: (req, file, callback) => {
-        if (file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
-          callback(null, true);
-        } else {
-          callback(
-            new HttpException('Unsupported image type', HttpStatus.BAD_REQUEST),
-            false,
-          );
-        }
-      },
+      fileFilter: imageMimeFilter,
     }),
   )
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Image upload',
-    schema: {
-      type: 'object',
-      properties: { file: { type: 'string', format: 'binary' } },
-    },
-  })
+  @ApiBody({ description: 'Image upload', schema: uploadSchema })
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary:
@@ -182,18 +135,22 @@ export class FileController {
       "GET /v1/files/images/:id orqali poll qiladi (status DONE bo'lguncha).",
   })
   @ApiResponse({ status: 202, type: ImageUploadResponseDto })
+  @ApiResponse({ status: 400, description: 'Unsupported or corrupted image' })
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ImageUploadResponseDto> {
     if (!file) {
-      throw new HttpException('Image upload failed', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('Image upload failed');
     }
+
+    // 0) Haqiqiy turini magic-byte bo'yicha aniqlaymiz (mimetype'ga ishonmaymiz).
+    const { ext } = await this.fileService.detectImageType(file.buffer);
 
     // 1) Original'ni DARHOL diskka yozamiz — durable manba.
     //    Shu nuqtadan keyin server qulasa ham rasm yo'qolmaydi.
     const originalPath = await this.fileService.saveOriginalBuffer(
       file.buffer,
-      file.originalname,
+      ext,
     );
 
     // 2) Tracking yozuvi (PENDING). Holat manbai — Postgres.
@@ -269,14 +226,24 @@ export class FileController {
 
     // Front `X-Content-Disposition: attachment` yuborsa — yuklab olishga,
     // aks holda (yoki `inline`) brauzerda / <img> tag'da ko'rsatamiz.
-    const disposition =
-      dispositionHeader?.toLowerCase() === 'attachment'
-        ? 'attachment'
-        : 'inline';
+    // Faqat "xavfsiz" rasm turlari inline bo'ladi; qolganlari (svg, octet-stream)
+    // HAR DOIM attachment — brauzer ularni sahifa sifatida bajarmasin.
+    const wantsAttachment =
+      dispositionHeader?.toLowerCase() === 'attachment' ||
+      !this.fileService.isInlineSafe(mimeType);
 
     res.set({
       'Content-Type': mimeType,
-      'Content-Disposition': `${disposition}; filename="${fileRecord.name}"`,
+      'Content-Disposition': this.fileService.contentDisposition(
+        wantsAttachment ? 'attachment' : 'inline',
+        fileRecord.name,
+      ),
+      // Fayl nomi UUID — mazmuni hech qachon o'zgarmaydi: 1 yil cache.
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      // Brauzer Content-Type'ni "hidlab" boshqa turga aylantirmasin.
+      'X-Content-Type-Options': 'nosniff',
+      // Fayl to'g'ridan-to'g'ri ochilsa ham skript/iframe/plugin ishlamasin.
+      'Content-Security-Policy': "default-src 'none'; sandbox",
     });
 
     return this.fileService.streamFile(filePath);
@@ -287,7 +254,7 @@ export class FileController {
   @UseGuards(AuthGuard(), PermissionsGuard)
   @Permissions(PERMISSIONS.FILE__VIEW)
   @ApiOperation({ summary: 'Get a file info by path' })
-  @ApiResponse({ status: 201, type: FileResponseDto })
+  @ApiResponse({ status: 200, type: FileResponseDto })
   @ApiResponse({ status: 404, description: 'File not found.' })
   async getFileInfoByPath(
     @Param('year') year: string,
