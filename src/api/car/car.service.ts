@@ -20,7 +20,7 @@ export class CarService {
   ): Promise<CarDTO.PageableResponseDto> {
     this.logger.log('getAllCars by pageable');
     const {
-      perPage = Number(this.config.get('PAGE_SIZE')),
+      perPage = this.config.get<number>('PAGE_SIZE', 20),
       page,
       order,
       filter,

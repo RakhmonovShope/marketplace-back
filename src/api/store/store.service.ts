@@ -21,7 +21,7 @@ export class StoreService {
   ): Promise<StoreDTO.PageableResponseDto> {
     this.logger.log('getAllStores by pageable');
     const {
-      perPage = Number(this.config.get('PAGE_SIZE')),
+      perPage = this.config.get<number>('PAGE_SIZE', 20),
       page,
       order,
       filter,

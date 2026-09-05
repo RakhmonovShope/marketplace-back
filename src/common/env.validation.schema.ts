@@ -17,9 +17,28 @@ export const envValidationSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().min(16).required(),
   JWT_REFRESH_EXPIRATION: Joi.string().default('7d'),
 
+  // Pagination: perPage berilmaganda ishlatiladigan default sahifa hajmi.
+  PAGE_SIZE: Joi.number().integer().min(1).max(100).default(20),
+
+  // Parol hash'lash kuchi (bcrypt cost). 12 — 2026 uchun tavsiya; 10 — eski default.
+  BCRYPT_ROUNDS: Joi.number().integer().min(10).max(15).default(12),
+
+  // Email'larda ko'rinadigan ilova nomi.
+  APP_NAME: Joi.string().default('Marketplace'),
+
   //REDIS
   REDIS_HOST: Joi.string().default('localhost'),
   REDIS_PORT: Joi.number().default(6379),
+  REDIS_PASSWORD: Joi.string().allow('').optional(),
+
+  // Bir vaqtda nechta rasm parallel ishlanadi (image.processor.ts).
+  // Bo'sh qoldirilsa — CPU yadrolari soni.
+  IMAGE_CONCURRENCY: Joi.number().integer().min(1).optional(),
+
+  // Swagger UI (/api). Production'da default yopiq; ochilsa basic auth majburiy.
+  SWAGGER_ENABLED: Joi.boolean().default(true),
+  SWAGGER_USER: Joi.string().allow('').default(''),
+  SWAGGER_PASS: Joi.string().allow('').default(''),
 
   // AWS S3 (audio.controller.ts da ishlatilgan)
   AWS_ACCESS_KEY_ID: Joi.string().required(),

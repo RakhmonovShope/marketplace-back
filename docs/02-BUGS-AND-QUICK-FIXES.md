@@ -61,6 +61,8 @@ ThrottlerModule.forRootAsync({
 
 ## B3. Env schema to'liq emas
 
+> ✅ Bajarildi (2026-09-05, STEP-05): `PAGE_SIZE` (default 20), `BCRYPT_ROUNDS` (12), `APP_NAME`, `REDIS_PASSWORD`, `IMAGE_CONCURRENCY`, `SWAGGER_ENABLED/USER/PASS`, `THROTTLE_*`, `TRUST_PROXY` Joi'ga qo'shildi; 10 ta servisda `config.get<number>('PAGE_SIZE', 20)`. B7 ham: `RedisModule.onApplicationShutdown → quit()`, `PrismaService.onModuleDestroy → $disconnect()`; `FileModule` dagi dublikat `PrismaService` provider olib tashlandi (ikkinchi pool yaratardi). Tekshirildi: PAGE_SIZE'siz pageable 200; SIGTERM'da ikkala ulanish yopiladi.
+
 Kodda o'qiladi, lekin `env.validation.schema.ts` da yo'q:
 
 | O'zgaruvchi | Qayerda | Default taklif |

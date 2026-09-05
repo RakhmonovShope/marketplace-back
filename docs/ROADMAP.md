@@ -39,7 +39,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** Admin panel 1 daqiqada 50 so'rov yuborsa 429 yo'q; `signin` 6-urinishda 429.
 **Tekshirish.** `for i in $(seq 1 6); do curl -s -o /dev/null -w "%{http_code}\n" -X POST /v1/auth/signin -d '{}' -H 'Content-Type: application/json'; done`
 
-### - [ ] STEP-05 — Env schema to'ldirish + graceful shutdown
+### - [x] STEP-05 — Env schema to'ldirish + graceful shutdown ✅ 2026-09-05
 **Manba.** `02-BUGS` B3, B7. **Fayllar.** `env.validation.schema.ts`, `redis.module.ts`, `prisma.service.ts`, barcha `*.service.ts` (`PAGE_SIZE`)
 **Bajarish.** `PAGE_SIZE`, `REDIS_PASSWORD`, `IMAGE_CONCURRENCY`, `APP_NAME`, `SWAGGER_*`, `BCRYPT_ROUNDS` Joi'ga; `redis.quit()`, `$disconnect()`.
 **DoD.** `.env` da `PAGE_SIZE` bo'lmasa ham pageable ishlaydi (default 20).

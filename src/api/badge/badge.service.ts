@@ -20,7 +20,7 @@ export class BadgeService {
   ): Promise<BadgeDTO.PageableResponseDto> {
     this.logger.log('getAllBadges by pageable');
     const {
-      perPage = Number(this.config.get('PAGE_SIZE')),
+      perPage = this.config.get<number>('PAGE_SIZE', 20),
       page,
       order,
       filter,

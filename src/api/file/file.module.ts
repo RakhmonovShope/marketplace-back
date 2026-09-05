@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { FileService } from './file.service';
 import { FileController } from './file.controller';
-import { PrismaService } from '../../prisma/prisma.service';
 import { passportModule } from '../auth/auth.module';
 import { ImageService } from './image.service';
 import { IMAGE_QUEUE, ImageProcessor } from './image.processor';
@@ -22,12 +21,8 @@ import { ImageQueueService } from './image-queue.service';
     }),
   ],
   controllers: [FileController],
-  providers: [
-    FileService,
-    PrismaService,
-    ImageService,
-    ImageProcessor,
-    ImageQueueService,
-  ],
+  // PrismaService bu yerda QAYTA e'lon qilinmaydi: PrismaModule @Global — aks holda
+  // ikkinchi PrismaClient (alohida connection pool) yaratiladi.
+  providers: [FileService, ImageService, ImageProcessor, ImageQueueService],
 })
 export class FileModule {}

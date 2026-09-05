@@ -1,4 +1,10 @@
-import { Global, Logger, Module, OnApplicationShutdown } from '@nestjs/common';
+import {
+  Global,
+  Inject,
+  Logger,
+  Module,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
@@ -33,7 +39,22 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
   exports: [REDIS_CLIENT],
 })
 export class RedisModule implements OnApplicationShutdown {
-  async onApplicationShutdown() {
-    // process tugaganda Redis ulanishini yopish (memory leak'ning oldini olish)
+  private readonly logger = new Logger(RedisModule.name);
+
+  constructor(@Inject(REDIS_CLIENT) private readonly redis: Redis) {}
+
+  /**
+   * SIGTERM/SIGINT'da (enableShutdownHooks) Redis ulanishini toza yopamiz:
+   * `quit()` navbatdagi buyruqlar bajarilishini kutadi, keyin uzadi.
+   * Aks holda jarayon ochiq socket bilan qoladi (Docker'da stop kechikadi).
+   */
+  async onApplicationShutdown(signal?: string): Promise<void> {
+    try {
+      await this.redis.quit();
+      this.logger.log(`Redis connection closed (${signal ?? 'shutdown'})`);
+    } catch (err) {
+      this.logger.warn(`Redis quit failed: ${(err as Error).message}`);
+      this.redis.disconnect();
+    }
   }
 }

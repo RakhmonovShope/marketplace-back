@@ -25,7 +25,7 @@ export class RoleService {
   ): Promise<RoleDTO.PageableResponseDto> {
     this.logger.log('getAllRoles by pageable');
     const {
-      perPage = Number(this.config.get('PAGE_SIZE')),
+      perPage = this.config.get<number>('PAGE_SIZE', 20),
       page,
       order,
       filter,
