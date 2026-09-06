@@ -107,7 +107,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 
 ## FAZA 2 — Kuzatuv, CI, testlar
 
-### - [ ] B2-21 — Prometheus metrikalar + `/health/live|ready`
+### - [x] B2-21 — Prometheus metrikalar + `/health/live|ready` ✅ 2026-09-06
 **Manba.** `07` §2. **DoD.** `/metrics` da http histogram va navbat gauge; Redis to'xtasa `ready` 503, `live` 200.
 
 ### - [ ] B2-22 — e2e bazasi (Testcontainers/CI services) + auth, stats, import, search oqimlari

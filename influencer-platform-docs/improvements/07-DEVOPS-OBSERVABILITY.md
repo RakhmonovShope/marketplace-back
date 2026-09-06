@@ -20,6 +20,8 @@ prod'da 500 lar ko'rinmaydi. Yechim:
 
 ## 2. Metrikalar va health (P1)
 
+> ✅ Bajarildi (2026-09-06, B2-21): `MetricsModule` (prom-client): `http_request_duration_seconds{method,route,status}` (interceptor, route pattern), `bullmq_queue_jobs{queue,state}` (scrape'da getJobCounts), `search_requests_total{anon}`, `sync_jobs_total{provider,status}`, `node_*` default; `GET /api/v1/metrics` — `METRICS_ENABLED`, `METRICS_TOKEN` (Bearer), nginx'da `deny all`. Health: `/health/live` (200), `/health/ready` = db + redis + heap (`HEALTH_HEAP_LIMIT_MB`) + uploads disk 90% + sync backlog (`HEALTH_SYNC_BACKLOG_MAX`), `/health` = ready; compose healthcheck → ready. +2 unit test. Smoke: metrics 280 qator, token 401/200, disabled 404, ready 200. Redis to'xtaganda 503 — terminus HealthCheckError orqali (lokal Redis'ni to'xtatib tekshirilmadi).
+
 - **Prometheus** (`@willsoto/nestjs-prometheus`): `http_request_duration_seconds{route,status}`, `bullmq_queue_waiting{queue}`, `sync_jobs_total{provider,status}`, `search_requests_total{anon}`, `cache_hits_total{key}`; `/metrics` ichki tarmoq yoki basic auth.
 - **Health**: `/health/live` (jarayon) va `/health/ready` (db, redis, disk `uploads`, heap, navbat backlog `sync` < 5 000) — compose `healthcheck` `ready` ga. Nest `HealthModule` da `MemoryHealthIndicator`, `DiskHealthIndicator` (terminus'da bor).
 - **Uptime**: Better Uptime/UptimeRobot: `api/health`, web `/uz`, admin `/login`, mini app URL; Telegram'ga alert.
