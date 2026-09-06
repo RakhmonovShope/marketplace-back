@@ -50,6 +50,8 @@ Biznes brief yaratadi (kategoriya, byudjet, format, muddat, shahar) → tizim mo
 `Organization { name, ownerId }`, `OrgMember`, umumiy favorites/ro'yxatlar/so'rovlar, BUSINESS plan → "5 ta a'zo". `User.organizationId`.
 
 ### 10. Programmatik SEO sahifalari — M, backend+web
+
+> ✅ Bajarildi (2026-09-06, B2-36 + W2-14): backend `GET /public/seo/landing?category&city&platform&tier` (top-12 karta, totalItems, o'rtacha ER/obunachi, priceFrom, ichki havolalar: boshqa shaharlar/kategoriyalar/platformalar; 10 daq kesh) va `GET /public/seo/landings` (sitemap/statik parametrlar uchun, `SEO_LANDING_MIN`=3, `SEO_LANDING_LIMIT`=300); `City.slug` + migratsiya (mavjud shaharlarga backfill) va admin CRUD'da avtomatik slug; e2e 3 test. Web: `/catalog/<kategoriya>/<shahar>` landing (unikal title/description/canonical/hreflang, H1, statistika, ItemList JSON-LD, ichki havola tarmog'i), sitemap'ga landing URL'lari. Eslatma: root layout CSP nonce uchun `headers()` o'qigani sababli sahifa so'rovga bog'liq render qilinadi (ma'lumot 300 s fetch keshida).
 Kategoriya × shahar × platforma × tier landing'lar ("Toshkentdagi Instagram food bloggerlar (10K–50K)"): `GET /public/seo/landing`, `generateMetadata`, ichki havola tarmog'i, sitemap. Organik trafikning asosiy manbai (`04-WEB` §2).
 
 ### 11. Taqqoslashni saqlash va ulashish (B-41.4 ⏸) — S, backend+web+miniapp

@@ -29,6 +29,8 @@ serveringizda yuklab optimizatsiya qilinadi (CPU/trafik suiiste'moli, SSRF'ga ya
 
 Qo'shimcha SEO (`09-FEATURE-IDEAS` §10): **programmatik landing sahifalar** — `/catalog/food/tashkent`, `/platform/instagram`, `/tier/micro` (`generateMetadata` unikal title/description, ichki havolalar). Backend: `GET /public/seo/landing?category&city&platform` (count + top-10) — keshlanadi.
 
+> ⚠️ Aniqlangan (2026-09-06, B2-36 smoke): prod build'da (`output: standalone`) mavjud bo'lmagan sahifalar **soft-404** beradi — `/uz/yoq-sahifa`, `/uz/influencer/yoq-slug`, `/uz/catalog/yoq-kategoriya` hammasi `200` + not-found UI. Sabab: root `layout.tsx` CSP nonce uchun `headers()` o'qiydi → barcha route so'rovga bog'liq; `notFound()` status'i 200 bo'lib qolmoqda. Crawl byudjeti uchun zararli — alohida qadamda `not-found` javob kodini to'g'rilash kerak (middleware'da nonce'ni response header'ga ko'chirish yoki `unstable_rethrow`/route handler bilan 404 qaytarish).
+
 `robots.ts` — `disallow: ['/api/', ...]` bor; `Sitemap` — kategoriya sahifalari yo'q → qo'shish (`/catalog/[categorySlug]`).
 
 ---
