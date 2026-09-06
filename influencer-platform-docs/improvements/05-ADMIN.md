@@ -7,6 +7,8 @@
 
 ## 1. Bundle: barcha sahifalar statik import (P1)
 
+> ✅ Bajarildi (2026-09-06, A2-01): `App.tsx`: 16 sahifa `lazy()` + `Suspense` (`guarded()` ichida Loader), login/layout statik; `vite.config` manualChunks: `vendor`, `mantine`, `charts` (recharts+@mantine/charts+d3), `datatable`; `ANALYZE=1 pnpm build` → `stats.html` (rollup-plugin-visualizer). Natija: index chunk 1 487 kB → 90 kB; boshlang'ich yuklash (index+vendor+mantine) ≈ 636 kB (2.3× kichik), charts/datatable faqat kerak sahifada; 41 chunk.
+
 `App.tsx` — 16 sahifa, `recharts`, `mantine-datatable`, `@mantine/charts` bitta chunk'da. Yechim: `lazy(() => import('@/pages/...'))` + `Suspense`
 (login va layout statik). Vite `manualChunks`: `mantine`, `charts`, `datatable`. Natija: birinchi yuklash ~2–3× kichik. `ANALYZE` (rollup-plugin-visualizer, miniapp'dagidek) qo'shish.
 

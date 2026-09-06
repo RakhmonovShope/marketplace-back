@@ -14,39 +14,39 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 
 ## FAZA 0 — Kritik tuzatishlar (production trafigidan oldin)
 
-### - [x] B2-01 — `trust proxy` + Redis throttler storage ✅ 2026-09-06
+### - [ ] B2-01 — `trust proxy` + Redis throttler storage
 **Manba.** `01-BACKEND-SECURITY` S1, `02-PERF` §8. **Fayllar.** `src/main.ts`, `src/common/env.validation.ts`, `src/app.module.ts`, `docker-compose.prod.yml`, `.env.example`
 **Bajarish.** `TRUST_PROXY` env (default `false`, prod `1`) → Express `trust proxy`; `@nest-lab/throttler-storage-redis`; search route'ga `@Throttle({ default: { limit: 60, ttl: 60_000 } })`.
 **DoD.** nginx ortida `req.ip` real IP (pino logda); 2 ta IP'dan alohida limit.
 **Tekshirish.** `curl -H "X-Forwarded-For: 1.2.3.4" localhost:3000/api/v1/health` → logda `ip: 1.2.3.4` (TRUST_PROXY=1 bilan); TRUST_PROXY=false da `::1`.
 
-### - [x] B2-02 — `requestContact` imzosini tekshirish ✅ 2026-09-06
+### - [ ] B2-02 — `requestContact` imzosini tekshirish
 **Manba.** `01` S2. **Fayllar.** `src/api/auth/telegram/validate-contact.ts` (+spec), `auth.service.ts`, `auth.dto.ts`, `error-codes.ts`; miniapp `useBindPhone` xom natijani yuborishini tasdiqlash.
 **DoD.** `contact` imzosiz/soxta → 401 `INVALID_CONTACT_DATA`; to'g'ri imzo (test bot token bilan yasalgan) → telefon bog'lanadi.
 **Tekshirish.** `pnpm test -- validate-contact`.
 
-### - [x] B2-03 — Loglarda token redaction + `userId` ✅ 2026-09-06
+### - [ ] B2-03 — Loglarda token redaction + `userId`
 **Manba.** `01` S3. **Fayllar.** `src/app.module.ts`
 **DoD.** Logda `authorization: "[redacted]"`; `userId` maydoni bor; `/files/`, `/api/docs` auto-log'dan tashqarida.
 **Tekshirish.** `curl -H "Authorization: Bearer abc" …/auth/me` → log qatorida `abc` yo'q.
 
-### - [x] B2-04 — `OptionalAuthGuard`: eskirgan token → 401 ✅ 2026-09-06
+### - [ ] B2-04 — `OptionalAuthGuard`: eskirgan token → 401
 **Manba.** `01` S6. **Fayllar.** `src/api/auth/optional-auth.guard.ts` (+spec)
 **DoD.** Token yo'q → anonim; token yaroqsiz → 401 `UNAUTHORIZED`; web/miniapp refresh oqimi ishlaydi (16 daqiqadan keyin `isFavorite` to'g'ri).
 **Tekshirish.** e2e: eskirgan token bilan `POST /app/influencers/search` → 401.
 
-### - [x] B2-05 — Sentry ishga tushirish (backend) ✅ 2026-09-06
+### - [ ] B2-05 — Sentry ishga tushirish (backend)
 **Manba.** `07-DEVOPS` §1. **Fayllar.** `src/instrument.ts`, `src/main.ts`, `src/common/filters/http-exception.filter.ts`, processor'lar
 **DoD.** `SENTRY_DSN` bilan sun'iy 500 (`GET /api/v1/admin/__boom` test route yoki mock) Sentry'da ko'rinadi, `requestId` bilan; DSN'siz hech narsa buzilmaydi.
 
-### - [x] B2-06 — Swagger prod'da yopiq + Prisma xatolarini map qilish ✅ 2026-09-06
+### - [ ] B2-06 — Swagger prod'da yopiq + Prisma xatolarini map qilish
 **Manba.** `01` S4, S7. **Fayllar.** `swagger.setup.ts`, `env.validation.ts`, `http-exception.filter.ts`, `error-codes.ts` (`CONFLICT`)
 **DoD.** `NODE_ENV=production` `/api/docs` 404 (yoki basic auth); `Country.code` dublikati → 409 `CONFLICT` `details.target`.
 
-### - [x] B2-07 — `xlsx`/`multer`/`dotenv` yangilash + import limitlari ✅ 2026-09-06
+### - [ ] B2-07 — `xlsx`/`multer`/`dotenv` yangilash + import limitlari
 **Manba.** `01` S5. **DoD.** `pnpm audit --audit-level=high` toza; XLSX import ishlaydi (e2e); 10MB/10k satr limiti.
 
-### - [x] B2-08 — `Category.influencerCount` to'g'ri hisob + import slug-merge himoyasi ✅ 2026-09-06
+### - [ ] B2-08 — `Category.influencerCount` to'g'ri hisob + import slug-merge himoyasi
 **Manba.** `03-DATA-QUALITY` §1.1, §1.2. **Fayllar.** `src/api/category/category-count.service.ts`, `influencer.service.ts` (publish/delete/restore), `import.service.ts`, `import.parser.ts` (`slug` ustuni, `NAME_MATCH` warning), cron.
 **DoD.** Count faqat PUBLISHED+active; importdan keyin to'g'ri; ism mos kelsa preview'da ogohlantirish, default — yangi yozuv.
 
@@ -61,37 +61,37 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 
 ## FAZA 1 — Performance va ma'lumot sifati
 
-### - [x] B2-10 — JwtStrategy user keshi (Redis 60 s) + invalidatsiya ✅ 2026-09-06
+### - [ ] B2-10 — JwtStrategy user keshi (Redis 60 s) + invalidatsiya
 **Manba.** `02` §1. **DoD.** Himoyalangan so'rovda DB query 0 (kesh hit); block/rol o'zgarishi darhol ta'sir qiladi (test).
 
-### - [x] B2-11 — Qidiruv: count keshi, anonim natija keshi (30 s), kategoriya bolalari keshdan, `/count` endpoint ✅ 2026-09-06
+### - [ ] B2-11 — Qidiruv: count keshi, anonim natija keshi (30 s), kategoriya bolalari keshdan, `/count` endpoint
 **Manba.** `02` §2. **DoD.** Bir xil anonim so'rov 2-marta DB'ga bormaydi (log); miniapp count 400 ms debounce.
 
-### - [x] B2-12 — `recountViews` bitta SQL + `ProfileView`/`SearchLog` retention ✅ 2026-09-06
+### - [ ] B2-12 — `recountViews` bitta SQL + `ProfileView`/`SearchLog` retention
 **Manba.** `02` §3, `01` S9. **DoD.** 10k influencer uchun < 2 s; 90/180 kundan eski yozuvlar kunlik o'chiriladi.
 
-### - [x] B2-13 — Aggregate: aniq kalit `del`, batch `recalculate(ids)`, dashboard dirty-flag ✅ 2026-09-06
+### - [ ] B2-13 — Aggregate: aniq kalit `del`, batch `recalculate(ids)`, dashboard dirty-flag
 **Manba.** `02` §4, §10. **DoD.** `SCAN` chaqiruvi yo'q (Redis `MONITOR`); import 1 000 satrda dashboard keshi 1 marta tozalanadi.
 
-### - [x] B2-14 — Import: referenslarni oldindan yuklash (Map), N+1 yo'q ✅ 2026-09-06
+### - [ ] B2-14 — Import: referenslarni oldindan yuklash (Map), N+1 yo'q
 **Manba.** `02` §5. **DoD.** 5 000 satr STATS < 3 daqiqa (lokal); query soni satr soniga chiziqli emas.
 
-### - [x] B2-15 — Sync: `UnrecoverableError`, provayder rate limit/kvota, ustuvorlik ✅ 2026-09-06
+### - [ ] B2-15 — Sync: `UnrecoverableError`, provayder rate limit/kvota, ustuvorlik
 **Manba.** `02` §6. **DoD.** 404 provayder xatosi retry qilinmaydi; YouTube kunlik byudjet env bilan cheklanadi; log shovqini kamaygan.
 
-### - [x] B2-16 — Statik fayllar: cache header'lar, nginx alias, `File.path` nisbiy ✅ 2026-09-06
+### - [ ] B2-16 — Statik fayllar: cache header'lar, nginx alias, `File.path` nisbiy
 **Manba.** `02` §7, `07` §3. **DoD.** `/files/...` javobida `Cache-Control: immutable`; nginx to'g'ridan-to'g'ri beradi; `PUBLIC_URL` o'zgarsa URL'lar to'g'ri.
 
-### - [x] B2-17 — Worker ajratish: `QUEUE_WORKERS_ENABLED`, `BOT_ENABLED` defaultlari, compose `worker` ✅ 2026-09-06
+### - [ ] B2-17 — Worker ajratish: `QUEUE_WORKERS_ENABLED`, `BOT_ENABLED` defaultlari, compose `worker`
 **Manba.** `02` §9, `07` §3. **DoD.** `app` (2 replica) job ishlamaydi va bot ochmaydi; `worker` — hammasi.
 
-### - [x] B2-18 — Analytics: `growth30d` nullable, trending damping, popularity weights → recalculate job ✅ 2026-09-06
+### - [ ] B2-18 — Analytics: `growth30d` nullable, trending damping, popularity weights → recalculate job
 **Manba.** `03` §1.3, §1.4, §3.4. **DoD.** Yangi influencer `growth30d: null`; weights saqlansa navbatga `recalculate-all`; frontend'lar `null` ko'rsatadi (W2/M2/A2 mos qadamlar).
 
-### - [x] B2-19 — Indekslar va Prisma sozlamalari ✅ 2026-09-06
+### - [ ] B2-19 — Indekslar va Prisma sozlamalari
 **Manba.** `02` §11. **DoD.** `minPrice`/`avgViews` indekslari migratsiyada; dublikat slug indekslari olib tashlangan; sekin query logi.
 
-### - [ ] A2-01 — Sahifalarni lazy yuklash + chunk'lar + analyzer
+### - [x] A2-01 — Sahifalarni lazy yuklash + chunk'lar + analyzer ✅ 2026-09-06
 **Manba.** `05-ADMIN` §1. **DoD.** Boshlang'ich JS 2× kichik (analyzer skrinshoti); barcha route'lar ishlaydi.
 
 ### - [ ] B2-20 + A2-02 — Bulk endpoint + admin bulk UI
