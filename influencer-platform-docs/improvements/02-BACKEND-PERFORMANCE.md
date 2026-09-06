@@ -50,6 +50,8 @@ FROM (SELECT "influencerId", COUNT(*) c FROM "ProfileView" GROUP BY 1) v WHERE v
 
 ## 4. Aggregate invalidatsiyasi: har chaqiruvda 2× Redis `SCAN`
 
+> ✅ Bajarildi (2026-09-06, B2-13): `CACHE_KEYS` (aniq kalitlar), `recalculateMany(ids)` — 50 talik chunk, 1 findMany + 1 groupBy, update'lar bitta tranzaksiyada, `del(influencer:<id>:profile)`; `recalculate(id)`/`recalculateAll`/import shu orqali; `InfluencerService.invalidate`, banner'lar ham aniq kalit. Dashboard: `dashboard:dirty` bayroq + stale-while-revalidate (`setNx` qulf bilan fon yangilanish, §10). +3 unit test. Redis MONITOR: SCAN 0, UNLINK profile 1, dirty set/del ko'rindi. Qolgan `delByPattern`: faqat `plan:*` (subscription, kam chaqiriladi).
+
 **Hozir.** `InfluencerAggregateService.recalculate` → `delByPattern('influencer:<id>:*')` + `delByPattern('dashboard:*')` (SCAN butun keyspace).
 Import 1 000 satr = 2 000 SCAN; `recalculateAll` (10k) = 20k SCAN + ketma-ket.
 
@@ -110,6 +112,8 @@ Repeatable job'lar (`onApplicationBootstrap`) — `jobId` bilan idempotent (bor)
 ---
 
 ## 10. Dashboard va profil keshi — kichik yaxshilashlar
+
+> ✅ Qisman (2026-09-06, B2-13): `dashboard:main` invalidatsiya o'rniga `dashboard:dirty` + o'qishda fon yangilanish (`setNx` qulf). Qolganlari (`search:filters` invalidatsiyasi, `registrations` raw SQL) — keyingi qadamlarda.
 
 - `dashboard:main` (10 min) invalidatsiyasi har `recalculate` da → yuqori yozish oqimida deyarli doim miss. `stale-while-revalidate`: TTL 10 min, invalidatsiya o'rniga `dashboard:dirty` bayrog'i + cron 1 daqiqada qayta hisoblash.
 - `search:filters` (1 soat) kategoriya/ma'lumotnoma o'zgarganda invalidatsiya qilinmaydi → `CategoryService.invalidate`/`ReferenceService` ga `del('search:filters')`.

@@ -70,7 +70,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-12 — `recountViews` bitta SQL + `ProfileView`/`SearchLog` retention ✅ 2026-09-06
 **Manba.** `02` §3, `01` S9. **DoD.** 10k influencer uchun < 2 s; 90/180 kundan eski yozuvlar kunlik o'chiriladi.
 
-### - [ ] B2-13 — Aggregate: aniq kalit `del`, batch `recalculate(ids)`, dashboard dirty-flag
+### - [x] B2-13 — Aggregate: aniq kalit `del`, batch `recalculate(ids)`, dashboard dirty-flag ✅ 2026-09-06
 **Manba.** `02` §4, §10. **DoD.** `SCAN` chaqiruvi yo'q (Redis `MONITOR`); import 1 000 satrda dashboard keshi 1 marta tozalanadi.
 
 ### - [ ] B2-14 — Import: referenslarni oldindan yuklash (Map), N+1 yo'q
