@@ -34,7 +34,7 @@ export const envValidationSchema = Joi.object({
 
   // Bir vaqtda nechta rasm parallel ishlanadi (image.processor.ts).
   // Bo'sh qoldirilsa — CPU yadrolari soni.
-  IMAGE_CONCURRENCY: Joi.number().integer().min(1).optional(),
+  IMAGE_CONCURRENCY: Joi.number().integer().min(1).allow('').optional(),
 
   // Swagger UI (/api). Development'da default ochiq, production'da default YOPIQ;
   // production'da ochilsa SWAGGER_USER/SWAGGER_PASS (basic auth) majburiy.
@@ -46,11 +46,12 @@ export const envValidationSchema = Joi.object({
   SWAGGER_USER: Joi.string().allow('').default(''),
   SWAGGER_PASS: Joi.string().allow('').default(''),
 
-  // AWS S3 (audio.controller.ts da ishlatilgan)
-  AWS_ACCESS_KEY_ID: Joi.string().required(),
-  AWS_SECRET_ACCESS_KEY: Joi.string().required(),
-  AWS_REGION: Joi.string().required(),
-  AWS_S3_BUCKET_NAME: Joi.string().required(),
+  // AWS S3 — hozircha faqat audio upload (audio.controller.ts). Ixtiyoriy:
+  // bo'sh bo'lsa app ishga tushadi, audio upload esa xato beradi.
+  AWS_ACCESS_KEY_ID: Joi.string().allow('').default(''),
+  AWS_SECRET_ACCESS_KEY: Joi.string().allow('').default(''),
+  AWS_REGION: Joi.string().allow('').default(''),
+  AWS_S3_BUCKET_NAME: Joi.string().allow('').default(''),
 
   // Rate limiting (IP bo'yicha, barcha route'lar uchun umumiy "default" limit).
   // Qat'iy limitlar route darajasida @Throttle() bilan beriladi (auth).
@@ -88,9 +89,10 @@ export const envValidationSchema = Joi.object({
   // app ishga tushishida majburiy emas.
   SEED_ADMIN_PHONE: Joi.string()
     .pattern(/^998\d{9}$/)
+    .allow('')
     .optional(),
-  SEED_ADMIN_PASSWORD: Joi.string().min(8).optional(),
-  SEED_ADMIN_EMAIL: Joi.string().email().optional(),
-  SEED_ADMIN_FIRST_NAME: Joi.string().optional(),
-  SEED_ADMIN_LAST_NAME: Joi.string().optional(),
+  SEED_ADMIN_PASSWORD: Joi.string().min(8).allow('').optional(),
+  SEED_ADMIN_EMAIL: Joi.string().email().allow('').optional(),
+  SEED_ADMIN_FIRST_NAME: Joi.string().allow('').optional(),
+  SEED_ADMIN_LAST_NAME: Joi.string().allow('').optional(),
 });

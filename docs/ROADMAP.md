@@ -78,7 +78,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 
 ## FAZA 1 — Poydevor (DevOps, kuzatuv, test, konvensiyalar)
 
-### - [ ] STEP-11 — `.env.example`, `README.md`, Node pin
+### - [x] STEP-11 — `.env.example`, `README.md`, Node pin ✅ 2026-09-06
 **Manba.** `10-DEVOPS` §1, §4; `12-DX` §3, §5. **DoD.** `cp .env.example .env` bilan dev ishga tushadi; `pnpm env:check` yashil.
 **Tekshirish.** `pnpm env:check`
 

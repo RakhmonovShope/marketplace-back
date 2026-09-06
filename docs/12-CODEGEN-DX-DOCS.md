@@ -44,6 +44,8 @@
 
 ## 3. `.env.example` va tekshiruv
 
+> ✅ Bajarildi (2026-09-06, STEP-11): `.env.example` (40 kalit, guruhlangan, izohli), `tools/check-env-example.js` (schema ↔ example kalitlari + qiymatlar Joi'dan o'tishi) → `pnpm env:check`; `README.md` haqiqiy qo'llanma; `.nvmrc` (24), `engines`, `packageManager: pnpm@8.12.1`, `pnpm typecheck`. AWS_* endi ixtiyoriy (audio upload'siz app ishga tushadi).
+
 `tools/check-env-example.js`: `env.validation.schema.ts` dan kalitlarni (regex `^\s+(\w+):\s*Joi`) o'qib, `.env.example` da yo'qlarini chiqaradi, `exit 1`. CI'da (`10-DEVOPS` §6).
 `.env.example` bo'limlari: App, Database, JWT, Redis, Storage, Mail, CORS, Throttle, Swagger, Observability, Seed, Payment (keyin).
 

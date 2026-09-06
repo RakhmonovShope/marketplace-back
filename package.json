@@ -1,14 +1,14 @@
 {
   "name": "marketplace-backend",
   "version": "0.0.1",
-  "description": "",
+  "description": "Marketplace backend — NestJS 10, Prisma 5, PostgreSQL, Redis, BullMQ",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "build": "pnpm run prisma:generate && nest build",
     "seed": "ts-node prisma/seed.ts",
-    "migrate:seed": "npx prisma migrate deploy && npx prisma db seed",
+    "migrate:seed": "prisma migrate deploy && prisma db seed",
     "prisma:generate": "prisma generate",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -21,7 +21,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate": "pnpm plop --plopfile tools/generators/index.js --no-interactive"
+    "generate": "pnpm plop --plopfile tools/generators/index.js --no-interactive",
+    "typecheck": "tsc --noEmit -p tsconfig.build.json",
+    "env:check": "node tools/check-env-example.js"
   },
   "prisma": {
     "seed": "ts-node --transpile-only prisma/seed.ts"
@@ -110,5 +112,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "engines": {
+    "node": ">=22 <25",
+    "pnpm": ">=8"
+  },
+  "packageManager": "pnpm@8.12.1"
 }

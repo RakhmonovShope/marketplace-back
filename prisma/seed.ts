@@ -55,8 +55,11 @@ async function seedRoles() {
  * Mavjud foydalanuvchi (telefon bo'yicha) faqat rol/faollik bo'yicha yangilanadi —
  * paroli o'zgartirilmaydi.
  */
+/** Bo'sh string ham "berilmagan" hisoblanadi (.env.example'dagi bo'sh qatorlar). */
+const env = (key: string): string | undefined => process.env[key] || undefined;
+
 async function seedSuperAdminUser(roleId: string) {
-  const phone = process.env.SEED_ADMIN_PHONE;
+  const phone = env('SEED_ADMIN_PHONE');
 
   if (!phone) {
     console.warn(
@@ -76,7 +79,7 @@ async function seedSuperAdminUser(roleId: string) {
     return;
   }
 
-  const password = process.env.SEED_ADMIN_PASSWORD;
+  const password = env('SEED_ADMIN_PASSWORD');
 
   if (!password || password.length < 8) {
     console.warn(
@@ -89,10 +92,10 @@ async function seedSuperAdminUser(roleId: string) {
 
   const user = await prisma.user.create({
     data: {
-      firstName: process.env.SEED_ADMIN_FIRST_NAME ?? 'Super',
-      lastName: process.env.SEED_ADMIN_LAST_NAME ?? 'Admin',
+      firstName: env('SEED_ADMIN_FIRST_NAME') ?? 'Super',
+      lastName: env('SEED_ADMIN_LAST_NAME') ?? 'Admin',
       phone,
-      email: process.env.SEED_ADMIN_EMAIL ?? `admin+${phone}@example.com`,
+      email: env('SEED_ADMIN_EMAIL') ?? `admin+${phone}@example.com`,
       gender: 'MALE',
       birthday: '01.01.1990',
       password: await bcrypt.hash(password, rounds),
