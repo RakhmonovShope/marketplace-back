@@ -35,7 +35,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **DoD.** Token yo'q → anonim; token yaroqsiz → 401 `UNAUTHORIZED`; web/miniapp refresh oqimi ishlaydi (16 daqiqadan keyin `isFavorite` to'g'ri).
 **Tekshirish.** e2e: eskirgan token bilan `POST /app/influencers/search` → 401.
 
-### - [ ] B2-05 — Sentry ishga tushirish (backend)
+### - [x] B2-05 — Sentry ishga tushirish (backend) ✅ 2026-09-06
 **Manba.** `07-DEVOPS` §1. **Fayllar.** `src/instrument.ts`, `src/main.ts`, `src/common/filters/http-exception.filter.ts`, processor'lar
 **DoD.** `SENTRY_DSN` bilan sun'iy 500 (`GET /api/v1/admin/__boom` test route yoki mock) Sentry'da ko'rinadi, `requestId` bilan; DSN'siz hech narsa buzilmaydi.
 

@@ -7,6 +7,8 @@
 
 ## 1. Sentry — hozir hech narsa yubormaydi (P0)
 
+> ✅ Bajarildi (2026-09-06, B2-05): `src/instrument.ts` — eng birinchi import, `Sentry.init` faqat DSN bilan (`APP_ENV`, `release=GIT_SHA` Dockerfile build-arg + CI, `beforeSend` header redaction); `HttpExceptionFilter`: 5xx → `captureException` (`requestId`/`path` teglari, user id) va javobda `requestId`; 5 ta BullMQ processor `@OnWorkerEvent('failed')` → `captureJobFailure`; `GET /health/boom` (`SENTRY_TEST_ROUTE=true` bo'lgandagina, aks holda 404). Tekshirildi: soxta ingest serverga event keldi (tags.requestId=smoke-req-1, release, env, authorization=[redacted]); DSN'siz hech narsa o'zgarmaydi. Frontend'lar — X2-01.
+
 `main.ts`: `Sentry.init` `NestFactory.create` dan **keyin** (auto-instrumentation talabi buzilgan) va hech qayerda `captureException` yo'q →
 prod'da 500 lar ko'rinmaydi. Yechim:
 1. `src/instrument.ts` — eng birinchi import (`import './instrument'` `main.ts` boshida), `SENTRY_DSN` bo'lsa `Sentry.init({ dsn, environment: APP_ENV, release: GIT_SHA })`.
