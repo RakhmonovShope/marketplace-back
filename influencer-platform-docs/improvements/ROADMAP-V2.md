@@ -20,7 +20,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **DoD.** nginx ortida `req.ip` real IP (pino logda); 2 ta IP'dan alohida limit.
 **Tekshirish.** `curl -H "X-Forwarded-For: 1.2.3.4" localhost:3000/api/v1/health` → logda `ip: 1.2.3.4` (TRUST_PROXY=1 bilan); TRUST_PROXY=false da `::1`.
 
-### - [ ] B2-02 — `requestContact` imzosini tekshirish
+### - [x] B2-02 — `requestContact` imzosini tekshirish ✅ 2026-09-06
 **Manba.** `01` S2. **Fayllar.** `src/api/auth/telegram/validate-contact.ts` (+spec), `auth.service.ts`, `auth.dto.ts`, `error-codes.ts`; miniapp `useBindPhone` xom natijani yuborishini tasdiqlash.
 **DoD.** `contact` imzosiz/soxta → 401 `INVALID_CONTACT_DATA`; to'g'ri imzo (test bot token bilan yasalgan) → telefon bog'lanadi.
 **Tekshirish.** `pnpm test -- validate-contact`.

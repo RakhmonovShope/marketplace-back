@@ -30,6 +30,8 @@ Proxy'siz muhitda `false` qoladi (aks holda mijoz `X-Forwarded-For` bilan limitn
 
 ## S2. `requestContact` javobi imzosiz qabul qilinadi — telefon soxtalashtirish (KRITIK)
 
+> ✅ Bajarildi (2026-09-06, B2-02): `validate-contact.ts` (+8 unit test) — `requestContactComplete().raw` (yoki parsed `{contact, auth_date, hash}`) initData bilan bir xil HMAC sxemada tekshiriladi (`webapp-hash.ts` umumiy, `timingSafeEqual`); imzo/muddat/tuzilma xato → 401 `INVALID_CONTACT_DATA`; miniapp `AuthGate` endi `raw` yuboradi, `api-schema.d.ts` qayta generatsiya. Smoke: soxta telefon 401, imzosiz obyekt 401, boshqa user 403, 6 daqiqa eski 401, to'g'ri imzo 201.
+
 **Muammo.** `AuthService.telegramBindPhone`: `initData` tekshiriladi (to'g'ri), keyin `dto.contact` dan `user_id` va
 `phone_number` olinadi; `user_id === initData.user.id` bo'lsa telefon `phoneVerified: true` bilan yoziladi.
 `contact` obyektini mijoz o'zi yasashi mumkin (`{ user_id: <o'z id>, phone_number: '+998...' }`) — Telegram imzosi tekshirilmaydi.

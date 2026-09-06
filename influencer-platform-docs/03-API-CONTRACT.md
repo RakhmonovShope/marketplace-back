@@ -23,7 +23,7 @@ X-Client: web | miniapp | admin   # analitika uchun
 | POST | `/auth/web/otp/request` ⏸ | web | `{phone}` — MVP-keyin (ADR-013) | `{sent, channel, expiresIn}` |
 | POST | `/auth/web/otp/verify` ⏸ | web | `{phone, code}` — MVP-keyin | `{accessToken, refreshToken, user, isNew}` |
 | POST | `/auth/telegram/init` | miniapp | `{initData}` | `{accessToken, refreshToken, user, needsPhone}` |
-| POST | `/auth/telegram/bind-phone` | miniapp | `{initData, contact}` | `{user}` |
+| POST | `/auth/telegram/bind-phone` | miniapp | `{initData, contact}` — `contact` = `requestContactComplete().raw` (Telegram imzoli query string; B2-02) | `{user}` |
 | POST | `/auth/refresh` | hammasi | `{refreshToken}` | `{accessToken, refreshToken}` |
 | POST | `/auth/logout` | hammasi | `{refreshToken}` | `{success}` |
 | GET | `/auth/me` | hammasi | — | `{user, plan, permissions}` |
@@ -384,6 +384,7 @@ Backend **raqamni** qaytaradi, frontend formatlaydi:
 | `INIT_DATA_EXPIRED` | 401 | `auth_date` 5 daqiqadan eski |
 | `INVALID_WIDGET_DATA` | 401 | Login Widget imzosi noto'g'ri (web, ADR-013) |
 | `WIDGET_DATA_EXPIRED` | 401 | Widget `auth_date` 5 daqiqadan eski |
+| `INVALID_CONTACT_DATA` | 401 | `requestContact` natijasi imzosiz/soxta yoki 5 daqiqadan eski (miniapp, B2-02) |
 | `OTP_INVALID` | 401 | Kod noto'g'ri |
 | `OTP_EXPIRED` | 401 | Kod muddati tugagan |
 | `OTP_TOO_MANY_ATTEMPTS` | 429 | 5 marta xato |
