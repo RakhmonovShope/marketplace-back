@@ -67,7 +67,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-11 — Qidiruv: count keshi, anonim natija keshi (30 s), kategoriya bolalari keshdan, `/count` endpoint ✅ 2026-09-06
 **Manba.** `02` §2. **DoD.** Bir xil anonim so'rov 2-marta DB'ga bormaydi (log); miniapp count 400 ms debounce.
 
-### - [ ] B2-12 — `recountViews` bitta SQL + `ProfileView`/`SearchLog` retention
+### - [x] B2-12 — `recountViews` bitta SQL + `ProfileView`/`SearchLog` retention ✅ 2026-09-06
 **Manba.** `02` §3, `01` S9. **DoD.** 10k influencer uchun < 2 s; 90/180 kundan eski yozuvlar kunlik o'chiriladi.
 
 ### - [ ] B2-13 — Aggregate: aniq kalit `del`, batch `recalculate(ids)`, dashboard dirty-flag

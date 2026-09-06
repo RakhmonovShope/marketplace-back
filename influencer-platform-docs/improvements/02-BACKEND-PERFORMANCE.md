@@ -36,6 +36,8 @@ preview botlari) bir xil so'rovlarni takrorlaydi.
 
 ## 3. `recountViews`: soatiga N ta `UPDATE`
 
+> ✅ Bajarildi (2026-09-06, B2-12): `recountViews` — bitta `UPDATE … FROM (GROUP BY)` (faqat `viewCount < count` bo'lsa ko'taradi); `viewCount` endi `trackView`'da `increment` (umrbod hisoblagich, retention'dan keyin ham saqlanadi); kunlik `cleanup-tracking` job (04:20): ProfileView `PROFILE_VIEW_RETENTION_DAYS` (90), SearchLog `SEARCH_LOG_RETENTION_DAYS` (180). +4 unit test. Smoke: view → viewCount +1; SQL dev DB'da 41 ms (O(1) so'rov, N ta UPDATE emas).
+
 **Hozir.** `profileView.groupBy` → har influencer uchun `influencer.update` (10k influencer = 10k query har soat).
 **Yechim.** Bitta SQL:
 ```sql
