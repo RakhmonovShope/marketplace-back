@@ -19,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -44,7 +45,9 @@ export class BrandController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiBody({ type: BrandDTO.BrandResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: BrandDTO.BrandResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.BRAND__VIEW)
   async getAdmin(@Param('id') id: string): Promise<BrandDTO.BrandResponse> {
     return this.brandService.getById(id);

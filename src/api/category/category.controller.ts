@@ -19,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -44,7 +45,9 @@ export class CategoryController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Category get by Id' })
-  @ApiBody({ type: CategoryDTO.CategoryResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: CategoryDTO.CategoryResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.CATEGORY__VIEW)
   async getById(@Param('id') id: string) {
     return this.categoryService.getById(id);
@@ -52,7 +55,8 @@ export class CategoryController {
 
   @Post()
   @ApiOperation({ summary: 'Category create' })
-  @ApiBody({ type: CategoryDTO.CategoryResponse })
+  @ApiBody({ type: CategoryDTO.Create })
+  @ApiResponse({ status: 201, type: CategoryDTO.CategoryResponse })
   @Permissions(PERMISSIONS.CATEGORY__CREATE)
   async create(
     @Body() payload: CategoryDTO.Create,
@@ -62,7 +66,9 @@ export class CategoryController {
 
   @Put()
   @ApiOperation({ summary: 'Category update' })
-  @ApiBody({ type: CategoryDTO.CategoryResponse })
+  @ApiBody({ type: CategoryDTO.Update })
+  @ApiResponse({ status: 200, type: CategoryDTO.CategoryResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.CATEGORY__UPDATE)
   async updateAdmin(
     @Body() payload: CategoryDTO.Update,

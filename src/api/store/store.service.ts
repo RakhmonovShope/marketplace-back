@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Store } from '@prisma/client';
 import * as StoreDTO from './store.dto';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 
 import { getWhereOperations } from 'helpers';
 import { ConfigService } from '@nestjs/config';
@@ -35,7 +35,7 @@ export class StoreService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.store.count({ where }),
@@ -74,9 +74,12 @@ export class StoreService {
   async updateStore({ payload }: { payload: StoreDTO.Update }): Promise<Store> {
     this.logger.log('updateStore');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateStore = await this.prisma.store.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return updateStore;

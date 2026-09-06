@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { Car } from '@prisma/client';
 import * as CarDTO from './car.dto';
 import { getWhereOperations } from 'helpers';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class CarService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.car.count({ where: { ...where, deletedAt: null } }),
@@ -55,6 +55,10 @@ export class CarService {
       where: { id, deletedAt: null },
     });
 
+    if (!car) {
+      throw new NotFoundException('Car not found');
+    }
+
     return car;
   }
 
@@ -69,9 +73,12 @@ export class CarService {
   async update({ payload }: { payload: CarDTO.Update }): Promise<Car> {
     this.logger.log('updateCar');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateCar = await this.prisma.car.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return updateCar;

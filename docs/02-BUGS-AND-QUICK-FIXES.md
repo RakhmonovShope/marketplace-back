@@ -80,6 +80,8 @@ Kodda o'qiladi, lekin `env.validation.schema.ts` da yo'q:
 
 ## B4. Message pageable: `count()` filtersiz, `getById` 404 bermaydi
 
+> ✅ Bajarildi (2026-09-06, STEP-09): B4, B5 (badge/page/banner/role/car/message 404), B6 (`order` `@IsIn`, `toPrismaOrder` helper, `prisma` paketidan tip importi olib tashlandi), B8 (`@nestjs/swagger` PartialType/OmitType), B9 (15 ta GET/POST/PUT dekorator), B10 (`badges/stream`, `cron/example`, `console.log` — 0 ta), B12 (`code` + `errors[]`, `src/common/error-codes.ts`, 4xx warn / 5xx error), B13 (10 ta servisda `const { id, ...data } = payload`), B14 (migratsiya `drop_duplicate_token_hash_indexes`); S9: `/auth/me` (+`/get-me` alias) `AuthGuard` + `@CurrentUser`, `auth.guard.ts` o'chirildi, `createAdmin` → `ADMIN__CREATE`, `Role.delete` → 409 `SYSTEM_ROLE`/`ROLE_IN_USE`. Tekshirildi: 8 holat.
+
 `message.service.ts:80`: `this.prisma.message.count()` → filter e'tiborga olinmaydi, `totalPages` noto'g'ri.
 Boshqa servislar (`category`, `store`, …) allaqachon `$transaction([findMany, count({where})])` ishlatadi.
 Bir xil qilish. `getById` `null` qaytarsa → `NotFoundException`.
@@ -182,3 +184,24 @@ await this.prisma.category.update({ where: { id }, data });
 
 B1 → B3 → B2 → B7 → B4 → B5 → B6 → B13 → B8 → B9 → B12 → B11 → B14 → B10.
 Har biridan keyin `pnpm lint && pnpm build`.
+
+---
+
+## B15. Swagger sxema nomlari to'qnashadi (`Create`/`Update`/`PageableResponseDto`) — STEP-20
+
+> Topildi 2026-09-06 (STEP-09 tekshiruvida). `components.schemas` da bitta `Update`, bitta `Create`,
+> bitta `PageableResponseDto` qoladi — qaysi modulniki "oxirgi" bo'lsa o'sha. `openapi-typescript`
+> uchun bu tiplarni yaroqsiz qiladi.
+
+**Sabab.** `@nestjs/swagger` sxema nomini **sinf nomidan** oladi; loyihada har modul `export class Create`,
+`export class Update`, `export class PageableResponseDto` (AGENTS.md §4.3 konvensiyasi).
+
+**Yechim (konvensiyani buzmasdan).** Sinfni prefiks bilan nomlab, eski nomni alias sifatida eksport qilish —
+`import * as CategoryDTO` + `CategoryDTO.Create` o'zgarmaydi, Swagger esa `CategoryCreate` ni ko'radi:
+```ts
+export class CategoryCreate { ... }
+export class CategoryUpdate extends CategoryCreate { ... }
+export class CategoryPageableResponse extends PageableDto { ... }
+export { CategoryCreate as Create, CategoryUpdate as Update, CategoryPageableResponse as PageableResponseDto };
+```
+Generator template (`12-DX` §1) ham shu shablonga o'tadi. Bajarilishi — `ROADMAP.md` STEP-20.

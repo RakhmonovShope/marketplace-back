@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Banner } from '@prisma/client';
 import * as BannerDTO from './banner.dto';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 import { getWhereOperations } from 'helpers';
 import { ConfigService } from '@nestjs/config';
 
@@ -34,7 +34,7 @@ export class BannerService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.banner.count({ where }),
@@ -55,6 +55,10 @@ export class BannerService {
       where: { id },
     });
 
+    if (!banner) {
+      throw new NotFoundException('Banner not found');
+    }
+
     return banner;
   }
 
@@ -73,9 +77,12 @@ export class BannerService {
   }): Promise<Banner> {
     this.logger.log('updateBanner');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateBanner = await this.prisma.banner.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return updateBanner;

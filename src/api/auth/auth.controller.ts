@@ -7,11 +7,10 @@ import {
   HttpStatus,
   Ip,
   Post,
-  Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './current-user.decorator';
 import * as AuthDTO from './auth.dto';
 import {
   ApiBearerAuth,
@@ -22,10 +21,6 @@ import {
 import * as AdminDTO from '../admin/admin.dto';
 import { Throttle } from '@nestjs/throttler';
 import { AuthGuard } from '@nestjs/passport';
-
-interface RequestWithUser {
-  user: { id: string };
-}
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -86,25 +81,26 @@ export class AuthController {
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: 'Logout from all devices' })
   @ApiResponse({ status: 200, schema: { example: { success: true } } })
-  async logoutAll(@Req() req: RequestWithUser): Promise<{ success: boolean }> {
-    return this.authService.logoutAll(req.user.id);
+  async logoutAll(
+    @CurrentUser('id') userId: string,
+  ): Promise<{ success: boolean }> {
+    return this.authService.logoutAll(userId);
   }
 
-  @Get('get-me')
-  @ApiOperation({ summary: 'Get me' })
+  // Token tekshiruvi — JwtStrategy (imzo + sessiya), qo'lda emas. `/get-me` — eski alias.
+  @Get(['me', 'get-me'])
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiOperation({ summary: 'Current user (alias: /get-me)' })
   @ApiResponse({
     status: 200,
     description: 'User',
     type: AdminDTO.UserResponseDto,
   })
-  async getMe(@Headers('authorization') authHeader: string) {
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Access token is missing or invalid');
-    }
-
-    const accessToken = authHeader.split(' ')[1];
-
-    return this.authService.getMe(accessToken);
+  async getMe(
+    @CurrentUser('id') userId: string,
+  ): Promise<AdminDTO.UserResponseDto> {
+    return this.authService.getMe(userId);
   }
 
   // ===== Email verification + reset password =====

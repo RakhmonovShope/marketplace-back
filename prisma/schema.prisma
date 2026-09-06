@@ -342,7 +342,7 @@ model RefreshToken {
   createdAt DateTime  @default(now())
 
   @@index([userId])
-  @@index([tokenHash])
+  // tokenHash @unique allaqachon indeks yaratadi — alohida @@index kerak emas
 }
 
 enum VERIFICATION_TOKEN_TYPE {
@@ -364,5 +364,5 @@ model VerificationToken {
   createdAt DateTime                @default(now())
 
   @@index([userId, type])
-  @@index([tokenHash])
+  // tokenHash @unique allaqachon indeks yaratadi — alohida @@index kerak emas
 }

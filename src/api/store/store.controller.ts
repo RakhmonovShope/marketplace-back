@@ -19,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -44,7 +45,9 @@ export class StoreController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiBody({ type: StoreDTO.StoreResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: StoreDTO.StoreResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.STORE__VIEW)
   async getAdmin(@Param('id') id: string): Promise<StoreDTO.StoreResponse> {
     return this.storeService.getById(id);

@@ -1,7 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as CategoryDTO from './category.dto';
-import { PaginationFilterOrderRequest } from '../../common/common.dto';
+import {
+  PaginationFilterOrderRequest,
+  toPrismaOrder,
+} from '../../common/common.dto';
 import { getWhereOperations } from 'helpers';
 import { ConfigService } from '@nestjs/config';
 
@@ -33,7 +36,7 @@ export class CategoryService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.category.count({ where }),
@@ -78,9 +81,12 @@ export class CategoryService {
   }): Promise<CategoryDTO.CategoryResponse> {
     this.logger.log('updateCategory');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateCategory = await this.prisma.category.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return updateCategory;

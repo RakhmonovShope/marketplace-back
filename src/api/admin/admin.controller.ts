@@ -61,7 +61,7 @@ export class AdminController {
     description: 'Admin',
     type: AdminDTO.UserResponseDto,
   })
-  @Permissions(PERMISSIONS.ADMIN__UPDATE)
+  @Permissions(PERMISSIONS.ADMIN__CREATE)
   async createAdmin(
     @Body() payload: AdminDTO.Create,
   ): Promise<AdminDTO.UserResponseDto> {

@@ -133,10 +133,9 @@ export class AuthService implements OnModuleInit {
     return this.issueTokens(user.id, meta);
   }
 
-  async getMe(accessToken: string): Promise<AdminDTO.UserResponseDto> {
+  /** Joriy foydalanuvchi (`req.user.id` — JwtStrategy allaqachon tokenni tekshirgan). */
+  async getMe(userId: string): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('getMe');
-
-    const { userId } = await this.validateAccessToken(accessToken);
 
     const user = await this.prisma.user.findFirst({
       where: { id: userId, deletedAt: null },

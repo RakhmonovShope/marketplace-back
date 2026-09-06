@@ -7,9 +7,9 @@ import {
   Length,
   MinLength,
 } from 'class-validator';
-// src/user/dto/user-response.dto.ts
-import { ApiProperty } from '@nestjs/swagger';
-import { OmitType, PartialType } from '@nestjs/mapped-types';
+// PartialType/OmitType — @nestjs/swagger'dan: @ApiProperty metadata saqlanadi
+// (@nestjs/mapped-types varianti Swagger'da bo'sh sxema beradi).
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { GENDER, SUB_TYPE } from '@prisma/client';
 import { PageableDto } from 'common/common.dto';
 

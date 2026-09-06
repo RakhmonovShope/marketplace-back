@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { BadgeService } from './badge.service';
@@ -19,12 +18,11 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationFilterOrderRequest } from 'common/common.dto';
-import { Response } from 'express';
-import { Readable } from 'stream';
 
 @ApiBearerAuth()
 @ApiTags('Badges')
@@ -46,7 +44,9 @@ export class BadgeController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiBody({ type: BadgeDTO.BadgeResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: BadgeDTO.BadgeResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.BADGE__VIEW)
   async getAdmin(@Param('id') id: string): Promise<BadgeDTO.BadgeResponse> {
     return this.badgeService.getById(id);
@@ -54,7 +54,8 @@ export class BadgeController {
 
   @Post()
   @ApiOperation({ summary: 'Create' })
-  @ApiBody({ type: BadgeDTO.BadgeResponse })
+  @ApiBody({ type: BadgeDTO.Create })
+  @ApiResponse({ status: 201, type: BadgeDTO.BadgeResponse })
   @Permissions(PERMISSIONS.BADGE__CREATE)
   async create(
     @Body() payload: BadgeDTO.Create,
@@ -64,7 +65,9 @@ export class BadgeController {
 
   @Put()
   @ApiOperation({ summary: 'Update' })
-  @ApiBody({ type: BadgeDTO.BadgeResponse })
+  @ApiBody({ type: BadgeDTO.Update })
+  @ApiResponse({ status: 200, type: BadgeDTO.BadgeResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.BADGE__UPDATE)
   async updateAdmin(
     @Body() payload: BadgeDTO.Update,
@@ -73,39 +76,9 @@ export class BadgeController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete badge' })
   @Permissions(PERMISSIONS.BADGE__DELETE)
   async deleteAdmin(@Param('id') id: string): Promise<boolean> {
     return this.badgeService.deleteBadge({ id });
-  }
-
-  @Post('stream')
-  @Permissions(PERMISSIONS.BADGE__DELETE)
-  async getStream(@Res() res: Response): Promise<any> {
-    res.setHeader('Content-Type', 'text/plain'); // Stream plain text
-    res.setHeader('Transfer-Encoding', 'chunked'); // Enable chunked transfer
-
-    const stream = new Readable({
-      read() {
-        // No-op
-      },
-    });
-
-    let count = 0;
-
-    // Log every chunk being sent
-    const interval = setInterval(() => {
-      if (count === 5) {
-        clearInterval(interval);
-        console.log('Sending: Done streaming.');
-        stream.push('Done streaming.\n');
-        stream.push(null); // Signals the end of the stream
-      } else {
-        const chunk = `Chunk ${++count}\n`;
-        console.log('Sending:', chunk);
-        stream.push(chunk);
-      }
-    }, 1000);
-
-    stream.pipe(res);
   }
 }

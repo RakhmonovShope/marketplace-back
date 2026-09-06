@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Brand } from '@prisma/client';
 import * as BrandDTO from './brand.dto';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 import { getWhereOperations } from 'helpers';
 import { ConfigService } from '@nestjs/config';
 
@@ -34,7 +34,7 @@ export class BrandService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.brand.count({ where }),
@@ -73,9 +73,12 @@ export class BrandService {
   async updateBrand({ payload }: { payload: BrandDTO.Update }): Promise<Brand> {
     this.logger.log('updateBrand');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateBrand = await this.prisma.brand.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return updateBrand;

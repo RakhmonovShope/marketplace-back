@@ -1,9 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { Page } from '@prisma/client';
 import * as PageDTO from './page.dto';
 import { PageableResponseDto } from './page.dto';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 import { getWhereOperations } from 'helpers';
 import { ConfigService } from '@nestjs/config';
 
@@ -35,7 +35,7 @@ export class PageService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.page.count({ where }),
@@ -56,6 +56,10 @@ export class PageService {
       where: { id },
     });
 
+    if (!page) {
+      throw new NotFoundException('Page not found');
+    }
+
     return page;
   }
 
@@ -70,9 +74,12 @@ export class PageService {
   async updatePage({ payload }: { payload: PageDTO.Update }): Promise<Page> {
     this.logger.log('updatePage');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updatePage = await this.prisma.page.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return updatePage;

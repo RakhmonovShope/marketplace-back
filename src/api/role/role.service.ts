@@ -1,10 +1,17 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { ERR } from '../../common/error-codes';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Role } from '@prisma/client';
 import * as RoleDTO from './role.dto';
 import { ConfigService } from '@nestjs/config';
 import { getWhereOperations } from 'helpers';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 
 import { REDIS_CLIENT } from '../../common/redis.module';
 import { rolePermissionsCacheKey } from '../auth/permissions.guard';
@@ -39,7 +46,7 @@ export class RoleService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.role.count({ where }),
@@ -53,13 +60,16 @@ export class RoleService {
     };
   }
 
-  async getById(id): Promise<RoleDTO.RoleResponse> {
+  async getById(id: string): Promise<RoleDTO.RoleResponse> {
     this.logger.log('roleById');
 
-    console.log('<==========>', id);
     const role = await this.prisma.role.findUnique({
       where: { id },
     });
+
+    if (!role) {
+      throw new NotFoundException('Role not found');
+    }
 
     return role;
   }
@@ -75,18 +85,46 @@ export class RoleService {
   async updateRole({ payload }: { payload: RoleDTO.Update }): Promise<Role> {
     this.logger.log('updateRole');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateRole = await this.prisma.role.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
-    await this.invalidateRoleCache(payload.id);
+    await this.invalidateRoleCache(id);
 
     return updateRole;
   }
 
   async deleteRole({ id }: { id: string }): Promise<boolean> {
     this.logger.log('deleteRole');
+
+    const role = await this.prisma.role.findUnique({
+      where: { id },
+      select: { isSystem: true, _count: { select: { User: true } } },
+    });
+
+    if (!role) {
+      throw new NotFoundException('Role not found');
+    }
+
+    // Tizim rollari (SUPER_ADMIN, CUSTOMER, ...) kod ichida ishlatiladi — o'chirib bo'lmaydi.
+    if (role.isSystem) {
+      throw new ConflictException({
+        code: ERR.SYSTEM_ROLE,
+        message: 'System role cannot be deleted',
+      });
+    }
+
+    // Foydalanuvchilar bog'langan bo'lsa FK xatosi (500/400) o'rniga aniq 409.
+    if (role._count.User > 0) {
+      throw new ConflictException({
+        code: ERR.ROLE_IN_USE,
+        message: `Role is assigned to ${role._count.User} user(s)`,
+      });
+    }
 
     await this.prisma.role.delete({
       where: { id },

@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import * as AdminDTO from './admin.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 import { getWhereOperations } from '../../helpers';
 import { toUserResponse } from './admin.mapper';
 
@@ -35,7 +35,7 @@ export class AdminService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.user.count({
@@ -88,11 +88,12 @@ export class AdminService {
   ): Promise<AdminDTO.UserResponseDto> {
     this.logger.log('updateAdmin');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateAdmin = await this.prisma.user.update({
-      where: {
-        id: payload.id,
-      },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return toUserResponse(updateAdmin);

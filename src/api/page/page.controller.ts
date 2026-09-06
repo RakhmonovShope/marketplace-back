@@ -20,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -44,7 +45,9 @@ export class PageController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiBody({ type: PageDTO.PageResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: PageDTO.PageResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.PAGE__VIEW)
   async getAdmin(@Param('id') id: string): Promise<PageDTO.PageResponse> {
     return this.pageService.getById(id);
@@ -52,7 +55,8 @@ export class PageController {
 
   @Post()
   @ApiOperation({ summary: 'Create' })
-  @ApiBody({ type: PageDTO.PageResponse })
+  @ApiBody({ type: PageDTO.Create })
+  @ApiResponse({ status: 201, type: PageDTO.PageResponse })
   @Permissions(PERMISSIONS.PAGE__CREATE)
   async create(@Body() payload: PageDTO.Create): Promise<PageDTO.PageResponse> {
     return this.pageService.create(payload);
@@ -60,7 +64,9 @@ export class PageController {
 
   @Put()
   @ApiOperation({ summary: 'Update' })
-  @ApiBody({ type: PageDTO.PageResponse })
+  @ApiBody({ type: PageDTO.Update })
+  @ApiResponse({ status: 200, type: PageDTO.PageResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.PAGE__UPDATE)
   async updateAdmin(
     @Body() payload: PageDTO.Update,

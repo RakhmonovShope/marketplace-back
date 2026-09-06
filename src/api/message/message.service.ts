@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { Message } from '@prisma/client';
 import * as MessageDTO from './message.dto';
 import { getWhereOperations } from 'helpers';
-import { PaginationFilterOrderRequest } from 'common/common.dto';
+import { PaginationFilterOrderRequest, toPrismaOrder } from 'common/common.dto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class MessageService {
         skip: (page - 1) * perPage,
         take: perPage,
         orderBy: {
-          createdAt: order ? order.toLowerCase() : 'asc',
+          createdAt: toPrismaOrder(order),
         },
       }),
       this.prisma.message.count({ where }), // filter bilan — totalPages to'g'ri bo'lsin
@@ -79,9 +79,12 @@ export class MessageService {
   }): Promise<Message> {
     this.logger.log('updateMessage');
 
+    // `id` `data` ga kirmasin (primary key yangilanmaydi).
+    const { id, ...data } = payload;
+
     const updateMessage = await this.prisma.message.update({
-      where: { id: payload.id },
-      data: payload,
+      where: { id },
+      data,
     });
 
     return updateMessage;

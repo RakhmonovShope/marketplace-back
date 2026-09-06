@@ -19,10 +19,10 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { PickType } from '@nestjs/mapped-types';
 
 @ApiBearerAuth()
 @ApiTags('Roles')
@@ -43,16 +43,18 @@ export class RoleController {
   }
 
   @Get('/permissions')
-  @ApiOperation({ summary: 'Permissions' })
-  @ApiResponse({ type: PickType<RoleDTO.RoleResponse, 'permissions'> })
+  @ApiOperation({ summary: 'All permission codes' })
+  @ApiResponse({ status: 200, type: [String] })
   @Permissions(PERMISSIONS.ROLE__PERMISSION__VIEW)
-  async getPermissions() {
+  async getPermissions(): Promise<string[]> {
     return Object.values(PERMISSIONS);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiResponse({ type: RoleDTO.RoleResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: RoleDTO.RoleResponse })
+  @ApiResponse({ status: 404, description: 'Role not found' })
   @Permissions(PERMISSIONS.ROLE__VIEW)
   async getAdmin(@Param('id') id: string): Promise<RoleDTO.RoleResponse> {
     return this.roleService.getById(id);
@@ -77,6 +79,14 @@ export class RoleController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete role' })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 404, description: 'Role not found' })
+  @ApiResponse({
+    status: 409,
+    description:
+      'System role (SYSTEM_ROLE) or role still assigned to users (ROLE_IN_USE)',
+  })
   @Permissions(PERMISSIONS.ROLE__DELETE)
   async deleteAdmin(@Param('id') id: string): Promise<boolean> {
     return this.roleService.deleteRole({ id });

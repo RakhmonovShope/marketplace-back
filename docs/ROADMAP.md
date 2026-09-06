@@ -63,7 +63,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** `NODE_ENV=production` da `/api` 404/401; noto'g'ri telefon va noto'g'ri parol bir xil javob.
 **Tekshirish.** `NODE_ENV=production SWAGGER_ENABLED=false node dist/main` → `curl -I /api` → 404.
 
-### - [ ] STEP-09 — Tez tuzatishlar to'plami
+### - [x] STEP-09 — Tez tuzatishlar to'plami ✅ 2026-09-06
 **Manba.** `02-BUGS` B4, B5, B6, B8, B9, B10, B12, B13, B14; `01-SECURITY` S9 (`getMe` guard, `auth.guard.ts` o'chirish, `ADMIN__CREATE`, `Role.delete` 409).
 **DoD.** `getById` hamma joyda 404; `message` count filter bilan; `badges/stream`, `cron/example`, `console.log` yo'q; `AllExceptionsFilter` `errors[]` + `code`.
 **Tekshirish.** `grep -rn "console\.log" src/ | wc -l` → 0; `curl /v1/banners/00000000-0000-0000-0000-000000000000` → 404.
@@ -116,7 +116,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** `filter: [{field:'password',…}]` → 400 `FILTER_FIELD_NOT_ALLOWED`; `sort: [{field:'nameUz',dir:'ASC'}]` ishlaydi; unit test 100% builder.
 **Tekshirish.** `pnpm test -- query` + `curl -X POST /v1/category/pageable -d '{"page":1,"filter":[{"field":"password","op":"eq","value":"x"}]}'` → 400
 
-### - [ ] STEP-20 — Xato kodlari, serializer, `PATCH`, Swagger sifat, OpenAPI export
+### - [ ] STEP-20 — Xato kodlari, serializer, `PATCH`, Swagger sifat, OpenAPI export (+ B15: sxema nomlari prefiks bilan)
 **Manba.** `04-API` §3, §4, §6, §8; `12-DX` §6. **DoD.** Xato javobida `code`; `openapi/admin.json` CI artefakti; GET'larda `@ApiBody` yo'q.
 **Tekshirish.** `pnpm api:export && jq '.paths | keys | length' openapi/admin.json`
 

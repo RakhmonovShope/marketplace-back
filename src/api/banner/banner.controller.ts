@@ -18,6 +18,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -43,7 +44,9 @@ export class BannerController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get By Id' })
-  @ApiBody({ type: BannerDTO.BannerResponse })
+  @ApiParam({ name: 'id', format: 'uuid' })
+  @ApiResponse({ status: 200, type: BannerDTO.BannerResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.BANNER__VIEW)
   async getAdmin(@Param('id') id: string): Promise<BannerDTO.BannerResponse> {
     return this.bannerService.getById(id);
@@ -51,7 +54,8 @@ export class BannerController {
 
   @Post()
   @ApiOperation({ summary: 'Create' })
-  @ApiBody({ type: BannerDTO.BannerResponse })
+  @ApiBody({ type: BannerDTO.Create })
+  @ApiResponse({ status: 201, type: BannerDTO.BannerResponse })
   @Permissions(PERMISSIONS.BANNER__CREATE)
   async create(
     @Body() payload: BannerDTO.Create,
@@ -61,7 +65,9 @@ export class BannerController {
 
   @Put()
   @ApiOperation({ summary: 'Update' })
-  @ApiBody({ type: BannerDTO.BannerResponse })
+  @ApiBody({ type: BannerDTO.Update })
+  @ApiResponse({ status: 200, type: BannerDTO.BannerResponse })
+  @ApiResponse({ status: 404, description: 'Not found' })
   @Permissions(PERMISSIONS.BANNER__UPDATE)
   async updateAdmin(
     @Body() payload: BannerDTO.Update,

@@ -11,7 +11,12 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { SortOrder } from 'prisma';
+
+export type SortDirection = 'ASC' | 'DESC';
+
+/** API'dagi `ASC|DESC` ni Prisma `asc|desc` ga o'giradi (default asc). */
+export const toPrismaOrder = (order?: SortDirection): 'asc' | 'desc' =>
+  order === 'DESC' ? 'desc' : 'asc';
 
 export class PageableDto {
   @ApiProperty({
@@ -91,11 +96,13 @@ export class PaginationFilterOrderRequest {
   })
   filter: Array<FilterItem>;
 
-  @IsString()
+  @IsIn(['ASC', 'DESC'])
   @IsOptional()
   @ApiProperty({
-    description: 'Order direction, either ASC or DESC',
+    description: 'Order direction by createdAt, either ASC or DESC',
     example: 'ASC',
+    enum: ['ASC', 'DESC'],
+    required: false,
   })
-  order: SortOrder;
+  order?: SortDirection;
 }
