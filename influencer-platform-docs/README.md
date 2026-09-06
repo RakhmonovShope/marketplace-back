@@ -60,3 +60,9 @@ Backend  B-44 … B-50
 
 Backend har doim oldinda yuradi. Frontend qadamlari o'zi bog'liq bo'lgan backend qadamini
 `Talab qilinadi:` bo'limida ko'rsatadi.
+
+## MVP'dan keyin — `improvements/` (2026-09-06)
+
+To'rt repo bo'yicha audit, xavfsizlik/performance topilmalari, ma'lumot sifati, g'oyalar va **ROADMAP-V2**
+(`B2-`/`W2-`/`A2-`/`M2-`/`X2-` qadamlar): [`improvements/README.md`](./improvements/README.md).
+Har repo'da nusxasi `docs/improvements/` (sinxronlash tartibi o'sha README'da).
