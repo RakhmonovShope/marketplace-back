@@ -47,6 +47,8 @@ Influencer profili PDF (avatar, statistika, grafik, narxlar, aloqa — planga qa
 Biznes brief yaratadi (kategoriya, byudjet, format, muddat, shahar) → tizim mos influencerlarni taklif qiladi (filter + benchmark + narx) → ro'yxat → aloqa (§5). Keyingi bosqich: influencer'lar briefga javob beradi (claim qilganlar) — marketplace (Phase 3).
 
 ### 9. Jamoa akkauntlari (agentliklar) — M, backend+web+admin
+
+> ✅ Bajarildi (2026-09-06, B2-41 + W2-21): backend `Organization` + `OrgMember` (OWNER/ADMIN/MEMBER), `User.organizationId`, `Plan.teamMembers` (FREE 1, PRO 2, BUSINESS 5, ENTERPRISE 25); `GET/POST/PUT/DELETE /app/org`, a'zo qo'shish (telefon/@username/email), chiqarish, `POST /app/org/leave`; umumiy resurslar — `GET /app/org/lists|favorites|leads` (kim qo'shgani ko'rinadi); e2e 4 test. Web `/team` sahifasi (a'zolar, chegara + tarifga havola, umumiy ro'yxat/so'rov/sevimlilar), profilda havola.
 `Organization { name, ownerId }`, `OrgMember`, umumiy favorites/ro'yxatlar/so'rovlar, BUSINESS plan → "5 ta a'zo". `User.organizationId`.
 
 ### 10. Programmatik SEO sahifalari — M, backend+web
