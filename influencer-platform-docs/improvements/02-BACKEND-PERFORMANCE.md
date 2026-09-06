@@ -92,6 +92,8 @@ Katta fayl (10k+) → `IMPORT_MAX_ROWS` chegarasi + xabar.
 
 ## 7. Statik fayllar: cache header'siz, Nest orqali
 
+> ✅ Bajarildi (2026-09-06, B2-16): ServeStatic: `maxAge 365d, immutable, etag, nosniff`; nginx `location /files/` alias (uploads volume ro, `expires 1y`, gzip on); `File.path` (nisbiy, migratsiya + backfill) — `url`/`variants` o'qishda `PUBLIC_URL` bilan quriladi (legacy absolut qiymatlar ham); variantlar nisbiy saqlanadi; `pnpm files:rewrite-url --from --to [--dry]` denormalizatsiya qilingan URL'lar (avatar/cover/thumbnail) uchun; serve-static 404 endi JSON 404 (avval 500). +4 filter testi. Smoke: `Cache-Control: public, max-age=31536000, immutable`, ETag, yo'q fayl → 404 NOT_FOUND, PUBLIC_URL=cdn.test → url/variants shu host bilan.
+
 **Hozir.** `ServeStaticModule` (`/files`) default `maxAge: 0` → `<img>` har safar qayta so'raydi (web `next/image` o'zi keshlaydi, miniapp/admin — yo'q).
 **Yechim.** `serveStaticOptions: { maxAge: '365d', immutable: true, etag: true, setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff') }`
 (fayl nomlari UUID — o'zgarmas). Prod'da nginx `location /files/ { alias /srv/uploads/files/; expires 1y; }` (volume ulanadi) — Nest qatnashmaydi.
