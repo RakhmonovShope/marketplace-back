@@ -77,6 +77,8 @@ Katta fayl (10k+) → `IMPORT_MAX_ROWS` chegarasi + xabar.
 
 ## 6. Sync: retry va provayder kvotasi
 
+> ✅ Bajarildi (2026-09-06, B2-15): `provider.errors.ts`: `ProviderPermanentError` (404, kanal/handle topilmadi, TGStat not found) → `syncStatus FAILED` + `UnrecoverableError` (retry yo'q); `ProviderQuotaError` (429 Retry-After, YouTube 403 quotaExceeded) → akkaunt PENDING, processor `job.moveToDelayed` + `DelayedError` (attempt sarflanmaydi). `ProviderLimiter` (Redis INCR): provayder bo'yicha daqiqalik + kunlik limit (defaultlar: youtube 60/min, 2000/kun; tgstat 30/5000; rapidapi 20/1000; `SYNC_PROVIDER_LIMITS` JSON bilan o'zgartiriladi), oshsa job kechiktiriladi. `enqueueAll` ustuvorlik: hech sinxronlanmagan → eskirgan+mashhur → qolganlar (BullMQ priority). `cleanupLogs`: SyncLog `SYNC_LOG_RETENTION_DAYS` (180). +14 unit test (http mapping, limiter, xato siyosati). Real provayder kaliti yo'q — e2e keyin.
+
 **Hozir.** `syncAccount` xato → `throw` → BullMQ 3× exponential retry — provayder "kanal topilmadi" (doimiy xato) uchun ham; har urinish yangi `SyncLog`.
 `enqueueAll` 03:00 da hamma akkauntni bir vaqtda, `concurrency: 3`, provayder bo'yicha limit yo'q (YouTube kvotasi 10k unit/kun ≈ 2 500 kanal).
 
