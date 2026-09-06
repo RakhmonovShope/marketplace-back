@@ -50,11 +50,11 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **Manba.** `03-DATA-QUALITY` §1.1, §1.2. **Fayllar.** `src/api/category/category-count.service.ts`, `influencer.service.ts` (publish/delete/restore), `import.service.ts`, `import.parser.ts` (`slug` ustuni, `NAME_MATCH` warning), cron.
 **DoD.** Count faqat PUBLISHED+active; importdan keyin to'g'ri; ism mos kelsa preview'da ogohlantirish, default — yangi yozuv.
 
-### - [x] W2-01 — `next/image` `remotePatterns` cheklash + CSP sarlavhalari ✅ 2026-09-06
+### - [ ] W2-01 — `next/image` `remotePatterns` cheklash + CSP sarlavhalari
 **Manba.** `04-WEB` §1, §8. **Fayllar.** `next.config.ts`, `.env.example`
 **DoD.** Begona host `/_next/image?url=` → 400; API/Telegram/ytimg rasmlari ishlaydi; CSP bilan Login Widget ishlaydi.
 
-### - [x] X2-01 — Sentry frontend'larda (web `@sentry/nextjs`, admin/miniapp `@sentry/react`) ✅ 2026-09-06
+### - [ ] X2-01 — Sentry frontend'larda (web `@sentry/nextjs`, admin/miniapp `@sentry/react`)
 **Manba.** `07` §1. **DoD.** ErrorBoundary'dan xato Sentry'da, release = git SHA (CI build-arg).
 
 ---
@@ -97,10 +97,10 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [ ] B2-20 + A2-02 — Bulk endpoint + admin bulk UI
 **Manba.** `05` §2. **DoD.** 100 ta influencer publish → 1 so'rov, natija modal (`ok/failed`).
 
-### - [x] W2-02 — Anonim katalog keshi + filterli URL'lar `noindex/canonical` + kategoriya sitemap ✅ 2026-09-06
+### - [ ] W2-02 — Anonim katalog keshi + filterli URL'lar `noindex/canonical` + kategoriya sitemap
 **Manba.** `04` §2. **DoD.** Anonim `/catalog` SSR 60 s revalidate; `?followers=` bilan `<meta name="robots" content="noindex">`; sitemap'da kategoriyalar.
 
-### - [ ] M2-01 — Count debounce, `avatarThumbUrl`, rasm fallback
+### - [x] M2-01 — Count debounce, `avatarThumbUrl`, rasm fallback ✅ 2026-09-06
 **Manba.** `06-MINIAPP` §1, §2 (+ backend kontrakt `InfluencerCardDto.avatarThumbUrl`). **DoD.** Ro'yxatda thumb (≤ 20KB) yuklanadi; variant yo'q bo'lsa original.
 
 ---

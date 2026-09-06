@@ -7,6 +7,8 @@
 
 ## 1. Filter varag'ida ikki marta qidiruv (P1)
 
+> ✅ Bajarildi (2026-09-06, B2-11 + M2-01): `useInfluencerCount` → `POST /app/influencers/count` (backend 60 s count keshi, kvota sarflamaydi) + 400 ms debounce; `placeholderData` oldingi sonni ushlab turadi.
+
 `useInfluencerCount` — har filter o'zgarishida `search` (perPage=1) faqat `totalItems` uchun, keyin "Ko'rsatish" → to'liq `search`.
 **Yechim.** 400 ms debounce (bor bo'lsa tekshiring) + backend `count` keshi (`02-BACKEND-PERFORMANCE` §2) yoki `POST /app/influencers/count`.
 Tarmoq sekin bo'lsa MainButton matni `…` (loading) — bor.
@@ -14,6 +16,8 @@ Tarmoq sekin bo'lsa MainButton matni `…` (loading) — bor.
 ---
 
 ## 2. Rasm: `thumbUrl` variant fallback (P2)
+
+> ✅ Bajarildi (2026-09-06, M2-01): Backend `InfluencerCardDto.avatarThumbUrl` — `FileService.thumbMap` (bitta `findMany` `File.path in`, tayyor `variants.thumb` bo'lsa joriy PUBLIC_URL bilan, aks holda null) search/favorites/dashboard kartalarida (+2 unit test); miniapp `Avatar` nomzodlar: backend thumb → konvensiya thumb → original → initials (`onError` bilan); web karta `avatarThumbUrl ?? avatarUrl`. Schema'lar qayta generatsiya.
 
 `helpers/image.ts` `.thumb.webp` ga almashtiradi; variant hali tayyor bo'lmasa (`ImageProcessor` fonda) `<img onError>` originalga qaytishi kerak — `Avatar` da bormi tekshiring; yo'q bo'lsa `onError={() => setSrc(original)}`.
 Backend `File.variants` tayyor bo'lguncha `avatarUrl` originalni beradi — karta ro'yxatida 20 ta original (100–500KB) → LCP. Yechim: `InfluencerCardDto.avatarThumbUrl` (backend `File.variants.thumb` dan, bo'lmasa original) — web ham foydalanadi.
