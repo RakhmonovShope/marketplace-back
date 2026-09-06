@@ -84,6 +84,8 @@ Gating rejasi: FREE — 10 qidiruv/kun, aloqa yashirin, grafik 30d; PRO — chek
 Schema bor; admin CRUD, dashboard/qidiruvda `isFeatured` (bor), kategoriya top; hisob (pullik joylashtirish) — creator claim bilan o'zi sotib oladi.
 
 ### 15. Public API (BUSINESS/ENTERPRISE) — M, backend
+
+> ✅ Bajarildi (2026-09-06, B2-44): backend `ApiKey` modeli (`<prefix>.<secret>`, bazada sha256; scope'lar: search/profile/categories; `dailyLimit`), `GET/POST/DELETE /app/api-keys` (max 5 faol kalit, to'liq qiymat faqat yaratishda), `ApiKeyGuard` — `X-API-Key` + Redis kunlik kvota (429 QUOTA_EXCEEDED) + scope tekshiruvi, hamkor endpointlari `POST /partner/influencers/search`, `GET /partner/influencers/:slug` (aloqasiz public ko'rinish), `GET /partner/categories`, `GET /partner/usage`; Swagger 4-definition (`/api/docs/partner-json`, `openapi/partner.json`); e2e 5 test.
 API kalitlari (`ApiKey { userId, keyHash, scopes, rateLimit }`), `/api/v1/partner/**` (search, profile), kunlik kvota, Swagger 4-definition. Agentliklar/CRM integratsiyasi.
 
 ---

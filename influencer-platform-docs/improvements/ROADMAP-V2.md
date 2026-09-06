@@ -163,7 +163,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-41 + W2-21 — Jamoa akkauntlari (Organization) ✅ 2026-09-06
 ### - [x] B2-42 + A2-20 — Featured placement (B-47/A-25 ⏸) ✅ 2026-09-06
 ### - [x] B2-43 — Media kit PDF + eksport ✅ 2026-09-06
-### - [ ] B2-44 — Public partner API (ApiKey, kvota)
+### - [x] B2-44 — Public partner API (ApiKey, kvota) ✅ 2026-09-06
 ### - [ ] B2-45 — Bot inline rejimi + share card rasmi
 ### - [ ] B2-46 + A2-21 — Audit log, dublikat merge, rejalashtirilgan hisobotlar, shikoyatlar
 ### - [ ] X2-10 — EN tili (nameI18n), akkauntni o'chirish/eksport, PWA
