@@ -126,6 +126,9 @@ X-Client: web | miniapp | admin   # analitika uchun
 | GET | `/app/influencers/:id/accounts/:accountId/growth?period=30d\|90d\|1y` | O'sish grafigi nuqtalari |
 | GET | `/app/influencers/:id/accounts/:accountId/posts` | Eng yaxshi postlar |
 | POST | `/app/influencers/:id/view` | Ko'rish hisoblagichi (fire-and-forget) |
+| POST | `/app/influencers/:id/contact-requests` | `{channel, message?, budget?}` → `ContactRequest` — aloqa so'rovi/lead, auth, 10/min (B2-30) |
+| GET | `/app/me/contact-requests` | So'rovlarim (oxirgi 200) (B2-30) |
+| POST | `/admin/leads/search` · GET `/admin/leads/stats` · PUT `/admin/leads/:id` | Admin lead ro'yxati (DSL), statistika, holat (`LEAD__VIEW/UPDATE`) (B2-30) |
 | POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |
 
 Profil javobi:

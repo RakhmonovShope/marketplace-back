@@ -129,7 +129,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 
 ## FAZA 3 — Mahsulot: aloqa zanjiri, ro'yxatlar, creator
 
-### - [ ] B2-30 + W2-10 + M2-10 + A2-10 — Lead/aloqa oqimi (`ContactRequest`)
+### - [x] B2-30 + W2-10 + M2-10 + A2-10 — Lead/aloqa oqimi (`ContactRequest`) ✅ 2026-09-06
 **Manba.** `09-FEATURE-IDEAS` §5. **DoD.** Aloqa tugmasi hodisa yozadi; biznes "so'rovlarim"; admin lead statistikasi.
 
 ### - [ ] B2-31 + W2-11 + M2-11 — Ro'yxatlar (collections)

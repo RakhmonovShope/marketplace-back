@@ -25,6 +25,8 @@ STATS import (`measuredAt`) bor; admin'da "Tarixni yuklash" (akkaunt sahifasidan
 ## B. Biznes foydalanuvchi (talab tomoni)
 
 ### 5. Aloqa oqimi va lead'lar — M, backend+web+miniapp+admin ⚠️ monetizatsiya asosi
+
+> ✅ Bajarildi (2026-09-06, B2-30 + W2-10 + M2-10 + A2-10): Backend: `ContactRequest` (channel, message ≤1000, budget, status NEW|CONTACTED|CLOSED, adminNote, source), `POST /app/influencers/:id/contact-requests` (auth, 10/min, nashr qilinganlarga; ContactClick ham yoziladi), `GET /app/me/contact-requests`, admin `POST /admin/leads/search` (DSL: status/channel/influencerId/createdAt), `GET /admin/leads/stats` (bugun/7/30 kun/jami, bosishlar, holat/kanal kesimi, top-10 influencer), `PUT /admin/leads/:id`; ruxsatlar `LEAD__VIEW/UPDATE` (seed + dev rollari); e2e 2 test. Web: profil sahifasida "Aloqa so'rovi" dialogi (kanal/xabar/byudjet, mehmon → kirish), `/requests` sahifasi (nav, protected), uz/ru. Miniapp: sheet + `/requests` sahifasi + profil havolasi, lug'at. Admin: Lead'lar sahifasi (stat kartalar, top ro'yxat, jadval, holat/izoh modal), menyu. Creator'ga kelgan so'rovlar — B2-34 (claim) bilan.
 "Aloqa" tugmasi → `ContactRequest { userId, influencerId, channel, message?, budget?, createdAt }` (telefon ko'rsatilgan bo'lsa ham hodisa yoziladi).
 Biznes uchun: "so'rovlarim" ro'yxati; admin: lead statistikasi (qaysi influencer ko'p so'ralgan); creator (claim qilgan bo'lsa): kelgan so'rovlar.
 Keyin: platforma ichida chat (Telegram bot orqali relay) → komissiya/pay-per-lead.
