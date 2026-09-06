@@ -54,7 +54,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **Manba.** `04-WEB` §1, §8. **Fayllar.** `next.config.ts`, `.env.example`
 **DoD.** Begona host `/_next/image?url=` → 400; API/Telegram/ytimg rasmlari ishlaydi; CSP bilan Login Widget ishlaydi.
 
-### - [ ] X2-01 — Sentry frontend'larda (web `@sentry/nextjs`, admin/miniapp `@sentry/react`)
+### - [x] X2-01 — Sentry frontend'larda (web `@sentry/nextjs`, admin/miniapp `@sentry/react`) ✅ 2026-09-06
 **Manba.** `07` §1. **DoD.** ErrorBoundary'dan xato Sentry'da, release = git SHA (CI build-arg).
 
 ---

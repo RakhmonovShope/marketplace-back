@@ -7,7 +7,7 @@
 
 ## 1. Sentry — hozir hech narsa yubormaydi (P0)
 
-> ✅ Bajarildi (2026-09-06, B2-05): `src/instrument.ts` — eng birinchi import, `Sentry.init` faqat DSN bilan (`APP_ENV`, `release=GIT_SHA` Dockerfile build-arg + CI, `beforeSend` header redaction); `HttpExceptionFilter`: 5xx → `captureException` (`requestId`/`path` teglari, user id) va javobda `requestId`; 5 ta BullMQ processor `@OnWorkerEvent('failed')` → `captureJobFailure`; `GET /health/boom` (`SENTRY_TEST_ROUTE=true` bo'lgandagina, aks holda 404). Tekshirildi: soxta ingest serverga event keldi (tags.requestId=smoke-req-1, release, env, authorization=[redacted]); DSN'siz hech narsa o'zgarmaydi. Frontend'lar — X2-01.
+> ✅ Bajarildi (2026-09-06, X2-01): Frontend'lar: web `@sentry/nextjs` (`src/instrumentation.ts` + `onRequestError`, `instrumentation-client.ts`, `sentry.server/edge.config.ts`, `global-error.tsx`, `[locale]/error.tsx` captureException, `withSentryConfig` tunnel `/monitoring` — CSP 'self', proxy matcher'dan chiqarilgan; source map faqat `SENTRY_AUTH_TOKEN` bilan); admin/miniapp `@sentry/react` (`services/sentry.ts`, DSN'siz o'chiq, miniapp'da `#tgWebAppData` scrub, `ErrorBoundary.componentDidCatch` → captureException). release = `NEXT_PUBLIC_GIT_SHA`/`VITE_GIT_SHA` (Dockerfile ARG + CI `github.sha`). Tekshirildi: web SSR xatosi soxta ingest'ga keldi (release=web-sha); 3 repo build OK. Brauzer tomonini real DSN bilan deploy'dan keyin tekshirish.
 
 `main.ts`: `Sentry.init` `NestFactory.create` dan **keyin** (auto-instrumentation talabi buzilgan) va hech qayerda `captureException` yo'q →
 prod'da 500 lar ko'rinmaydi. Yechim:
