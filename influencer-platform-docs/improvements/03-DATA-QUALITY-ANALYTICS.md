@@ -89,6 +89,8 @@ Kunlik job: har kategoriya × tier bo'yicha median `engagementRate`, `viewRate`,
 `views(7d)/views(prev 7d)` — kam ko'rilgan profillar (1→5 ko'rish = 5×) yuqoriga chiqadi. Minimal chegara (`current >= 20`) + Wilson/log damping: `score = log(1+current) * ratio`.
 
 ### 3.5 Qidiruv sifati (pg_trgm bor, ishlatilmaydi)
+
+> ✅ Bajarildi (2026-09-06, B2-37): 09 §16 izohiga qarang — `searchText` ustuni + trigram reyting; `unaccent` o'rniga translit jadvali ishlatildi (o'zbek lotin/kirill juftliklari aniqroq).
 `influencer_fullname_trgm` indeks bor, lekin `contains` (ILIKE `%q%`) — indeks GIN trigram bilan ishlaydi (OK), ammo **ranking** yo'q: `similarity(fullName, q)` bo'yicha sort (`$queryRaw`), `suggest` da `word_similarity`; `@username` prefiksi → faqat username'da. Sinonim/lotin-kirill: `Aziz`↔`Азиз` — `unaccent` + translit jadvali (uz lotin/kirill) kiritish.
 
 ---

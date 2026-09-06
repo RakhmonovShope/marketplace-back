@@ -83,9 +83,13 @@ API kalitlari (`ApiKey { userId, keyHash, scopes, rateLimit }`), `/api/v1/partne
 ## D. Qidiruv va tavsiya
 
 ### 16. Qidiruv sifati — M, backend
+
+> ✅ Bajarildi (2026-09-06, B2-37): `Influencer.searchText` — nom/username va lotin↔kirill translit variantlari (`helpers/translit.ts`, unit testlar), trigram indekslar qayta tiklandi (`influencer_searchtext_trgm`, `influencer_fullname_trgm`, `social_username_trgm`), qidiruvda relevantlik tartibi (`similarity`/`word_similarity`, 300 nomzod oynasi), `suggest` reyting bilan, `@username` prefiksi faqat akkaunt nomi bo'yicha, admin `GET /admin/search/gaps` (natijasiz so'rovlar). Sinonim jadvali (`SearchSynonym`) — keyingi bosqichda.
 `03` §3.5: trigram ranking, `@username`, lotin/kirill translit, sinonimlar (`SearchSynonym` jadvali admin'da), zero-result loglari → admin "kontent bo'shliqlari".
 
 ### 17. O'xshash influencerlar — S, backend+web+miniapp
+
+> ✅ Bajarildi (2026-09-06, B2-37 + W2-15 + M2-14): backend `GET /app/influencers/:slug/similar` — asosiy kategoriya, shahar, tier ±1 va popularityScore yaqinligi bo'yicha 6 ta (10 daq kesh); web profil ostida kartalar bloki, miniapp'da gorizontal ro'yxat.
 Profil ostida: shu kategoriya, tier ±1, shahar, `popularityScore` yaqin — 6 ta. Keyin: "birga ko'rilgan" (`ProfileView` ko'nikma, kunlik hisob).
 
 ### 18. Filter qo'shimchalari — S

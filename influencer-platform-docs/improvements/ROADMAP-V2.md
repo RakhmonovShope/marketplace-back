@@ -150,7 +150,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-36 + W2-14 — Programmatik SEO landing'lar (ADR-018) ✅ 2026-09-06
 **Manba.** `09` §10, `04` §2. **DoD.** `/catalog/<cat>/<city>` sahifalari unikal metadata bilan; sitemap; Search Console'da indekslangan.
 
-### - [ ] B2-37 + W2-15 + M2-14 — O'xshash influencerlar + qidiruv sifati (ranking, translit)
+### - [x] B2-37 + W2-15 + M2-14 — O'xshash influencerlar + qidiruv sifati (ranking, translit) ✅ 2026-09-06
 **Manba.** `09` §16–17. **DoD.** Profilda 6 ta o'xshash; `Азиз` → `Aziz` topiladi.
 
 ---
