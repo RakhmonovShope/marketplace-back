@@ -31,10 +31,14 @@ Trigger: publish/delete/restore/setCategories/import (batch), + kunlik cron (dri
 admin `mode: create-new | update-existing` tanlaydi (job darajasida). Default — **yangi yaratish** (`-2` suffiks), yangilash faqat aniq `slug` bilan.
 
 ### 1.3 Snapshot bo'lmasa growth 0
+
+> ✅ Bajarildi (2026-09-06, B2-18): `growth7d/30d/90d` va `Influencer.growthRate30d` nullable (migratsiya: <2 snapshot → NULL); `growthSince` → null; `computeAggregates` faqat ma'lumoti bor akkauntlar bo'yicha (hech biri bo'lmasa null); `popularityScore` null'ni neytral (0) oladi; search sort va dashboard "Eng tez o'sayotgan" — `nulls: 'last'`, ma'lumotsizlar blokda chiqmaydi; DTO'lar nullable, 3 frontend `—`/yashirin ko'rsatadi (schema'lar qayta generatsiya).
 `growthSince` 30 kunlik snapshot topmasa `0` → yangi influencerlarda `growthRate30d = 0` → "Eng tez o'sayotgan" blokida yolg'on 0. UI'da `null` ("ma'lumot yetarli emas") va `growth30d` faqat ≥ 2 nuqta bo'lganda.
 Schema: `SocialAccountStats.growth30d Decimal?` (nullable) yoki `growthAvailable Boolean`.
 
 ### 1.4 Popularity og'irliklari o'zgarganda recalculateAll chaqirilmaydi
+
+> ✅ Bajarildi (2026-09-06, B2-18): `ContentService.setSetting('popularity.weights')` → tracking navbatiga `recalculate-all` (`recalculateAll` batch), javobda `recalculating: true`; admin sozlamalar sahifasi "Qayta hisoblanmoqda" toast ko'rsatadi. +2 unit test.
 `ContentService.setSetting('popularity.weights')` → kesh tozalanadi, lekin `Influencer.popularityScore` eski. Yechim: setting saqlanganda `recalculate-all` job (navbat) + admin'da "qayta hisoblanmoqda" holati.
 
 ### 1.5 Mayda
@@ -76,6 +80,8 @@ Kunlik job: har kategoriya × tier bo'yicha median `engagementRate`, `viewRate`,
 - Backfill CSV shabloni (`STATS` import `measuredAt` bilan) — bor; admin UI'da "tarixni yuklash" alohida tugma (`05-ADMIN`).
 
 ### 3.4 Trending sifat
+
+> ✅ Bajarildi (2026-09-06, B2-18): `trendingScore(current, prev, minViews)` = log(1+current)·current/max(prev,1), chegara `TRENDING_MIN_VIEWS` (default 20); chegaradan past → trending'ga kirmaydi (dashboard fastestGrowing'ga tushadi).
 `views(7d)/views(prev 7d)` — kam ko'rilgan profillar (1→5 ko'rish = 5×) yuqoriga chiqadi. Minimal chegara (`current >= 20`) + Wilson/log damping: `score = log(1+current) * ratio`.
 
 ### 3.5 Qidiruv sifati (pg_trgm bor, ishlatilmaydi)

@@ -85,7 +85,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-17 — Worker ajratish: `QUEUE_WORKERS_ENABLED`, `BOT_ENABLED` defaultlari, compose `worker` ✅ 2026-09-06
 **Manba.** `02` §9, `07` §3. **DoD.** `app` (2 replica) job ishlamaydi va bot ochmaydi; `worker` — hammasi.
 
-### - [ ] B2-18 — Analytics: `growth30d` nullable, trending damping, popularity weights → recalculate job
+### - [x] B2-18 — Analytics: `growth30d` nullable, trending damping, popularity weights → recalculate job ✅ 2026-09-06
 **Manba.** `03` §1.3, §1.4, §3.4. **DoD.** Yangi influencer `growth30d: null`; weights saqlansa navbatga `recalculate-all`; frontend'lar `null` ko'rsatadi (W2/M2/A2 mos qadamlar).
 
 ### - [ ] B2-19 — Indekslar va Prisma sozlamalari
