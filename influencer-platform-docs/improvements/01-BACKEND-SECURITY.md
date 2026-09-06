@@ -85,6 +85,8 @@ Import upload'ida `limits.fileSize` (10MB) va mimetype/kengaytma tekshiruvi borl
 
 ## S6. `OptionalAuthGuard` — eskirgan token jimgina anonim (UX bug, O'RTA)
 
+> ✅ Bajarildi (2026-09-06, B2-04): `handleRequest`: Authorization yo'q → null; bor lekin yaroqsiz/eskirgan → 401 `UNAUTHORIZED`; strategy xatosi (403) saqlanadi (+4 unit test). Smoke: search/profile/view eskirgan JWT → 401, token'siz → 201/404. Web `apiFetch`: SSR'da 401 + bearer → bir marta anonim takror (sahifa yiqilmaydi); klient/miniapp/admin refresh oqimi o'zgarishsiz.
+
 **Muammo.** `handleRequest(_err, user) { return user || null }` — token bor, lekin muddati o'tgan bo'lsa ham `null`.
 `search`, `profile`, `view`, `favorites` marker'lari anonim bo'lib qaytadi; web `apiFetch` va admin/miniapp `axios-auth-refresh`
 faqat **401** da refresh qiladi → 15 daqiqadan keyin foydalanuvchi "chiqib ketgan" kabi (isFavorite=false), lekin hech kim buni bilmaydi.

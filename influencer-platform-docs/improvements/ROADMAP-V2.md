@@ -30,7 +30,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **DoD.** Logda `authorization: "[redacted]"`; `userId` maydoni bor; `/files/`, `/api/docs` auto-log'dan tashqarida.
 **Tekshirish.** `curl -H "Authorization: Bearer abc" …/auth/me` → log qatorida `abc` yo'q.
 
-### - [ ] B2-04 — `OptionalAuthGuard`: eskirgan token → 401
+### - [x] B2-04 — `OptionalAuthGuard`: eskirgan token → 401 ✅ 2026-09-06
 **Manba.** `01` S6. **Fayllar.** `src/api/auth/optional-auth.guard.ts` (+spec)
 **DoD.** Token yo'q → anonim; token yaroqsiz → 401 `UNAUTHORIZED`; web/miniapp refresh oqimi ishlaydi (16 daqiqadan keyin `isFavorite` to'g'ri).
 **Tekshirish.** e2e: eskirgan token bilan `POST /app/influencers/search` → 401.
