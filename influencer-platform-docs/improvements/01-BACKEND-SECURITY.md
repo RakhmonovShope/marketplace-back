@@ -75,6 +75,8 @@ customProps: (req) => ({ userId: (req as { user?: { id?: string } }).user?.id })
 
 ## S5. `xlsx` va `multer` — zaif versiyalar (O'RTA)
 
+> ✅ Bajarildi (2026-09-06, B2-07): `xlsx` → SheetJS CDN 0.20.3 (npm 0.18.5 CVE'lari yopiq), `multer` 2.3.0 (+`pnpm.overrides`: multer, js-yaml, lodash, qs, glob, picomatch, ajv, tmp) — audit 32 → 7 (1 high qoldi: `path-to-regexp@0.2.5` `@nestjs/serve-static@4` ichida, faqat konfiguratsiya pattern'ida ishlatiladi; to'liq yopish Nest 11 bilan). `dotenv` qoladi (`instrument.ts`). Import: faqat 1-varaq, `MAX_IMPORT_ROWS=10_000` (`sheetRows`/`preview` bilan xotira ham cheklangan) → 400/FAILED; 10MB + kengaytma filtri tasdiqlandi. E2E: XLSX 2 satr VALIDATED, 10 001 satr CSV FAILED ("10000 dan ko'p satr"), PNG upload (multer 2 diskStorage) 201.
+
 | Paket | Hozir | Muammo | Yechim |
 |---|---|---|---|
 | `xlsx` | `^0.18.5` (npm) | SheetJS npm nashrini to'xtatgan; 0.18.5 da CVE-2023-30533 (prototype pollution), CVE-2024-22363 (ReDoS) — admin yuklagan fayl orqali | `exceljs` (faol) yoki SheetJS CDN nashri `xlsx@https://cdn.sheetjs.com/xlsx-0.20.x/xlsx-0.20.x.tgz`; import faqat birinchi varaq, 10k qator limiti |

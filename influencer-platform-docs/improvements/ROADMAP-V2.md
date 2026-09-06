@@ -43,7 +43,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **Manba.** `01` S4, S7. **Fayllar.** `swagger.setup.ts`, `env.validation.ts`, `http-exception.filter.ts`, `error-codes.ts` (`CONFLICT`)
 **DoD.** `NODE_ENV=production` `/api/docs` 404 (yoki basic auth); `Country.code` dublikati → 409 `CONFLICT` `details.target`.
 
-### - [ ] B2-07 — `xlsx`/`multer`/`dotenv` yangilash + import limitlari
+### - [x] B2-07 — `xlsx`/`multer`/`dotenv` yangilash + import limitlari ✅ 2026-09-06
 **Manba.** `01` S5. **DoD.** `pnpm audit --audit-level=high` toza; XLSX import ishlaydi (e2e); 10MB/10k satr limiti.
 
 ### - [ ] B2-08 — `Category.influencerCount` to'g'ri hisob + import slug-merge himoyasi
