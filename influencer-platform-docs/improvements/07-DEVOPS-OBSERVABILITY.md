@@ -46,6 +46,8 @@ prod'da 500 lar ko'rinmaydi. Yechim:
 
 ## 4. CI/CD (P1)
 
+> ✅ Bajarildi (2026-09-06, X2-02): Backend: `pnpm api:export` (`scripts/export-openapi.ts`, `buildAudienceDocuments`) → `openapi/{admin,web,miniapp}.json` repo'da, CI `git diff --exit-code openapi/`; `pnpm audit --audit-level=high` (backend `pnpm.auditConfig.ignoreCves`: CVE-2024-45296 path-to-regexp/serve-static); docker tag'lar `:latest` + `:<sha>`; `dependabot.yml` (npm weekly grouped, actions, docker) — 4 repo. Frontend'lar: `api:gen:file` (backend openapi fayldan), CI drift qadami `OPENAPI_BASE_URL` var berilganda (`openapi-typescript` + `git diff --exit-code`), audit, admin `typecheck`; miniapp `valibot >=1.2.0` override (ReDoS high yopildi). Lighthouse CI va deploy job (manual approval) — keyin.
+
 - Backend CI'ga **DB'li testlar**: `services: postgres:16, redis:7` → `prisma migrate deploy` → `pnpm test:e2e` (`08-TESTING`).
 - `pnpm audit --audit-level=high` (xlsx/multer kabi) — 4 repo. `dependabot.yml` (haftalik, grouped).
 - **OpenAPI drift**: backend CI `pnpm api:export` → `openapi/{admin,web,miniapp}.json` artefakt (server ishga tushmasdan `createDocument`); frontend CI `openapi-typescript <artefakt>` → `git diff --exit-code src/**/api-schema.d.ts` — kontrakt o'zgarsa PR'da ko'rinadi. Hozir tiplar lokal `localhost:3000` dan generatsiya qilinadi — CI tekshirmaydi.

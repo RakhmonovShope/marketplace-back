@@ -113,7 +113,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-22 — e2e bazasi (Testcontainers/CI services) + auth, stats, import, search oqimlari ✅ 2026-09-06
 **Manba.** `08-TESTING` §1. **DoD.** `pnpm test:e2e` 8 oqim yashil; CI'da ishlaydi.
 
-### - [ ] X2-02 — CI: SHA tag'lar, `pnpm audit`, dependabot, OpenAPI export + frontend drift tekshiruvi
+### - [x] X2-02 — CI: SHA tag'lar, `pnpm audit`, dependabot, OpenAPI export + frontend drift tekshiruvi ✅ 2026-09-06
 **Manba.** `07` §4, `08` §2. **DoD.** Backend PR'da `openapi/*.json` diff; frontend CI drift'da qizil; image `:sha` bilan.
 
 ### - [ ] X2-03 — Backup (pg_dump → S3), Redis appendonly, staging muhiti + test bot
