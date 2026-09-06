@@ -146,6 +146,7 @@ X-Client: web | miniapp | admin   # analitika uchun
 | GET | `/app/influencers/:slug/media-kit.pdf` · `/app/lists/:id/export.pdf` | Media kit PDF (ko'rsatkichlar, tarmoqlar, narxlar, benchmark; aloqa — `Plan.canSeeContacts`) va ro'yxat PDF (`Plan.canExport`). Kirill uchun `MEDIA_KIT_FONT` (TTF); berilmasa matn lotinga translit qilinadi (B2-43) |
 | POST/GET | `/app/api-keys` · DELETE `/app/api-keys/:id` | Hamkor API kalitlari (B2-44, BUSINESS+): yaratishda to'liq kalit **bir marta** qaytadi (`<prefix>.<secret>`), bazada sha256 saqlanadi |
 | GET | `/partner/influencers` · `/partner/influencers/:slug` · `/partner/categories` · `/partner/usage` | Hamkor API — `X-API-Key` sarlavhasi, kunlik kvota (`ApiKey.dailyLimit`), Swagger `partner` definition (`/api/docs/partner-json`) (B2-44) |
+| GET | `/public/influencers/:slug/card.png` | Ulashish kartasi 1200×630 PNG (og:image va Telegram preview; SVG → sharp, avatar bilan, 1 soat kesh). Bot inline rejimi: `@bot <so'rov>` → top-10 profil, «Profilni ochish» tugmasi (`startapp=inf_<slug>`) (B2-45) |
 | GET | `/app/me/contact-requests` | So'rovlarim (oxirgi 200) (B2-30) |
 | POST | `/admin/leads/search` · GET `/admin/leads/stats` · PUT `/admin/leads/:id` | Admin lead ro'yxati (DSL), statistika, holat (`LEAD__VIEW/UPDATE`) (B2-30) |
 | POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |

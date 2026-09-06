@@ -110,6 +110,8 @@ Profil ostida: shu kategoriya, tier ±1, shahar, `popularityScore` yaqin — 6 t
 ## E. Telegram ekotizimi
 
 ### 19. Bot inline rejimi — S/M, backend(bot)
+
+> ✅ Bajarildi (2026-09-06, B2-45): backend `GET /public/influencers/:slug/card.png` — 1200×630 ulashish kartasi (SVG → sharp, avatar bilan, Redis'da 1 soat) va bot inline rejimi (`@bot <so'rov>` → top-10 profil, statistika + «Profilni ochish» tugmasi `startapp=inf_<slug>`, 60 s kesh); e2e 2 test. Web: profil `og:image` va `twitter:card` shu kartaga ulandi.
 `@bot food toshkent` → inline natijalar (karta + link) — chatda ulashish; `/top food`, `/trending` buyruqlari; kunlik digest (obuna).
 
 ### 20. Share card rasmi — S, backend
