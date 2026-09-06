@@ -9,6 +9,8 @@
 ## A. Ma'lumot va ishonch
 
 ### 1. Creator claim + OAuth connect (ADR-016 taklifi) — L, backend+web+miniapp+admin
+
+> ✅ Bajarildi (2026-09-06, B2-34 + A2-11 + W2-13 + M2-13): backend `InfluencerClaim` (PENDING/APPROVED/REJECTED, admin moderatsiya → `ownerUserId`), `OAuthConnection` (AES-256-GCM tokenlar), Google OAuth start/callback (HMAC state, YouTube Data + Analytics scope), `DATA_SOURCE.OWNER_API` + `YouTubeOwnerProvider` (mine=true, AudienceDemographics jins/yosh/davlat), sync OWNER_API akkauntni owner provayder bilan; creator kabineti (aloqa/bio, narxlar → minPrice, statistika), `/auth/me.creatorOf`, e2e 4 + unit 2; admin /claims moderatsiya sahifasi; web «Bu mening profilim» + /creator (statistika, aloqa, narxlar, YouTube ulash); miniapp ClaimSheet + /creator (YouTube — brauzerda). Cheklov: GOOGLE_CLIENT_ID/SECRET deploy'da; Instagram/TikTok OAuth — keyingi bosqich.
 Influencer Telegram orqali kiradi → "Bu men" (claim) → admin tasdiqlaydi → YouTube (OAuth), Instagram (Facebook Login, `instagram_manage_insights`) ulaydi → rasmiy stats + **auditoriya demografiyasi** (`AudienceDemographics` allaqachon schema'da) → `dataSource: OWNER_API`, `isVerified` avtomatik, o'z narxlari/aloqasini tahrirlaydi, profil ko'rishlari statistikasini ko'radi (creator dashboard). Ma'lumot muammosini qonuniy hal qiladi (`03-DATA-QUALITY` §2). `Influencer.ownerUserId` allaqachon bor.
 
 ### 2. Auditoriya sifati va benchmark'lar — M, backend+web+miniapp
