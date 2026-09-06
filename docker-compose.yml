@@ -1,0 +1,69 @@
+# Development infratuzilmasi: `docker compose up -d`
+# App'ning o'zi lokal ishlaydi (`pnpm start:dev`) — bu yerda faqat servislar.
+#
+# Lokal Postgres/Redis allaqachon 5432/6379 da bo'lsa, portlarni env bilan o'zgartiring:
+#   POSTGRES_HOST_PORT=5433 REDIS_HOST_PORT=6380 docker compose up -d
+# va .env da DATABASE_URL / REDIS_PORT ni mos qiling.
+
+name: marketplace
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - '${POSTGRES_HOST_PORT:-5432}:5432'
+    environment:
+      POSTGRES_DB: marketplace
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U app -d marketplace']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '${REDIS_HOST_PORT:-6379}:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # S3-compatible storage (docs/07-FILES-MEDIA.md §2). Console: http://localhost:9001
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ':9001'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # SMTP sinov serveri: xatlar http://localhost:8025 da ko'rinadi.
+  # .env: MAIL_TRANSPORT=smtp SMTP_HOST=localhost SMTP_PORT=1025 SMTP_SECURE=false
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - '8025:8025'
+      - '1025:1025'
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:

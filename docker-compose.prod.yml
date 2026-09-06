@@ -1,0 +1,85 @@
+# Production / staging: `docker compose -f docker-compose.prod.yml up -d`
+#
+# Tartib (docs/10-DEVOPS-CI-CD.md §5, §10):
+#   1. docker compose -f docker-compose.prod.yml build
+#   2. docker compose -f docker-compose.prod.yml run --rm migrate     # prisma migrate deploy
+#   3. docker compose -f docker-compose.prod.yml up -d api
+#   4. curl -f http://localhost:3000/health
+#
+# Sirlar `.env` faylida (env_file) — image ichiga KIRMAYDI.
+# Postgres/Redis managed bo'lsa — shu servislarni olib tashlab, .env da manzil bering.
+
+name: marketplace-prod
+
+services:
+  api:
+    build:
+      context: .
+      target: runner
+    image: marketplace-backend:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      REDIS_HOST: redis
+    ports:
+      - '${API_HOST_PORT:-3000}:3000'
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    stop_grace_period: 15s
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/health']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # Bir martalik migratsiya job'i: `build` stage'da prisma CLI bor.
+  migrate:
+    build:
+      context: .
+      target: build
+    image: marketplace-backend:build
+    env_file: .env
+    command: ['pnpm', 'prisma', 'migrate', 'deploy']
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: ['tools']
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-marketplace}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD kerak}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-marketplace}']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:
+  uploads:

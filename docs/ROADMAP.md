@@ -82,7 +82,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **Manba.** `10-DEVOPS` §1, §4; `12-DX` §3, §5. **DoD.** `cp .env.example .env` bilan dev ishga tushadi; `pnpm env:check` yashil.
 **Tekshirish.** `pnpm env:check`
 
-### - [ ] STEP-12 — docker-compose (dev) + Dockerfile
+### - [x] STEP-12 — docker-compose (dev) + Dockerfile ✅ 2026-09-06
 **Manba.** `10-DEVOPS` §2, §3. **DoD.** `docker compose up -d` → postgres/redis/minio/mailpit; `docker build -t mb .` → `docker run mb` `/health` 200.
 **Tekshirish.** `docker compose up -d && docker build -t mb . && docker run --rm --env-file .env --network host mb & sleep 5; curl localhost:3000/health`
 

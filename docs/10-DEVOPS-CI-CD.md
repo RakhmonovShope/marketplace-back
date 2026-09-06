@@ -14,6 +14,8 @@
 
 ## 2. Dockerfile (multi-stage)
 
+> ✅ Bajarildi (2026-09-06, STEP-12): `Dockerfile` (deps → build → runner, node:24-alpine, non-root `app`, HEALTHCHECK, `openssl` (Prisma engine OpenSSL 3 aniqlashi uchun), ~435MB), `.dockerignore`, `docker-compose.yml` (postgres 16, redis 7, minio, mailpit; portlar env bilan o'zgaradi), `docker-compose.prod.yml` (api + `migrate` job `build` stage'dan, profiles: tools). `schema.prisma` `binaryTargets`: native + linux-musl (x64, arm64) openssl-3.0.x. Tekshirildi: `docker build` OK, konteyner prod rejimida host DB/Redis bilan `/health` 200, `/v1/auth/me` 401 JSON (DB ishlaydi).
+
 ```dockerfile
 FROM node:22-alpine AS base
 RUN corepack enable && apk add --no-cache libc6-compat
