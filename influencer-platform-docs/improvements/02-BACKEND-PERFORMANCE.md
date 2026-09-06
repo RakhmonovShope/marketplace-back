@@ -6,6 +6,8 @@
 
 ## 1. Har himoyalangan so'rovda `user + role` DB'dan
 
+> ✅ Bajarildi (2026-09-06, B2-10): `AuthUserCacheService` (`auth:user:<id>`, TTL 60 s, +4 unit test) → `JwtStrategy.validate` DB'siz; invalidatsiya: `UserService.block/unblock`, `AdminService.update/delete/restore`, `RoleService.update` (`invalidateRole` — shu roldagi userlar). Smoke: kalit TTL 60, block → kalit o'chadi → keyingi so'rov darhol 403, unblock → 201.
+
 **Hozir.** `JwtStrategy.validate` → `prisma.user.findUnique({ include: { role } })`; `PermissionsGuard` shu natijaga tayanadi.
 Admin panel sahifasi 5 so'rov = 5 query; public `OptionalAuthGuard` route'larida ham.
 
