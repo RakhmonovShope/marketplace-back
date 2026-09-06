@@ -151,12 +151,18 @@ Profilda "Shikoyat" (noto'g'ri ma'lumot, firibgarlik) → `Report` → admin nav
 ## G. Platforma
 
 ### 27. Ingliz tili (EN) — M, hammasi
+
+> ✅ Bajarildi (2026-09-06, X2-10): backend: `Category/Country/City/Language.nameI18n Json?` (ADR-011 kengaytmasi), `languageCode` da `en` qabul qilinadi; web: `en` locale (`routing.locales`, to'liq `en.json`, yetishmagan kalitlar uz'ga tushadi — `request.ts` merge), til almashtirgich va profil selectida English; miniapp: `en` lug'ati (uz ustiga merge) va `lz()` `nameI18n.en` ni o'qiydi.
 ADR-011 `Uz/Ru` maydonlari — 3-til uchun `nameI18n Json` yoki `Translation` jadvali; UI i18n JSON'lar (next-intl/dictionary) oson. Xorijiy brendlar uchun.
 
 ### 28. Foydalanuvchi ma'lumotlarini boshqarish — S, backend+web+miniapp
+
+> ✅ Bajarildi (2026-09-06, X2-10): `GET /app/me/export` (JSON: profil, sevimlilar, ro'yxatlar, saqlangan qidiruvlar, so'rovlar, to'lovlar, bildirishnomalar) va `DELETE /app/me {confirm}` — soft-delete + anonimlashtirish, sessiyalar bekor qilinadi, 30 kundan keyin `purge-accounts` job butunlay o'chiradi; web profilida «Ma'lumotlarni yuklab olish / Akkauntni o'chirish», miniapp profilida ham. e2e 3 test.
 "Akkauntni o'chirish" (soft + 30 kun), ma'lumot eksporti (JSON) — ishonch va do'kon (Telegram) talablari.
 
 ### 29. Web PWA, miniapp offline — S (`04` §6, `06` §5)
+
+> ✅ Bajarildi (2026-09-06, X2-10): web — `app/manifest.ts` (standalone, ikonalar 192/512) va `public/sw.js` (statik cache-first, sahifalar network-first, oflaynda keshdan), prod'da `RegisterServiceWorker` ulaydi; miniapp — mavjud oflayn banneri (`useOnline`) va lug'atga EN qo'shildi.
 
 ### 30. Mobil ilova (React Native / Expo) — L, keyin
 Mini app + web'dan keyin, agar Telegram tashqarisida auditoriya bo'lsa (iOS Safari foydalanuvchilari). API tayyor.

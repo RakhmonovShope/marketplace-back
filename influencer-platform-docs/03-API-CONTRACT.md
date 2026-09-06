@@ -151,6 +151,8 @@ X-Client: web | miniapp | admin   # analitika uchun
 | POST | `/admin/audit/search` · GET `/admin/audit/:entity/:entityId` | Audit tarixi — barcha admin POST/PUT/PATCH/DELETE avtomatik yoziladi (`AUDIT__VIEW`) |
 | GET | `/admin/influencers-duplicates` · POST `/admin/influencers/:id/merge {targetId}` | Dublikatlar (bir xil `platform+username`, trigram nom o'xshashligi) va birlashtirish: akkaunt/narx/sevimli/ro'yxat/lead ko'chadi, eski slug `SlugAlias` bo'lib qoladi |
 | GET/PUT | `/admin/reports/schedule` · POST `/admin/reports/send-now` | Rejalashtirilgan Telegram digest (DAILY/WEEKLY): yangi userlar, profillar, lead'lar, shikoyatlar, natijasiz qidiruvlar, sync xatolari |
+| GET | `/app/me/export` · DELETE `/app/me {confirm, reason?}` | Ma'lumot eksporti (JSON: profil, sevimlilar, ro'yxatlar, saqlangan qidiruvlar, so'rovlar, to'lovlar, bildirishnomalar) va akkauntni o'chirish — soft + anonimlashtirish, 30 kundan keyin `purge-accounts` job butunlay o'chiradi (X2-10) |
+| — | `Category/Country/City/Language.nameI18n` | Qo'shimcha tillar uchun JSON (`{"en": {"name": "..."}}`) — ADR-011 kengaytmasi; UI EN tarjimalari web/miniapp'da (X2-10) |
 | GET | `/app/me/contact-requests` | So'rovlarim (oxirgi 200) (B2-30) |
 | POST | `/admin/leads/search` · GET `/admin/leads/stats` · PUT `/admin/leads/:id` | Admin lead ro'yxati (DSL), statistika, holat (`LEAD__VIEW/UPDATE`) (B2-30) |
 | POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |
