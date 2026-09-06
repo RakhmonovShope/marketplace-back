@@ -69,9 +69,13 @@ Bu ADR-005 (uch kanal) ga 4-kanal qo'shadi: `OWNER_API` (`DATA_SOURCE` enum'ga).
 ## 3. Analytics'ni chuqurlashtirish (P2)
 
 ### 3.1 Auditoriya sifati (fake follower signali)
+
+> ✅ Bajarildi (2026-09-06, B2-35): backend `Influencer.qualityScore` (viewRate 0.4 + ER/kategoriya mediani 0.3 + o'sish anomaliyasi 0.3; 7 kunda +50 % → 0 ball) va `CategoryBenchmark` (kategoriya × tier: medianEr, p25/p75, medianViewRate, medianCpm, medianQuality, sampleSize ≥ 3) — kunlik `compute-benchmarks` job (04:40); qidiruvda `qualityMin` filtri va `qualityScore:desc` sort, kartada/profilda ko'rsatkich, profilda `benchmark.erRatio` va narx yo'q bo'lsa `estimatedPrice`; admin `GET /admin/benchmarks`, `POST /admin/benchmarks/recompute`, filter `qualityScore lte 40` (shubhalilar); e2e 4 + unit 4 test; web/miniapp: sifat belgisi, «Auditoriya sifati (min)» filtri, profilda benchmark qatori.
 Formulalar bor (`viewRate`), lekin flag yo'q. `audienceQuality` (0–100): `viewRate` (og'irlik 0.4), ER kategoriya medianiga nisbati (0.3), o'sish anomaliyasi (7 kunda +50 % followers, ER tushgan — 0.3). Natija: `Influencer.qualityScore Decimal`, karta/profilda "Auditoriya sifati: yaxshi/shubhali", filter `qualityMin`. Admin: "shubhali" ro'yxati (tekshirish uchun).
 
 ### 3.2 Kategoriya benchmark'lari
+
+> ✅ Bajarildi (2026-09-06, B2-35): §3.1 izohiga qarang — `CategoryBenchmark` kunlik hisoblanadi, profilda «ER kategoriya medianidan 1.8×» va narxsizlar uchun taxminiy narx (medianCpm × followers/1000).
 Kunlik job: har kategoriya × tier bo'yicha median `engagementRate`, `viewRate`, `avgViews/followers`, `price per 1k followers` (narx bo'lsa).
 `CategoryBenchmark { categoryId, tier, medianEr, p25, p75, medianCpm, sampleSize, computedAt }`. Profilda "ER kategoriya o'rtachasidan 1.8× yuqori"; taqqoslashda "benchmark" ustuni; narx yo'q bo'lsa **taxminiy narx** (medianCpm × followers/1000).
 
