@@ -109,6 +109,8 @@ Katta fayl (10k+) → `IMPORT_MAX_ROWS` chegarasi + xabar.
 
 ## 9. Worker ajratish (bayroqlar)
 
+> ✅ Bajarildi (2026-09-06, B2-17): `QUEUE_WORKERS_ENABLED` (default true; prod app'da false): 5 ta processor `workerProviders()` bilan shartli ro'yxatdan o'tadi, repeatable job'lar (tracking/sync/category-count) faqat worker'da qo'shiladi; `BOT_ENABLED=false` endi ishlaydi (Joi boolean vs 'false' string bug'i tuzatildi); `WORKER_MODE=true` + workers=false → xato. compose prod: `app` (false/false, replikalanadi) + `worker` (WORKER_MODE=true, true/true, uploads volume, pgrep healthcheck); README yangilandi. Tekshirildi: API-only jarayonda BullMQ worker soni oshmadi (5→5), bot getMe urinmadi; workers=true → +5; WORKER_MODE jarayoni HTTP'siz ishga tushdi.
+
 **Hozir.** `WORKER_MODE=true` alohida jarayon, lekin API jarayonida ham **barcha processor'lar** ro'yxatdan o'tadi (sync/import/image/tracking) →
 2 API replica + 1 worker = 3 ta worker; `sharp` va import CPU'ni API'da yeydi.
 **Yechim.** `QUEUE_WORKERS_ENABLED` (API'da `false`): processor providerlarini shartli ro'yxatdan o'tkazish

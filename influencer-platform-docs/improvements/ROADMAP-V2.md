@@ -82,7 +82,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-16 — Statik fayllar: cache header'lar, nginx alias, `File.path` nisbiy ✅ 2026-09-06
 **Manba.** `02` §7, `07` §3. **DoD.** `/files/...` javobida `Cache-Control: immutable`; nginx to'g'ridan-to'g'ri beradi; `PUBLIC_URL` o'zgarsa URL'lar to'g'ri.
 
-### - [ ] B2-17 — Worker ajratish: `QUEUE_WORKERS_ENABLED`, `BOT_ENABLED` defaultlari, compose `worker`
+### - [x] B2-17 — Worker ajratish: `QUEUE_WORKERS_ENABLED`, `BOT_ENABLED` defaultlari, compose `worker` ✅ 2026-09-06
 **Manba.** `02` §9, `07` §3. **DoD.** `app` (2 replica) job ishlamaydi va bot ochmaydi; `worker` — hammasi.
 
 ### - [ ] B2-18 — Analytics: `growth30d` nullable, trending damping, popularity weights → recalculate job
