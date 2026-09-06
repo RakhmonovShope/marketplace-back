@@ -125,17 +125,25 @@ Birinchi ochilishda 3 ta ekran (nima, qanday, kategoriya tanlash → shaxsiy hom
 ## F. Admin va operatsiyalar
 
 ### 22. Audit log — M, backend+admin
+
+> ✅ Bajarildi (2026-09-06, B2-46 + A2-21): backend `AuditLog` + global interceptor (barcha `/admin/**` POST/PUT/PATCH/DELETE, parol/token maskalanadi), `POST /admin/audit/search`, `GET /admin/audit/:entity/:entityId`; `ProfileReport` shikoyatlari (`POST /app/influencers/:id/report`, admin navbati va ko'rib chiqish); dublikat aniqlash (bir xil platform+username, trigram nom o'xshashligi) va `POST /admin/influencers/:id/merge` — akkaunt/narx/sevimli/ro'yxat/lead/klik ko'chadi, manba arxivlanadi, eski slug `SlugAlias` orqali ishlaydi; `ReportSchedule` — kunlik/haftalik Telegram digest (yangi userlar, profillar, lead'lar, shikoyatlar, natijasiz qidiruvlar, sync xatolari) va `send-reports` job; e2e 4 test. Admin: /audit, /reports (shikoyat + hisobot obunasi), /duplicates (merge) sahifalari.
 `AuditLog { actorId, action, entity, entityId, before, after, ip, requestId }` — admin `POST/PUT/DELETE` interceptor; influencer sahifasida "tarix"; rol/permission o'zgarishlari.
 
 ### 23. Ma'lumot sifati paneli — M (`03` §4, `05` §3)
 
 ### 24. Dublikat aniqlash va birlashtirish — M, backend+admin
+
+> ✅ Bajarildi (2026-09-06, B2-46): §22 izohiga qarang — `GET /admin/influencers-duplicates` + `POST /admin/influencers/:id/merge`, `SlugAlias` bilan eski havolalar saqlanadi.
 Bir xil `platform+username` turli influencerlarda; ism o'xshashligi (trigram); "Merge" oqimi (akkauntlar, narxlar, favorites ko'chadi, eski slug → redirect `SlugAlias`).
 
 ### 25. Rejalashtirilgan hisobotlar — S, backend
+
+> ✅ Bajarildi (2026-09-06, B2-46): `ReportSchedule` (DAILY/WEEKLY) + kunlik `send-reports` job — Telegram digest; admin panelda yoqiladi va «Hozir yuborish» tugmasi bor.
 Haftalik Telegram/email adminlarga: yangi userlar, top qidiruvlar, zero-result, sync sog'ligi, lead'lar (§5).
 
 ### 26. Kontent moderatsiyasi va shikoyat — S, hammasi
+
+> ✅ Bajarildi (2026-09-06, B2-46): `ProfileReport` (WRONG_DATA/FRAUD/INAPPROPRIATE/OTHER) — `POST /app/influencers/:id/report`, admin navbati (`/admin/reports/search`, `PUT /admin/reports/:id`) va A2-21 sahifasi.
 Profilda "Shikoyat" (noto'g'ri ma'lumot, firibgarlik) → `Report` → admin navbati; claim so'rovlari moderatsiyasi (§1).
 
 ---

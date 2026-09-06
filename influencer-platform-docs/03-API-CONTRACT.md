@@ -147,6 +147,10 @@ X-Client: web | miniapp | admin   # analitika uchun
 | POST/GET | `/app/api-keys` · DELETE `/app/api-keys/:id` | Hamkor API kalitlari (B2-44, BUSINESS+): yaratishda to'liq kalit **bir marta** qaytadi (`<prefix>.<secret>`), bazada sha256 saqlanadi |
 | GET | `/partner/influencers` · `/partner/influencers/:slug` · `/partner/categories` · `/partner/usage` | Hamkor API — `X-API-Key` sarlavhasi, kunlik kvota (`ApiKey.dailyLimit`), Swagger `partner` definition (`/api/docs/partner-json`) (B2-44) |
 | GET | `/public/influencers/:slug/card.png` | Ulashish kartasi 1200×630 PNG (og:image va Telegram preview; SVG → sharp, avatar bilan, 1 soat kesh). Bot inline rejimi: `@bot <so'rov>` → top-10 profil, «Profilni ochish» tugmasi (`startapp=inf_<slug>`) (B2-45) |
+| POST | `/app/influencers/:id/report {reason, message?}` | Profil ustidan shikoyat (WRONG_DATA/FRAUD/INAPPROPRIATE/OTHER), 5/min; admin: `POST /admin/reports/search`, `PUT /admin/reports/:id` (`REPORT__VIEW/UPDATE`) (B2-46) |
+| POST | `/admin/audit/search` · GET `/admin/audit/:entity/:entityId` | Audit tarixi — barcha admin POST/PUT/PATCH/DELETE avtomatik yoziladi (`AUDIT__VIEW`) |
+| GET | `/admin/influencers-duplicates` · POST `/admin/influencers/:id/merge {targetId}` | Dublikatlar (bir xil `platform+username`, trigram nom o'xshashligi) va birlashtirish: akkaunt/narx/sevimli/ro'yxat/lead ko'chadi, eski slug `SlugAlias` bo'lib qoladi |
+| GET/PUT | `/admin/reports/schedule` · POST `/admin/reports/send-now` | Rejalashtirilgan Telegram digest (DAILY/WEEKLY): yangi userlar, profillar, lead'lar, shikoyatlar, natijasiz qidiruvlar, sync xatolari |
 | GET | `/app/me/contact-requests` | So'rovlarim (oxirgi 200) (B2-30) |
 | POST | `/admin/leads/search` · GET `/admin/leads/stats` · PUT `/admin/leads/:id` | Admin lead ro'yxati (DSL), statistika, holat (`LEAD__VIEW/UPDATE`) (B2-30) |
 | POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |
