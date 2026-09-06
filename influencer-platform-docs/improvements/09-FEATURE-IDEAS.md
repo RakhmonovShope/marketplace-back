@@ -41,6 +41,8 @@ Keyin: platforma ichida chat (Telegram bot orqali relay) → komissiya/pay-per-l
 Favorites ustida nomlangan ro'yxatlar ("Ramazon kampaniyasi"), eslatma, tartib; jamoa bilan ulashish (§9), CSV/PDF eksport (§7). Schema: `List { userId, name }`, `ListItem`. `Favorite` → default ro'yxat.
 
 ### 7. Media kit / PDF eksport — M, backend
+
+> ✅ Bajarildi (2026-09-06, B2-43): backend `GET /app/influencers/:slug/media-kit.pdf` (ko'rsatkichlar, tarmoqlar, narxlar, benchmark; aloqa faqat `Plan.canSeeContacts` bilan; lokal avatar PDF ichida) va `GET /app/lists/:id/export.pdf` (`Plan.canExport`); `pdfkit` — brauzersiz, worker'siz. Kirill uchun `MEDIA_KIT_FONT` (TTF) berilsa shrift o'rnatiladi, aks holda matn lotinga translit qilinadi (B2-37 helper'i). e2e 2 test. Web: profilda «Media kit (PDF)» tugmasi, ro'yxatda «PDF yuklab olish» (umumiy `downloadFile` yordamchisi).
 Influencer profili PDF (avatar, statistika, grafik, narxlar, aloqa — planga qarab) va ro'yxat/taqqoslash PDF. `puppeteer`/`@react-pdf` worker'da; `Plan.canExport` bor.
 
 ### 8. Brief / kampaniya so'rovi — L, hammasi

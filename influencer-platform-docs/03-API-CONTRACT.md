@@ -143,6 +143,7 @@ X-Client: web | miniapp | admin   # analitika uchun
 | GET | `/app/org/lists` · `/app/org/favorites` · `/app/org/leads` | Jamoaning umumiy ro'yxatlari, sevimlilari va aloqa so'rovlari (a'zolar bo'yicha, kim qo'shgani ko'rinadi) (B2-41) |
 | GET | `/public/featured?type=&categoryId=&limit=` | Pullik joylashtirish (B2-42): TOP_SEARCH / CATEGORY_TOP / DASHBOARD_RECOMMENDED kartalari; soatlik job `Influencer.isFeatured` ni faol joylashtirishlar bo'yicha yangilaydi |
 | POST | `/app/creator/featured/checkout {type, categoryId?, days, provider}` | Creator o'z profilini joylashtirishni sotib oladi (`FEATURED_PRICE_PER_DAY` × kun) — to'lov tasdiqlansa `FeaturedPlacement` yaratiladi. Admin: `POST /admin/featured/search`, `POST /admin/featured`, `PUT/DELETE /admin/featured/:id` (`FEATURED__VIEW/UPDATE`) |
+| GET | `/app/influencers/:slug/media-kit.pdf` · `/app/lists/:id/export.pdf` | Media kit PDF (ko'rsatkichlar, tarmoqlar, narxlar, benchmark; aloqa — `Plan.canSeeContacts`) va ro'yxat PDF (`Plan.canExport`). Kirill uchun `MEDIA_KIT_FONT` (TTF); berilmasa matn lotinga translit qilinadi (B2-43) |
 | GET | `/app/me/contact-requests` | So'rovlarim (oxirgi 200) (B2-30) |
 | POST | `/admin/leads/search` · GET `/admin/leads/stats` · PUT `/admin/leads/:id` | Admin lead ro'yxati (DSL), statistika, holat (`LEAD__VIEW/UPDATE`) (B2-30) |
 | POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |
