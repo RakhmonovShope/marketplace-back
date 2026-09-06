@@ -161,7 +161,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **Manba.** `09` §13. **DoD.** Sandbox to'lov → PRO obuna; `FEATURE_GATING_ENABLED=true` bilan `locked` maydonlar va kvota ishlaydi; webhook idempotent.
 
 ### - [x] B2-41 + W2-21 — Jamoa akkauntlari (Organization) ✅ 2026-09-06
-### - [ ] B2-42 + A2-20 — Featured placement (B-47/A-25 ⏸)
+### - [x] B2-42 + A2-20 — Featured placement (B-47/A-25 ⏸) ✅ 2026-09-06
 ### - [ ] B2-43 — Media kit PDF + eksport
 ### - [ ] B2-44 — Public partner API (ApiKey, kvota)
 ### - [ ] B2-45 — Bot inline rejimi + share card rasmi

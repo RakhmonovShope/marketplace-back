@@ -77,6 +77,8 @@ Schema bor; UI "Qidiruvni saqlash" + §3 alertlar bilan qiymat oshadi.
 Gating rejasi: FREE — 10 qidiruv/kun, aloqa yashirin, grafik 30d; PRO — cheksiz, aloqa, 1y grafik, eksport; BUSINESS — jamoa, API.
 
 ### 14. Featured placement (B-47/A-25 ⏸) — M, backend+admin
+
+> ✅ Bajarildi (2026-09-06, B2-42 + A2-20): backend admin CRUD (`POST /admin/featured/search|/admin/featured`, `PUT/DELETE /admin/featured/:id`, `POST /admin/featured/sync`), public `GET /public/featured?type&categoryId&limit` (5 daq kesh), soatlik `sync-featured` job `Influencer.isFeatured` ni faol joylashtirishlarga moslaydi; creator o'zi sotib oladi — `POST /app/creator/featured/checkout` (`Payment.kind=FEATURED`, `FEATURED_PRICE_PER_DAY` × kun, to'lov tasdiqlansa `FeaturedPlacement` yaratiladi, idempotent); e2e 3 test. Admin: /featured sahifasi (CRUD, filtr, isFeatured sync). Eslatma: `Payment.planId` endi nullable (FEATURED to'lovlari tarifsiz).
 Schema bor; admin CRUD, dashboard/qidiruvda `isFeatured` (bor), kategoriya top; hisob (pullik joylashtirish) — creator claim bilan o'zi sotib oladi.
 
 ### 15. Public API (BUSINESS/ENTERPRISE) — M, backend
