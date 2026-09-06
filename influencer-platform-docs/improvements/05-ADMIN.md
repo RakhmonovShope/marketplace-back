@@ -16,6 +16,8 @@
 
 ## 2. Ommaviy amallar: N ta so'rov (P1)
 
+> ✅ Bajarildi (2026-09-06, B2-20 + A2-02): Backend `POST /admin/influencers/bulk` `{ ids (1..200), action: publish|archive|restore|verify|unverify|addCategory|sync, payload? }` → `{ ok, failed:[{id, code, message}], queued? }`; har element alohida (bittasi xato — qolgani davom), ruxsat amalga qarab (`BULK_PERMISSION`), sync — akkauntlar SYNC navbatiga (priority 1), +3 unit test. Admin: `useBulk` bitta so'rov (publish/arxiv/kategoriya/sync loop'lari o'rniga), natija modal "N ta OK, M ta xato: ism — sabab (kod)". Smoke: verify 4/4 ok, publish → draft `CONFLICT` (missing ro'yxati), noto'g'ri action/201 id → 400.
+
 `pages/influencers/index.tsx`: bulk publish → `selected.forEach(publish.mutate)`; kategoriya qo'shish va sinxronizatsiya — `for ... await` (100 ta influencer = 100–300 so'rov, qisman xato bo'lsa holat noaniq).
 **Backend:** `POST /admin/influencers/bulk` `{ ids, action: 'publish'|'archive'|'restore'|'verify'|'addCategory'|'sync', payload? }` → `{ ok: n, failed: [{id, code, message}] }` (transaction per item, natija ro'yxati).
 **Admin:** bitta mutation, progress/natija modal ("97 ta OK, 3 ta xato: …").
