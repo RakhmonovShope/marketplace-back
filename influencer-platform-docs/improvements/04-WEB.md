@@ -7,6 +7,8 @@
 
 ## 1. `next/image` — ochiq rasm proxy (P0)
 
+> ✅ Bajarildi (2026-09-06, W2-01): `remotePatterns`: faqat API host (`NEXT_PUBLIC_API_URL`), `t.me`, `**.telegram-cdn.org`, `**.telesco.pe`, `i.ytimg.com`, `yt3.ggpht.com` + `NEXT_PUBLIC_IMAGE_HOSTS`; `minimumCacheTTL` 86400, avif/webp; dev'da `dangerouslyAllowLocalIP` (Next 16 SSRF himoyasi localhost'ni bloklaydi). Tekshirildi: example.com → 400, localhost API va t.me → 200.
+
 `next.config.ts`: `remotePatterns: [{ protocol: 'https', hostname: '**' }]` → `/_next/image?url=https://istalgan-sayt/…` orqali **istalgan** rasm sizning
 serveringizda yuklab optimizatsiya qilinadi (CPU/trafik suiiste'moli, SSRF'ga yaqin).
 **Yechim.** Faqat kerakli hostlar: API domeni (`NEXT_PUBLIC_API_URL` host), `t.me`/`cdn*.telegram-cdn.org` (Telegram avatarlari), provayder thumbnail hostlari (`i.ytimg.com`).
@@ -76,6 +78,8 @@ W-27 "analitika" bajarilgan deb belgilangan, lekin kodda `plausible/gtag/posthog
 ---
 
 ## 8. Xavfsizlik (qisqa)
+
+> ✅ Bajarildi (2026-09-06, W2-01): `proxy.ts` har so'rovda nonce + CSP (`shared/security/csp.ts`: script nonce+'strict-dynamic'+telegram.org, img-src API/Telegram/YouTube hostlari, frame-src oauth.telegram.org, frame-ancestors 'none'); login sahifasida `'unsafe-eval'` — telegram-widget.js `data-onauth` ni eval qiladi (kelajakda `data-auth-url` oqimi bilan olib tashlash mumkin); next-themes inline skriptiga nonce (`ThemeProvider nonce`), shu sabab barcha sahifalar dynamic. Statik sarlavhalar `next.config headers()`: X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy. Dev'da CSP o'chiq; prod'da `CSP_ENABLED=false` / `CSP_REPORT_ONLY=true`. Tekshirildi (`next start`): barcha inline skriptlar nonce bilan (0 ta nonce'siz), sahifalar 200. Widget'ni brauzerda tekshirish — deploy'dan keyin.
 
 - `Content-Security-Policy` yo'q (Next default'da yo'q). Telegram widget (`telegram.org`), rasm hostlari, API — `next.config headers()` bilan CSP (`script-src 'self' https://telegram.org`, `img-src 'self' data: https://<api> https://t.me ...`, `connect-src 'self' https://<api>`).
 - `Referrer-Policy: strict-origin-when-cross-origin`, `X-Frame-Options: DENY` (Telegram in-app brauzer iframe emas — OK).
