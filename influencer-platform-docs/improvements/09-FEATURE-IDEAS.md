@@ -32,6 +32,8 @@ Biznes uchun: "so'rovlarim" ro'yxati; admin: lead statistikasi (qaysi influencer
 Keyin: platforma ichida chat (Telegram bot orqali relay) → komissiya/pay-per-lead.
 
 ### 6. Ro'yxatlar (collections) — S/M, backend+web+miniapp
+
+> ✅ Bajarildi (2026-09-06, B2-31 + W2-11 + M2-11): backend List/ListItem + migratsiya (mavjud favorites → default "Saqlanganlar"), FavoriteService ↔ default ro'yxat ko'zgusi, GET/POST/PUT/DELETE /app/lists, items, CSV eksport (aloqa ustunlari plan bo'yicha), limit 20×500, e2e 4 test; web /lists, /lists/[id], profil sahifasida "ro'yxatga qo'shish" dialogi, CSV yuklab olish; miniapp /lists, /lists/:id, AddToListSheet, profil havolasi.
 Favorites ustida nomlangan ro'yxatlar ("Ramazon kampaniyasi"), eslatma, tartib; jamoa bilan ulashish (§9), CSV/PDF eksport (§7). Schema: `List { userId, name }`, `ListItem`. `Favorite` → default ro'yxat.
 
 ### 7. Media kit / PDF eksport — M, backend
