@@ -157,7 +157,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 
 ## FAZA 4 — O'sish va monetizatsiya
 
-### - [ ] B2-40 + W2-20 + M2-20 — To'lov (Payme/Click, Telegram Stars) + obuna + gating yoqish
+### - [x] B2-40 + W2-20 + M2-20 — To'lov (Payme/Click, Telegram Stars) + obuna + gating yoqish ✅ 2026-09-06
 **Manba.** `09` §13. **DoD.** Sandbox to'lov → PRO obuna; `FEATURE_GATING_ENABLED=true` bilan `locked` maydonlar va kvota ishlaydi; webhook idempotent.
 
 ### - [ ] B2-41 + W2-21 — Jamoa akkauntlari (Organization)

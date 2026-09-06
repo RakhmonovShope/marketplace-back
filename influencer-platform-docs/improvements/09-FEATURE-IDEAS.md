@@ -69,6 +69,8 @@ Schema bor; UI "Qidiruvni saqlash" + §3 alertlar bilan qiymat oshadi.
 ## C. Monetizatsiya (ADR-008 gating tayyor)
 
 ### 13. To'lov va obuna — L, backend+web+miniapp
+
+> ✅ Bajarildi (2026-09-06, B2-40 + W2-20 + M2-20): backend `Payment` modeli + `POST /app/billing/checkout` (PAYME/CLICK → to'lov havolasi, TELEGRAM_STARS → `openInvoice` uchun invoice link), Payme Merchant API (JSON-RPC: CheckPerformTransaction/CreateTransaction/PerformTransaction/CancelTransaction/CheckTransaction/GetStatement, Basic auth, idempotent), Click prepare/complete (md5 imzo), Telegram Stars (bot `pre_checkout_query` + `successful_payment`), obuna uzayishi va kunlik `expire-subscriptions` job'i, admin `GET /admin/payments`; gating `FEATURE_GATING_ENABLED=true` bilan e2e'da tekshirildi (PRO — aloqa ochiq, FREE — kvota 429 va `locked: ['contact']`); e2e 6 test. Web `/pricing` (tariflar, Payme/Click, to'lovlar tarixi), miniapp `/pricing` (Telegram Stars). Sandbox kalitlari deploy'da (PAYME_*/CLICK_*).
 `FEATURE_GATING_ENABLED=true` uchun: Payme/Click (web), **Telegram Stars/Payments** (mini app — `openInvoice`), `Subscription` yaratish, muddati, avto-eskirish job'i, chek/hisob-faktura. `PaymentProvider` interfeysi (Payme JSON-RPC, Click prepare/complete), webhook idempotentlik.
 Gating rejasi: FREE — 10 qidiruv/kun, aloqa yashirin, grafik 30d; PRO — cheksiz, aloqa, 1y grafik, eksport; BUSINESS — jamoa, API.
 
