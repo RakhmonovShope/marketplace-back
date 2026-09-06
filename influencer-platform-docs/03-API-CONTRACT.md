@@ -130,6 +130,7 @@ X-Client: web | miniapp | admin   # analitika uchun
 | GET/POST | `/app/lists` · GET/PUT/DELETE `/app/lists/:id` · POST `/app/lists/:id/items` · DELETE `/app/lists/:id/items/:influencerId` · GET `/app/lists/:id/export.csv` | Ro'yxatlar (collections, max 20×500); default "Saqlanganlar" = favorites ko'zgusi; CSV (aloqa ustunlari plan bo'yicha) (B2-31) |
 | POST/GET | `/app/comparison` · DELETE `/app/comparison/:id` · GET `/public/comparison/:id` | Taqqoslashni saqlash (max 50) → `url` (web `/compare/<id>`), `startapp=cmp_<id>`; public read-only (B2-32) |
 | GET/POST | `/app/saved-searches` · PUT/DELETE `/app/saved-searches/:id` · POST `/app/saved-searches/:id/run {page}` | Saqlangan qidiruvlar (max 20; `filters` = InfluencerSearchDto, `notifyNew` → B2-33) (B2-32) |
+| GET | `/app/notifications?unread=1` · GET `/app/notifications/unread-count` · POST `/app/notifications/read {ids?}` | Alertlar (B2-33): FOLLOWERS_CHANGE (±`ALERT_FOLLOWERS_PCT` % / 7 kun), VERIFIED, PRICE_NEW (sevimlilar), SAVED_SEARCH_NEW (notifyNew digest); Telegram'ga `allowsWriteToPm && notifyTelegram` bo'lsa. `PUT /auth/me {notifyTelegram, allowsWriteToPm}`; admin `POST /admin/alerts/run` (`ALERT__RUN`) |
 | GET | `/app/me/contact-requests` | So'rovlarim (oxirgi 200) (B2-30) |
 | POST | `/admin/leads/search` · GET `/admin/leads/stats` · PUT `/admin/leads/:id` | Admin lead ro'yxati (DSL), statistika, holat (`LEAD__VIEW/UPDATE`) (B2-30) |
 | POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |

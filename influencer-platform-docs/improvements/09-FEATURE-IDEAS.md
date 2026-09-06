@@ -15,6 +15,8 @@ Influencer Telegram orqali kiradi → "Bu men" (claim) → admin tasdiqlaydi →
 `03` §3.1–3.2: `qualityScore`, kategoriya × tier median'lari, "kategoriya o'rtachasidan ×1.8", taxminiy narx. Kartada belgi, filterda `qualityMin`.
 
 ### 3. O'zgarish alertlari — M, backend(bot)+miniapp+web
+
+> ✅ Bajarildi (2026-09-06, B2-33): backend `Notification` jadvali (FOLLOWERS_CHANGE ±ALERT_FOLLOWERS_PCT % / growth7d, VERIFIED, PRICE_NEW — sevimlilar; SAVED_SEARCH_NEW — notifyNew digest), `notification` navbatida kunlik `daily-alerts` (ALERTS_CRON) + `send` (Telegram bot HTML xabar, `allowsWriteToPm && notifyTelegram`, dedupKey), `User.allowsWriteToPm` initData'dan, `PUT /auth/me {notifyTelegram}`, GET/POST /app/notifications, admin POST /admin/alerts/run (ALERT__RUN), e2e 3 test; miniapp /notifications sahifasi, profilda toggle (`requestWriteAccess`), startapp `ss_`. Web UI (qo'ng'iroq) — alohida qadam.
 "Kuzatish" (favorites ustida): followers ±10 %, ER anomaliyasi, yangi narx, verified bo'ldi → Telegram bot xabari (`requestWriteAccess`), web'da bildirishnoma. `SavedSearch.notifyNew` (B-42 ⏸) shu mexanizmga qo'shiladi: "yangi mos influencer". Backend: `notification` navbati (bor, bo'sh processor), `Notification` jadvali, kunlik digest.
 
 ### 4. Tarixiy ma'lumot to'ldirish vositasi — S, admin

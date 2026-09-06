@@ -138,7 +138,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-32 + W2-12 + M2-12 — Saqlangan qidiruv (B-42/W-23 ⏸) + taqqoslashni saqlash/ulashish (B-41.4 ⏸) ✅ 2026-09-06
 **Manba.** `09` §11, §12. **DoD.** `/compare/<id>` public; `startapp=cmp_<id>`; saqlangan qidiruv ro'yxati.
 
-### - [ ] B2-33 — Alertlar: `notification` navbati, Telegram bot xabarlari, `requestWriteAccess`
+### - [x] B2-33 — Alertlar: `notification` navbati, Telegram bot xabarlari, `requestWriteAccess` ✅ 2026-09-06
 **Manba.** `09` §3. **DoD.** Followers ±10 % → xabar; saqlangan qidiruvga yangi mos → kunlik digest.
 
 ### - [ ] B2-34 + A2-11 + W2-13 + M2-13 — Creator claim + OAuth connect (ADR-016)
