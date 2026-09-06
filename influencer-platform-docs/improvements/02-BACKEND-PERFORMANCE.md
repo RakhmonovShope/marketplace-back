@@ -132,6 +132,8 @@ Repeatable job'lar (`onApplicationBootstrap`) — `jobId` bilan idempotent (bor)
 
 ## 11. Prisma/DB
 
+> ✅ Bajarildi (2026-09-06, B2-19): Migratsiya: `Influencer(status, active, minPrice)`, `Influencer(status, active, avgViews DESC)` qo'shildi; dublikat `Influencer_slug_idx`, `Category_slug_idx` va foydasiz `SearchLog_query_idx` o'chirildi. `PrismaService`: `log: query` event → `SLOW_QUERY_MS` (default 200) dan sekin so'rovlar warn (param'larsiz). Prod `DATABASE_URL` `?connection_limit=10&pool_timeout=10` (compose). Tekshirildi: pg_indexes ro'yxati, event handler ishlaydi.
+
 - `Influencer.minPrice` bo'yicha filter/sort indekssiz → `@@index([status, active, minPrice])`; `avgViews` sort ham (`@@index([status, active, avgViews(sort: Desc)])`).
 - `Category.slug @unique` + `@@index([slug])`, `Influencer.slug` — dublikat indeks (unique yetarli) → olib tashlash.
 - `DATABASE_URL?connection_limit=10&pool_timeout=10`; sekin so'rov logi (`$on('query')` > 200 ms → warn).
