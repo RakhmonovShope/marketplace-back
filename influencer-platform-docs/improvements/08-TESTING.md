@@ -7,6 +7,8 @@
 
 ## 1. Backend e2e — real Postgres/Redis (Testcontainers yoki CI services)
 
+> ✅ Bajarildi (2026-09-06, B2-22): `test/setup/{env,global-setup,app,helpers}.ts`: alohida `influencer_test` bazasi (`prisma migrate deploy` yaratadi) + seed, Redis db=1 (`REDIS_DB` env qo'shildi), `configureApp()` main.ts bilan umumiy; har spec `resetDb` (TRUNCATE dinamik jadvallar, ADMIN qoladi) + `flushRedis`. 5 suite / 14 test (~6 s): auth (login→me→rotation→reuse 401/theft, initData, bind-phone imzo/403/eskirgan, OptionalAuthGuard, blok invalidatsiyasi), stats (applyStats→stats+snapshot+aggregate, growth null→25, backfill), import (template, CSV→VALIDATED preview NAME_MATCH/errors→apply PARTIAL, 10 001 satr FAILED, .exe 400), katalog (publish 409 missing, ota-kategoriya, count, followersMin, influencerCount, DTO whitelist, DSL, isFavorite, bulk), health/metrics. CI: Postgres/Redis services + `pnpm test:e2e`. Coverage threshold — keyin.
+
 `test/jest-e2e.json` + `globalSetup` (`@testcontainers/postgresql`, `redis`): `prisma migrate deploy` + `seed` (rollar, FREE plan, kategoriyalar).
 Har spec oldidan `TRUNCATE` (rollar/planlar qoladi). Fabrikalar: `test/factories/{influencer,socialAccount,user}.ts`.
 

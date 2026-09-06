@@ -110,7 +110,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-21 — Prometheus metrikalar + `/health/live|ready` ✅ 2026-09-06
 **Manba.** `07` §2. **DoD.** `/metrics` da http histogram va navbat gauge; Redis to'xtasa `ready` 503, `live` 200.
 
-### - [ ] B2-22 — e2e bazasi (Testcontainers/CI services) + auth, stats, import, search oqimlari
+### - [x] B2-22 — e2e bazasi (Testcontainers/CI services) + auth, stats, import, search oqimlari ✅ 2026-09-06
 **Manba.** `08-TESTING` §1. **DoD.** `pnpm test:e2e` 8 oqim yashil; CI'da ishlaydi.
 
 ### - [ ] X2-02 — CI: SHA tag'lar, `pnpm audit`, dependabot, OpenAPI export + frontend drift tekshiruvi
