@@ -373,6 +373,8 @@ Backend **raqamni** qaytaradi, frontend formatlaydi:
 
 ## 9. Xatolik kodlari
 
+Xato javobi: `{ statusCode, code, message, details?, timestamp, path, requestId }` — `requestId` = `X-Request-Id` sarlavhasi (Sentry/loglar bilan bog'lash, B2-05).
+
 | `code` | HTTP | Ma'nosi |
 |---|---|---|
 | `VALIDATION_ERROR` | 400 | DTO validatsiyasi |
@@ -392,7 +394,8 @@ Backend **raqamni** qaytaradi, frontend formatlaydi:
 | `FORBIDDEN` | 403 | Permission yetishmaydi |
 | `PLAN_REQUIRED` | 403 | Yuqoriroq tarif kerak (`requiredPlan` qaytadi) |
 | `QUOTA_EXCEEDED` | 429 | Kunlik limit tugagan |
-| `NOT_FOUND` | 404 | Resurs topilmadi |
+| `NOT_FOUND` | 404 | Resurs topilmadi (Prisma P2025 ham) |
+| `CONFLICT` | 409 | Unique/slug band; Prisma P2002 → `details.target` (B2-06) |
 | `DUPLICATE_SOCIAL_ACCOUNT` | 409 | Bu influencerda bunday akkaunt bor |
 | `MANUAL_LOCK_CONFLICT` | 409 | Qo'lda qulflangan maydonni API yozmoqchi |
 | `IMPORT_NOT_VALIDATED` | 409 | Validatsiyadan o'tmagan importni apply qilish |

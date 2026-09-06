@@ -66,6 +66,8 @@ customProps: (req) => ({ userId: (req as { user?: { id?: string } }).user?.id })
 
 ## S4. Swagger production'da ochiq (O'RTA)
 
+> ✅ Bajarildi (2026-09-06, B2-06): `SWAGGER_ENABLED` (prod default false) + `SWAGGER_USER/PASSWORD` → `express-basic-auth` (`/api/docs`, `/api/docs-json`, `/api/docs-yaml`). Smoke: NODE_ENV=production → `/api/docs` va `/api/docs/miniapp-json` 404; dev + creds → 401/200.
+
 `setupSwagger` har doim ishlaydi. `SWAGGER_ENABLED` (prod default `false`) + ochilsa `express-basic-auth`
 (`SWAGGER_USER/PASS`) `/api/docs*` uchun. Frontend tip generatsiyasi staging'dan yoki CI artefaktidan (`07-DEVOPS` §4).
 
@@ -105,6 +107,8 @@ Endi eskirgan token → 401 → mijoz refresh → takror. Web SSR'da `inf_at` co
 ---
 
 ## S7. Prisma xatolari 500 bo'lib qaytadi (PAST-O'RTA)
+
+> ✅ Bajarildi (2026-09-06, B2-06): `prisma-error.map.ts` (+spec) — P2002 → 409 `CONFLICT` (`details.target`), P2025 → 404, P2003/P2000 → 400; `ERROR_CODES.CONFLICT`/`SERVICE_UNAVAILABLE` konstantalari (16 literal almashtirildi); xato javobida `requestId`. Smoke: yo'q country/city DELETE → 404 "Yozuv topilmadi".
 
 `HttpExceptionFilter` faqat `HttpException` ni map qiladi. `P2002` (unique: `Country.code`, `Language.code`, `Page.slug`,
 `InfluencerPrice`), `P2025` (yozuv yo'q), `P2003` (FK) → "Internal server error". Filter'ga:

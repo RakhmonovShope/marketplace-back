@@ -39,7 +39,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **Manba.** `07-DEVOPS` §1. **Fayllar.** `src/instrument.ts`, `src/main.ts`, `src/common/filters/http-exception.filter.ts`, processor'lar
 **DoD.** `SENTRY_DSN` bilan sun'iy 500 (`GET /api/v1/admin/__boom` test route yoki mock) Sentry'da ko'rinadi, `requestId` bilan; DSN'siz hech narsa buzilmaydi.
 
-### - [ ] B2-06 — Swagger prod'da yopiq + Prisma xatolarini map qilish
+### - [x] B2-06 — Swagger prod'da yopiq + Prisma xatolarini map qilish ✅ 2026-09-06
 **Manba.** `01` S4, S7. **Fayllar.** `swagger.setup.ts`, `env.validation.ts`, `http-exception.filter.ts`, `error-codes.ts` (`CONFLICT`)
 **DoD.** `NODE_ENV=production` `/api/docs` 404 (yoki basic auth); `Country.code` dublikati → 409 `CONFLICT` `details.target`.
 
