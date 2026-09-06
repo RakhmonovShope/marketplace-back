@@ -59,6 +59,8 @@ prod'da 500 lar ko'rinmaydi. Yechim:
 
 ## 5. Backup va DR (P1)
 
+> ✅ Bajarildi (2026-09-06, X2-03): compose prod: `backup` (postgres-backup-local, kunlik `pg_dump -Fc`, 30 kun/8 hafta/6 oy, `backups` volume), `backup-sync` (rclone, `--profile s3`: dump'lar + uploads → S3/R2 kuniga bir), Redis `appendonly yes`; `scripts/backup.sh` (qo'lda dump), `scripts/restore.sh <dump> [db]` — restore drill alohida bazaga (jadval/satr/migratsiya soni), prod'ga tasdiq bilan; `docker-compose.staging.yml` overlay + `.env.staging.example` (APP_ENV=staging, test bot, Swagger basic auth, SENTRY_TEST_ROUTE); README'da tartib. Tekshirildi: compose config (prod/staging/s3 profil) OK; drill dev DB'da: dump → `influencer_restore_drill` → jadvallar/influencerlar/migratsiyalar mos → drop. Real S3 va staging server — deploy vaqtida.
+
 - Postgres: `pg_dump -Fc` kunlik (compose `backup` servisi: `prodrigestivill/postgres-backup-local` yoki cron) → S3/R2, 30 kun; oyda bir `pg_restore` staging'ga.
 - `uploads` volume: `rclone sync` S3/R2 kunlik (yoki fayllarni to'g'ridan-to'g'ri S3'ga yuklash — `08` P2).
 - Redis: BullMQ job'lar — `appendonly yes` (compose'da yo'q → qo'shish); sync/import holati DB'da — yo'qolsa qayta navbatga.
@@ -67,6 +69,8 @@ prod'da 500 lar ko'rinmaydi. Yechim:
 ---
 
 ## 6. Muhitlar
+
+> ✅ Bajarildi (2026-09-06, X2-03): staging — `docker-compose.staging.yml` overlay (prod stack, `.env.staging`, `STAGING_HTTP_PORT`), alohida test bot (`/newbot` → `/setdomain` → `/newapp`), URL sxemasi README'da; real domenlar deploy vaqtida.
 
 | Muhit | Backend | Web | Admin | Mini App |
 |---|---|---|---|---|

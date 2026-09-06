@@ -116,7 +116,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] X2-02 — CI: SHA tag'lar, `pnpm audit`, dependabot, OpenAPI export + frontend drift tekshiruvi ✅ 2026-09-06
 **Manba.** `07` §4, `08` §2. **DoD.** Backend PR'da `openapi/*.json` diff; frontend CI drift'da qizil; image `:sha` bilan.
 
-### - [ ] X2-03 — Backup (pg_dump → S3), Redis appendonly, staging muhiti + test bot
+### - [x] X2-03 — Backup (pg_dump → S3), Redis appendonly, staging muhiti + test bot ✅ 2026-09-06
 **Manba.** `07` §5, §6. **DoD.** Kunlik dump S3'da; restore sinovi hujjatlangan; staging URL'lar.
 
 ### - [ ] W2-03 / A2-03 / M2-02 — Frontend unit testlar (vitest) + Playwright smoke
