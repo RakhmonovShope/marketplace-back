@@ -97,6 +97,7 @@ X-Client: web | miniapp | admin   # analitika uchun
 | Metod | Path | Body | Izoh |
 |---|---|---|---|
 | POST | `/app/influencers/search` | `InfluencerSearchDto` | Asosiy katalog — aniq tipli DTO (ADR-014, `01-ARCHITECTURE.md` §7.1) |
+| POST | `/app/influencers/count` | `InfluencerSearchDto` | Faqat `{totalItems}` — filter varag'i uchun (60 s kesh, kvota sarflamaydi; B2-11) |
 | GET | `/app/influencers/filters` | — | Mavjud filter variantlari + min/max qiymatlar |
 | GET | `/app/influencers/suggest?q=` | — | Autocomplete (10 ta, 200ms debounce) |
 

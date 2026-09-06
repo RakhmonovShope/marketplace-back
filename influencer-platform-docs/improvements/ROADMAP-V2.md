@@ -64,7 +64,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-10 — JwtStrategy user keshi (Redis 60 s) + invalidatsiya ✅ 2026-09-06
 **Manba.** `02` §1. **DoD.** Himoyalangan so'rovda DB query 0 (kesh hit); block/rol o'zgarishi darhol ta'sir qiladi (test).
 
-### - [ ] B2-11 — Qidiruv: count keshi, anonim natija keshi (30 s), kategoriya bolalari keshdan, `/count` endpoint
+### - [x] B2-11 — Qidiruv: count keshi, anonim natija keshi (30 s), kategoriya bolalari keshdan, `/count` endpoint ✅ 2026-09-06
 **Manba.** `02` §2. **DoD.** Bir xil anonim so'rov 2-marta DB'ga bormaydi (log); miniapp count 400 ms debounce.
 
 ### - [ ] B2-12 — `recountViews` bitta SQL + `ProfileView`/`SearchLog` retention

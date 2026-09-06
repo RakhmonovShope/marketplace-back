@@ -19,6 +19,8 @@ Invalidatsiya: `UserService.block/unblock`, `RoleService.update` (o'sha rol foyd
 
 ## 2. Qidiruv: `count + findMany` har safar, keshsiz
 
+> ✅ Bajarildi (2026-09-06, B2-11): `SearchService`: count keshi `search:count:<sha1(where)>` 60 s, anonim natija `search:res:<sha1(dto)>` 30 s (isFavorite keyin qo'yiladi), kategoriya bolalari `categories:tree` keshidan (DB query yo'q); `POST /app/influencers/count` → `{totalItems}` (kvota sarflamaydi); miniapp `useInfluencerCount` → `/count` + 400 ms debounce. +3 unit test. Smoke: 2-anonim so'rov DB'siz (log "search kesh hit"), Redis'da res/count kalitlari, count = search.totalItems.
+
 **Hozir.** `SearchService.search`: kategoriya bolalari query + `$transaction([count, findMany+include])`. Miniapp filter varag'i
 har o'zgarishda **ikkinchi** `search` (perPage=1) faqat `totalItems` uchun (`useInfluencerCount`). Anonim trafik (SEO, Telegram
 preview botlari) bir xil so'rovlarni takrorlaydi.
