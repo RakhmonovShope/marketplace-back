@@ -18,6 +18,8 @@ serveringizda yuklab optimizatsiya qilinadi (CPU/trafik suiiste'moli, SSRF'ga ya
 
 ## 2. Anonim sahifalar keshi va SEO (P1)
 
+> ✅ Bajarildi (2026-09-06, W2-02): `SearchAnonymousCached` (`unstable_cache`, 60 s, tag `catalog`) — token'siz `/catalog` va kategoriya sahifalari uchun (Next data-cache POST fetch'ni keshlamaydi); token bo'lsa `no-store`. `listingSeo`: filter/qidiruv/sort bilan URL → `robots: noindex, follow` + canonical asosiy ro'yxat; sahifalash canonical `?page=N`. Sitemap'ga kategoriya sahifalari (uz/ru alternates). Tekshirildi (`next start`): 3 anonim yuklash → backend'ga 1 so'rov; `?followers=` → `<meta name=robots content="noindex, follow">`; sitemap'da `/catalog/<slug>`.
+
 | Sahifa | Hozir | Muammo | Yechim |
 |---|---|---|---|
 | `/catalog` (`(list)/page.tsx`) | `cache: 'no-store'`, token forward | Har crawler/anonim so'rov → backend `search` (count+findMany) | Token bo'lmasa `next: { revalidate: 60 }` (yoki `unstable_cache`), `isFavorite` — client-side (`useFavoriteIds`) |
