@@ -119,7 +119,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] X2-03 — Backup (pg_dump → S3), Redis appendonly, staging muhiti + test bot ✅ 2026-09-06
 **Manba.** `07` §5, §6. **DoD.** Kunlik dump S3'da; restore sinovi hujjatlangan; staging URL'lar.
 
-### - [ ] W2-03 / A2-03 / M2-02 — Frontend unit testlar (vitest) + Playwright smoke
+### - [x] W2-03 / A2-03 / M2-02 — Frontend unit testlar (vitest) + Playwright smoke ✅ 2026-09-06
 **Manba.** `08` §3. **DoD.** Har repo'da ≥ 10 unit test, 1 smoke e2e CI'da (nightly).
 
 ### - [ ] W2-04 — Analytics (Plausible) + `contact_click` hodisasi + Web Vitals + Lighthouse CI

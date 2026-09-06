@@ -36,6 +36,8 @@ Skript: `pnpm test:e2e` CI `services:` bilan (`07-DEVOPS` §4). Coverage thresho
 
 ## 3. Frontend testlar
 
+> ✅ Bajarildi (2026-09-06, W2-03 / A2-03 / M2-02): vitest (node env, sof modullar): web 15 test (filter-params parse/serialize/toApiParams/count, listingSeo, format, buildCsp), admin 12 test (format, applyServerErrors, parseTableState — hook'dan ajratildi, bulkSummary — modulga ko'chirildi), miniapp 12 test (format, thumbUrl, apiErrorText, category filters). `pnpm test` CI'da. Playwright smoke: `e2e/smoke.spec.ts` + `playwright.config.ts` (webServer: next start / vite preview; `E2E_BASE_URL` bilan staging'ga qarshi) — web (home uz/ru + CSP nonce, katalog + noindex + sitemap), admin (login sahifasi, himoyalangan route redirect), miniapp (qobiq oq ekran emas); `e2e-nightly.yml` (cron 02:00 + dispatch, chromium, hisobot artefakt). Lokal: 5/5 smoke o'tdi. MSW, RTL komponent testlari, Lighthouse — keyin.
+
 | Repo | Unit (vitest + RTL) | E2E (Playwright) |
 |---|---|---|
 | web | `filter-params.ts` (parse/serialize/toApiParams — 100 %), `format.ts`, `auth/store` (refresh mutex, 401 → refresh → retry), `filter-panel` (URL o'zgarishi) | Home → katalog filter → profil → (dev login) sevimli → taqqoslash; SEO: `sitemap.xml`, `robots.txt`, JSON-LD mavjudligi; `next build` ISR |
