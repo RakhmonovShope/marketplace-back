@@ -68,7 +68,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **DoD.** `getById` hamma joyda 404; `message` count filter bilan; `badges/stream`, `cron/example`, `console.log` yo'q; `AllExceptionsFilter` `errors[]` + `code`.
 **Tekshirish.** `grep -rn "console\.log" src/ | wc -l` → 0; `curl /v1/banners/00000000-0000-0000-0000-000000000000` → 404.
 
-### - [ ] STEP-10 — Repo gigiyenasi
+### - [x] STEP-10 — Repo gigiyenasi ✅ 2026-09-06
 **Manba.** `01-SECURITY` S8, `11-DEPS` §1. **Fayllar.** `.gitignore`, `prisma/seed.ts`, `package.json`
 **Bajarish.** `git rm -r --cached uploads`; `uploads/` `.gitignore`ga; seed ma'lumotlari `SEED_ADMIN_*` env'dan; keraksiz paketlarni olib tashlash; `prisma`/`@types/*` devDeps'ga.
 **DoD.** `git ls-files uploads` bo'sh; `pnpm build` yashil; `node_modules` hajmi kamaygan.

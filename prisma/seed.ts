@@ -1,12 +1,12 @@
 import { PrismaClient, SUB_TYPE } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 import { PERMISSIONS } from '../src/api/auth/auth.enum';
 import { ROLE_CODE } from '../src/api/role/role.enum';
 
 const prisma = new PrismaClient();
 
-// Barqaror ID'lar — mavjud muhitlardagi yozuvlar bilan mos kelishi uchun.
+// Barqaror rol ID'si — mavjud muhitlardagi yozuvlar bilan mos kelishi uchun.
 const SUPER_ADMIN_ROLE_ID = 'bfdc30ce-9442-4729-9f2c-4513d851052c';
-const SUPER_ADMIN_USER_ID = 'ce22df22-85a2-45e8-a33a-3884f47aad4f';
 
 /**
  * Seed IDEMPOTENT: `upsert` ishlatiladi, ikki marta ishga tushirilsa dublikat bo'lmaydi.
@@ -48,19 +48,54 @@ async function seedRoles() {
   return { superAdmin, customer };
 }
 
+/**
+ * Super-admin foydalanuvchi — ma'lumotlar ENV'dan (repo'da shaxsiy ma'lumot/hash saqlanmaydi):
+ *   SEED_ADMIN_PHONE (majburiy), SEED_ADMIN_PASSWORD (yangi yaratishda majburiy),
+ *   SEED_ADMIN_EMAIL, SEED_ADMIN_FIRST_NAME, SEED_ADMIN_LAST_NAME (ixtiyoriy).
+ * Mavjud foydalanuvchi (telefon bo'yicha) faqat rol/faollik bo'yicha yangilanadi —
+ * paroli o'zgartirilmaydi.
+ */
 async function seedSuperAdminUser(roleId: string) {
-  const user = await prisma.user.upsert({
-    where: { phone: '998995107444' },
-    update: { roleId, subType: SUB_TYPE.ADMIN, active: true },
-    create: {
-      id: SUPER_ADMIN_USER_ID,
-      firstName: 'Shohboz',
-      lastName: 'Rahmonov',
-      phone: '998995107444',
-      email: 'shahbozbek10199701@gmail.com',
+  const phone = process.env.SEED_ADMIN_PHONE;
+
+  if (!phone) {
+    console.warn(
+      'SEED_ADMIN_PHONE berilmagan — super-admin foydalanuvchi yaratilmadi (rollar seed qilindi).',
+    );
+    return;
+  }
+
+  const existing = await prisma.user.findUnique({ where: { phone } });
+
+  if (existing) {
+    await prisma.user.update({
+      where: { id: existing.id },
+      data: { roleId, subType: SUB_TYPE.ADMIN, active: true, deletedAt: null },
+    });
+    console.log(`Super admin user updated: ${existing.id}`);
+    return;
+  }
+
+  const password = process.env.SEED_ADMIN_PASSWORD;
+
+  if (!password || password.length < 8) {
+    console.warn(
+      'SEED_ADMIN_PASSWORD (kamida 8 belgi) berilmagan — yangi super-admin yaratilmadi.',
+    );
+    return;
+  }
+
+  const rounds = Number(process.env.BCRYPT_ROUNDS) || 12;
+
+  const user = await prisma.user.create({
+    data: {
+      firstName: process.env.SEED_ADMIN_FIRST_NAME ?? 'Super',
+      lastName: process.env.SEED_ADMIN_LAST_NAME ?? 'Admin',
+      phone,
+      email: process.env.SEED_ADMIN_EMAIL ?? `admin+${phone}@example.com`,
       gender: 'MALE',
-      birthday: '01.11.1997',
-      password: '$2b$10$Lh.0oN.tAwKRQIqTgyDa0upe0dyDtr5/kT5uy/VyHuRNvqyj2ue12',
+      birthday: '01.01.1990',
+      password: await bcrypt.hash(password, rounds),
       subType: SUB_TYPE.ADMIN,
       roleId,
       active: true,
@@ -69,7 +104,7 @@ async function seedSuperAdminUser(roleId: string) {
     },
   });
 
-  console.log(`Super admin user: ${user.id}`);
+  console.log(`Super admin user created: ${user.id}`);
 }
 
 async function main() {

@@ -83,4 +83,14 @@ export const envValidationSchema = Joi.object({
   // Tokenlar muddati (verification email va reset password uchun).
   EMAIL_VERIFICATION_TTL: Joi.string().default('1d'),
   PASSWORD_RESET_TTL: Joi.string().default('1h'),
+
+  // Seed (prisma/seed.ts) — super-admin foydalanuvchi. Faqat `pnpm seed` uchun;
+  // app ishga tushishida majburiy emas.
+  SEED_ADMIN_PHONE: Joi.string()
+    .pattern(/^998\d{9}$/)
+    .optional(),
+  SEED_ADMIN_PASSWORD: Joi.string().min(8).optional(),
+  SEED_ADMIN_EMAIL: Joi.string().email().optional(),
+  SEED_ADMIN_FIRST_NAME: Joi.string().optional(),
+  SEED_ADMIN_LAST_NAME: Joi.string().optional(),
 });

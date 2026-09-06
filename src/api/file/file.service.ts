@@ -12,9 +12,8 @@ import { createReadStream, existsSync } from 'fs';
 import { File as PrismaFile, ImageStatus, ImageUpload } from '@prisma/client';
 import * as process from 'node:process';
 
-import { readFile, unlink, writeFile } from 'fs/promises';
-import { mkdirp } from 'mkdirp';
-import { v4 as uuidv4 } from 'uuid';
+import { mkdir, readFile, unlink, writeFile } from 'fs/promises';
+import { randomUUID } from 'crypto';
 import * as FileType from 'file-type';
 
 /**
@@ -95,9 +94,9 @@ export class FileService {
     const day = now.getDate().toString();
 
     const uploadDir = join(process.cwd(), 'uploads', 'files', year, month, day);
-    await mkdirp(uploadDir);
+    await mkdir(uploadDir, { recursive: true });
 
-    const filename = `${uuidv4()}.${ext}`;
+    const filename = `${randomUUID()}.${ext}`;
     await writeFile(join(uploadDir, filename), buffer);
 
     const url = `/${year}/${month}/${day}/${filename}`;
@@ -186,9 +185,9 @@ export class FileService {
     const day = now.getDate().toString();
 
     const uploadDir = join(process.cwd(), 'uploads', 'files', year, month, day);
-    await mkdirp(uploadDir);
+    await mkdir(uploadDir, { recursive: true });
 
-    const filename = `${uuidv4()}.webp`;
+    const filename = `${randomUUID()}.webp`;
     await writeFile(join(uploadDir, filename), buffer);
 
     const url = `/${year}/${month}/${day}/${filename}`;
@@ -226,9 +225,9 @@ export class FileService {
     const day = now.getDate().toString();
 
     const dir = join(this.originalsRoot(), year, month, day);
-    await mkdirp(dir);
+    await mkdir(dir, { recursive: true });
 
-    const filename = `${uuidv4()}.${ext}`;
+    const filename = `${randomUUID()}.${ext}`;
     await writeFile(join(dir, filename), buffer);
 
     // relativ yo'lni qaytaramiz — DB'da shu saqlanadi

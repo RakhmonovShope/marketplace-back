@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import multerS3 from 'multer-s3';
 import { S3Client } from '@aws-sdk/client-s3';
 import { AudioService } from './audio.service';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import { Response } from 'express';
 import {
   ApiBearerAuth,
@@ -60,7 +60,7 @@ export class AudioController {
           cb(null, { fieldName: file.fieldname });
         },
         key: (req, file, cb) => {
-          const filename = `${uuidv4()}${file.originalname}`;
+          const filename = `${randomUUID()}${file.originalname}`;
           cb(null, `uploads/audios/${filename}`);
         },
       }),

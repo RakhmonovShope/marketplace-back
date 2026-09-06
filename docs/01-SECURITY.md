@@ -180,6 +180,8 @@ hash'ni boolean-oracle bilan tekshirish, relation nomlarini yuborib Prisma 500 c
 
 ## S8. Sirlar va PII repo'da (O'RTA)
 
+> ✅ Bajarildi (2026-09-06, STEP-10): `uploads/` git'dan chiqarildi va `.gitignore`ga qo'shildi; seed super-admin ma'lumotlari `SEED_ADMIN_PHONE/PASSWORD/EMAIL/FIRST_NAME/LAST_NAME` env'dan (mavjud user faqat rol bo'yicha yangilanadi, parol tegilmaydi); keraksiz paketlar olib tashlandi (`aws-sdk` v2, `chalk`, `node-plop`, `@nestjs/serve-static`, `dotenv`, `uuid` → `crypto.randomUUID`, `mkdirp` → `fs.mkdir`), `prisma`/`@types/*` devDependencies'ga (prisma 5.19.1 client bilan bir xil). `AudioController` S3Client import-vaqtida — 07-FILES §2 (STEP-43) da hal qilinadi.
+
 - `prisma/seed.ts`: real ism, telefon, email, bcrypt hash → env'dan o'qish:
   `SEED_ADMIN_PHONE`, `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` (hash seed ichida hisoblanadi).
 - `uploads/files/2026/6/30/*.webp` git'da: `git rm -r --cached uploads && echo 'uploads/' >> .gitignore`.
