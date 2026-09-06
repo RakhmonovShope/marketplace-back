@@ -49,9 +49,13 @@ Biznes brief yaratadi (kategoriya, byudjet, format, muddat, shahar) → tizim mo
 Kategoriya × shahar × platforma × tier landing'lar ("Toshkentdagi Instagram food bloggerlar (10K–50K)"): `GET /public/seo/landing`, `generateMetadata`, ichki havola tarmog'i, sitemap. Organik trafikning asosiy manbai (`04-WEB` §2).
 
 ### 11. Taqqoslashni saqlash va ulashish (B-41.4 ⏸) — S, backend+web+miniapp
+
+> ✅ Bajarildi (2026-09-06, B2-32 + W2-12 + M2-12): backend POST/GET/DELETE /app/comparison + GET /public/comparison/:id (read-only), `url`/`startapp=cmp_<id>`/`tgUrl`; saqlangan qidiruvlar GET/POST/PUT/DELETE /app/saved-searches + POST :id/run (filters = InfluencerSearchDto, notifyNew → B2-33), e2e 2 test; web /compare «Saqlash va ulashish» → havola nusxalanadi + public /compare/[id], katalogda «Qidiruvni saqlash» + /saved-searches (→ /catalog?… fromApiParams); miniapp MainButton «Saqlash va ulashish» → shareURL(startapp=cmp_), /compare/:id, startapp cmp_ redirect, kategoriya sahifasida bookmark sheet + /saved, /saved/:id.
 `Comparison` schema bor; `POST /app/comparison` + public havola `/compare/<id>` (read-only) + `startapp=cmp_<id>`.
 
 ### 12. Saqlangan qidiruvlar (B-42/W-23 ⏸) — S/M
+
+> ✅ Bajarildi (2026-09-06, B2-32 + W2-12 + M2-12): §11 izohiga qarang — `/app/saved-searches` + web `/saved-searches` + miniapp `/saved`; `notifyNew` bayrog'i B2-33 alertlarida ishlatiladi.
 Schema bor; UI "Qidiruvni saqlash" + §3 alertlar bilan qiymat oshadi.
 
 ---

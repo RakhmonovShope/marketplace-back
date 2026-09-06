@@ -128,6 +128,8 @@ X-Client: web | miniapp | admin   # analitika uchun
 | POST | `/app/influencers/:id/view` | Ko'rish hisoblagichi (fire-and-forget) |
 | POST | `/app/influencers/:id/contact-requests` | `{channel, message?, budget?}` → `ContactRequest` — aloqa so'rovi/lead, auth, 10/min (B2-30) |
 | GET/POST | `/app/lists` · GET/PUT/DELETE `/app/lists/:id` · POST `/app/lists/:id/items` · DELETE `/app/lists/:id/items/:influencerId` · GET `/app/lists/:id/export.csv` | Ro'yxatlar (collections, max 20×500); default "Saqlanganlar" = favorites ko'zgusi; CSV (aloqa ustunlari plan bo'yicha) (B2-31) |
+| POST/GET | `/app/comparison` · DELETE `/app/comparison/:id` · GET `/public/comparison/:id` | Taqqoslashni saqlash (max 50) → `url` (web `/compare/<id>`), `startapp=cmp_<id>`; public read-only (B2-32) |
+| GET/POST | `/app/saved-searches` · PUT/DELETE `/app/saved-searches/:id` · POST `/app/saved-searches/:id/run {page}` | Saqlangan qidiruvlar (max 20; `filters` = InfluencerSearchDto, `notifyNew` → B2-33) (B2-32) |
 | GET | `/app/me/contact-requests` | So'rovlarim (oxirgi 200) (B2-30) |
 | POST | `/admin/leads/search` · GET `/admin/leads/stats` · PUT `/admin/leads/:id` | Admin lead ro'yxati (DSL), statistika, holat (`LEAD__VIEW/UPDATE`) (B2-30) |
 | POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |

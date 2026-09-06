@@ -135,7 +135,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-31 + W2-11 + M2-11 — Ro'yxatlar (collections) ✅ 2026-09-06
 **Manba.** `09` §6. **DoD.** Nomlangan ro'yxatlar, favorites migratsiyasi default ro'yxatga, eksport CSV.
 
-### - [ ] B2-32 + W2-12 + M2-12 — Saqlangan qidiruv (B-42/W-23 ⏸) + taqqoslashni saqlash/ulashish (B-41.4 ⏸)
+### - [x] B2-32 + W2-12 + M2-12 — Saqlangan qidiruv (B-42/W-23 ⏸) + taqqoslashni saqlash/ulashish (B-41.4 ⏸) ✅ 2026-09-06
 **Manba.** `09` §11, §12. **DoD.** `/compare/<id>` public; `startapp=cmp_<id>`; saqlangan qidiruv ro'yxati.
 
 ### - [ ] B2-33 — Alertlar: `notification` navbati, Telegram bot xabarlari, `requestWriteAccess`
