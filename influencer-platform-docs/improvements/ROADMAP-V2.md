@@ -94,7 +94,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] A2-01 — Sahifalarni lazy yuklash + chunk'lar + analyzer ✅ 2026-09-06
 **Manba.** `05-ADMIN` §1. **DoD.** Boshlang'ich JS 2× kichik (analyzer skrinshoti); barcha route'lar ishlaydi.
 
-### - [ ] B2-20 + A2-02 — Bulk endpoint + admin bulk UI
+### - [x] B2-20 + A2-02 — Bulk endpoint + admin bulk UI ✅ 2026-09-06
 **Manba.** `05` §2. **DoD.** 100 ta influencer publish → 1 so'rov, natija modal (`ok/failed`).
 
 ### - [ ] W2-02 — Anonim katalog keshi + filterli URL'lar `noindex/canonical` + kategoriya sitemap
