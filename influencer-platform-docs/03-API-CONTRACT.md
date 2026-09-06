@@ -126,6 +126,7 @@ X-Client: web | miniapp | admin   # analitika uchun
 | GET | `/app/influencers/:id/accounts/:accountId/growth?period=30d\|90d\|1y` | O'sish grafigi nuqtalari |
 | GET | `/app/influencers/:id/accounts/:accountId/posts` | Eng yaxshi postlar |
 | POST | `/app/influencers/:id/view` | Ko'rish hisoblagichi (fire-and-forget) |
+| POST | `/app/influencers/:id/contact-click` | `{channel: TELEGRAM\|PHONE\|EMAIL}` → `{counted}` — aloqa tugmasi (lead), 1 soatda 1 marta (W2-04) |
 
 Profil javobi:
 ```json

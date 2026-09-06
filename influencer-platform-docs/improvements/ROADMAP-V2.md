@@ -122,7 +122,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] W2-03 / A2-03 / M2-02 — Frontend unit testlar (vitest) + Playwright smoke ✅ 2026-09-06
 **Manba.** `08` §3. **DoD.** Har repo'da ≥ 10 unit test, 1 smoke e2e CI'da (nightly).
 
-### - [ ] W2-04 — Analytics (Plausible) + `contact_click` hodisasi + Web Vitals + Lighthouse CI
+### - [x] W2-04 — Analytics (Plausible) + `contact_click` hodisasi + Web Vitals + Lighthouse CI ✅ 2026-09-06
 **Manba.** `04` §4. **DoD.** Dashboard'da voronka (search → profile → contact); LCP < 2.5 s home/profil.
 
 ---

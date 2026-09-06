@@ -45,6 +45,8 @@ Qo'shimcha SEO (`09-FEATURE-IDEAS` §10): **programmatik landing sahifalar** —
 
 ## 4. Analytics va o'lchov (P1)
 
+> ✅ Bajarildi (2026-09-06, W2-04): Plausible (`NEXT_PUBLIC_PLAUSIBLE_DOMAIN/HOST`, nonce'li `<Script>`, CSP script/connect hostlari), `track()` yordamchisi; hodisalar: `search` (natija soni, filtered), `profile_view`, `contact_click` (kanal+slug — lead), `favorite_add/remove`, `share_click`, `login`, `web_vitals` (`useReportWebVitals`). Backend `POST /app/influencers/:id/contact-click` → `ContactClick` jadvali + `Influencer.contactClickCount` (1 soat dedup, retention; admin javobida). Lighthouse CI (`lighthouserc.json`, nightly workflow, warn darajasi): lokal desktop — home perf 100 / LCP 775 ms, katalog perf 99 / LCP 904 ms, 445–467 KB. Voronka (search → profile → contact) Plausible dashboardida event'lar asosida quriladi — real DSN/domen deploy'da.
+
 W-27 "analitika" bajarilgan deb belgilangan, lekin kodda `plausible/gtag/posthog/umami` topilmadi. Mahsulot metrikalarisiz o'sish qarorlari yo'q.
 - **Plausible** (self-host, cookie'siz, GDPR-yengil) yoki **PostHog** (voronka, session replay). Event'lar: `search`, `filter_apply`, `profile_view`, `favorite_add`, `compare_open`, `contact_click` (⚠️ eng muhim — "lead"), `share_click`, `login`.
 - Backend `contact_click` → `POST /app/influencers/:id/contact-click` (ProfileView kabi) — biznes uchun "necha marta aloqa ochildi" (creator'lar uchun qiymat, monetizatsiya asosi).
