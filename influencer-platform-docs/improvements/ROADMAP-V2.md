@@ -46,7 +46,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-07 — `xlsx`/`multer`/`dotenv` yangilash + import limitlari ✅ 2026-09-06
 **Manba.** `01` S5. **DoD.** `pnpm audit --audit-level=high` toza; XLSX import ishlaydi (e2e); 10MB/10k satr limiti.
 
-### - [ ] B2-08 — `Category.influencerCount` to'g'ri hisob + import slug-merge himoyasi
+### - [x] B2-08 — `Category.influencerCount` to'g'ri hisob + import slug-merge himoyasi ✅ 2026-09-06
 **Manba.** `03-DATA-QUALITY` §1.1, §1.2. **Fayllar.** `src/api/category/category-count.service.ts`, `influencer.service.ts` (publish/delete/restore), `import.service.ts`, `import.parser.ts` (`slug` ustuni, `NAME_MATCH` warning), cron.
 **DoD.** Count faqat PUBLISHED+active; importdan keyin to'g'ri; ism mos kelsa preview'da ogohlantirish, default — yangi yozuv.
 

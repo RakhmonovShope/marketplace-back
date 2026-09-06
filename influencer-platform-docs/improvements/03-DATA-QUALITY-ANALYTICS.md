@@ -8,6 +8,8 @@
 ## 1. Buglar (P0/P1)
 
 ### 1.1 `Category.influencerCount` noto'g'ri
+
+> ✅ Bajarildi (2026-09-06, B2-08): `CategoryCountService.recount(ids?)` — bitta SQL (PUBLISHED + active + deletedAt IS NULL), `categories:tree` kesh tozalanadi; trigger: setCategories, publish, delete, restore, update(active/status), import (batch, bir marta); kunlik `recount-categories` job (tracking navbati, 04:30). `CategoryService.delete` endi BARCHA bindinglarni sanaydi (`details.bindings/published`). Tekshirildi: 41 kategoriya drift=0, DRAFT import sonni o'zgartirmaydi.
 - Recount faqat `InfluencerService.setCategories` da. **Import** (`applyRow INFLUENCER` → `influencerCategory.upsert`) recount qilmaydi.
 - Hisob **barcha** bindinglarni sanaydi — DRAFT/ARCHIVED/`deletedAt` ham. Public katalog "Food 120" ko'rsatadi, ichida 40 ta nashr qilingan.
 - `CategoryService.delete` shu songa tayanadi → "kategoriyaga N ta influencer biriktirilgan" (arxivlanganlar ham).
@@ -22,6 +24,8 @@ UPDATE "Category" c SET "influencerCount" = COALESCE(s.c, 0) FROM (
 Trigger: publish/delete/restore/setCategories/import (batch), + kunlik cron (drift himoyasi). `delete` uchun alohida `count` (barcha bindinglar) — "arxivlanganlar ham bor" xabari bilan.
 
 ### 1.2 Import: ism bo'yicha slug-merge
+
+> ✅ Bajarildi (2026-09-06, B2-08): INFLUENCER importida ixtiyoriy `slug` ustuni (format tekshiruvi); yangilash FAQAT aniq `slug` bilan, ism mos kelsa ham yangi yozuv (`uniqueSlug` → `-2`); preview'da `NAME_MATCH` ogohlantirishi (admin jadvalida ⚠ ustuni, tooltip). Job darajasidagi `mode` tanlovi qilinmadi — default "yangi yozuv" yetarli.
 `applyRow INFLUENCER`: `slugify(fullName)` mavjud bo'lsa **update** — bir xil ismli ikki odam bitta yozuvga birlashadi (ma'lumot yo'qoladi).
 **Yechim.** Ustunlar: `slug` (ixtiyoriy, aniq) yoki `externalId`; `slug` yo'q va ism mos kelsa → preview'da `warnings: ['NAME_MATCH — mavjud yozuv yangilanadi']`,
 admin `mode: create-new | update-existing` tanlaydi (job darajasida). Default — **yangi yaratish** (`-2` suffiks), yangilash faqat aniq `slug` bilan.
