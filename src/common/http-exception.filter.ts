@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
+import * as Sentry from '@sentry/nestjs';
 import { codeForStatus, ERR, ErrorCode } from './error-codes';
 
 interface ResolvedError {
@@ -34,23 +35,32 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const { statusCode, code, message, errors } =
       this.resolveException(exception);
 
+    // pino-http (genReqId) har so'rovga id beradi — javobda ham qaytaramiz,
+    // foydalanuvchi xato haqida yozganda loglardan shu id bo'yicha topiladi.
+    const requestId = (request as Request & { id?: string }).id;
+
     const body = {
       statusCode,
       code,
       message,
       ...(errors?.length ? { errors } : {}),
       path: request.url,
+      requestId,
       timestamp: new Date().toISOString(),
     };
 
     const line = `[${request.method}] ${request.url} → ${statusCode} ${code}: ${message}`;
 
-    // 5xx — haqiqiy xato: stack bilan. 4xx — mijoz xatosi: qisqa, stack'siz (shovqin kam).
+    // 5xx — haqiqiy xato: stack bilan + Sentry. 4xx — mijoz xatosi: qisqa, stack'siz.
     if (statusCode >= 500) {
       this.logger.error(
         line,
         exception instanceof Error ? exception.stack : undefined,
       );
+      // SENTRY_DSN bo'lmasa no-op.
+      Sentry.captureException(exception, {
+        extra: { requestId, path: request.url, method: request.method, code },
+      });
     } else {
       this.logger.warn(line);
     }

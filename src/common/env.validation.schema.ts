@@ -53,6 +53,19 @@ export const envValidationSchema = Joi.object({
   AWS_REGION: Joi.string().allow('').default(''),
   AWS_S3_BUCKET_NAME: Joi.string().allow('').default(''),
 
+  // Logging (pino). LOG_PRETTY: dev'da default true (rangli), prod'da false (JSON).
+  LOG_LEVEL: Joi.string()
+    .valid('fatal', 'error', 'warn', 'info', 'debug', 'trace')
+    .allow('')
+    .optional(),
+  LOG_PRETTY: Joi.boolean().allow('').optional(),
+
+  // Sentry (bo'sh — o'chiq). APP_ENV: staging/production farqlash uchun (Sentry environment).
+  APP_ENV: Joi.string().allow('').optional(),
+  SENTRY_DSN: Joi.string().uri().allow('').default(''),
+  SENTRY_RELEASE: Joi.string().allow('').default(''),
+  SENTRY_TRACES_SAMPLE_RATE: Joi.number().min(0).max(1).default(0),
+
   // Rate limiting (IP bo'yicha, barcha route'lar uchun umumiy "default" limit).
   // Qat'iy limitlar route darajasida @Throttle() bilan beriladi (auth).
   THROTTLE_TTL_MS: Joi.number().integer().min(1000).default(60_000),

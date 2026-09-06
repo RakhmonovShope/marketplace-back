@@ -7,6 +7,8 @@
 
 ## 1. Strukturali log + request id
 
+> ✅ Bajarildi (2026-09-06, STEP-13): `nestjs-pino` 4 + `pino-http` 10 (`LoggerModule.forRootAsync`): JSON loglar (prod) / pino-pretty (dev, `LOG_PRETTY`), `LOG_LEVEL`, `genReqId` → `X-Request-Id` javob sarlavhasi (mijoz bergani saqlanadi), `userId` customProps, authorization/cookie redact, `/health`, `/files`, `/api`, `/metrics` auto-log'dan tashqarida; `LoggingInterceptor` o'chirildi; xato javobida `requestId`. §2: `@sentry/nestjs` — `src/instrument.ts` (main.ts'da birinchi import, `SENTRY_DSN` bo'lsa init), `SentryModule.forRoot()`, filter 5xx'da `captureException` (requestId bilan).
+
 `nestjs-pino` + `pino-http`:
 ```ts
 LoggerModule.forRoot({

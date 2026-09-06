@@ -86,7 +86,7 @@ Fazalar: **0** kritik (1 hafta) → **1** poydevor (2–3 hafta) → **2** data 
 **Manba.** `10-DEVOPS` §2, §3. **DoD.** `docker compose up -d` → postgres/redis/minio/mailpit; `docker build -t mb .` → `docker run mb` `/health` 200.
 **Tekshirish.** `docker compose up -d && docker build -t mb . && docker run --rm --env-file .env --network host mb & sleep 5; curl localhost:3000/health`
 
-### - [ ] STEP-13 — pino + request id + Sentry
+### - [x] STEP-13 — pino + request id + Sentry ✅ 2026-09-06
 **Manba.** `08-OBS` §1, §2. **DoD.** Har log qatorida `reqId`; javob header'ida `X-Request-Id`; 500 xato Sentry'da (DSN bo'lsa).
 **Tekshirish.** `curl -i /v1/yoq | grep -i x-request-id`; log JSON.
 

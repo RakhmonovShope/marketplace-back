@@ -6,20 +6,28 @@ if (!process.env.UV_THREADPOOL_SIZE) {
   process.env.UV_THREADPOOL_SIZE = String(Math.max(4, os.cpus().length));
 }
 
+// Sentry — Nest importlaridan OLDIN (auto-instrumentation uchun).
+import { sentryEnabled } from './instrument';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Logger as PinoLogger } from 'nestjs-pino';
 import helmet from 'helmet';
 import basicAuth from 'express-basic-auth';
 import { TransformInterceptor } from './transform.interceptor';
 import { AllExceptionsFilter } from './common/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { LoggingInterceptor } from './common/logging.interceptor';
 import { ConfiguredIoAdapter } from './common/socket-io.adapter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // bufferLogs: pino logger o'rnatilgunga qadar chiqqan loglar yo'qolmaydi.
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+  // Barcha `new Logger('X')` chaqiruvlari endi pino orqali (JSON, reqId bilan).
+  app.useLogger(app.get(PinoLogger));
+
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
@@ -108,10 +116,8 @@ async function bootstrap() {
       transform: true, // payload'ni DTO instance'ga aylantiradi + tip coercion
     }),
   );
-  app.useGlobalInterceptors(
-    new LoggingInterceptor(),
-    new TransformInterceptor(),
-  );
+  // HTTP so'rov loglari — pino-http (LoggerModule, app.module.ts); alohida interceptor yo'q.
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   // Swagger UI (/api). Development'da ochiq; production'da default YOPIQ
   // (SWAGGER_ENABLED=false). Ochilsa — faqat basic auth (SWAGGER_USER/PASS) bilan.
@@ -152,6 +158,9 @@ async function bootstrap() {
 
   logger.log(`App ishga tushdi: http://localhost:${port}`);
   logger.log(`NODE_ENV=${nodeEnv}`);
+  logger.log(
+    `Sentry: ${sentryEnabled ? 'yoqilgan' : "o'chiq (SENTRY_DSN yo'q)"}`,
+  );
   logger.log(
     corsOrigins.length
       ? `CORS whitelist: ${corsOrigins.join(', ')}`
