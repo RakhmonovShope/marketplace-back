@@ -64,6 +64,8 @@ Import 1 000 satr = 2 000 SCAN; `recalculateAll` (10k) = 20k SCAN + ketma-ket.
 
 ## 5. Import: satr-satr N+1
 
+> ✅ Bajarildi (2026-09-06, B2-14): `preloadRefs(type, rows)` — influencer slug'lari, kategoriya, davlat, shahar, akkauntlar BIR MARTA `findMany({ in })` (1000 talik chunk) → Map; `validateRefs`/`detectAction` sinxron, `applyRow` Map'dan (yangi yozuvlar Map'ga qo'shiladi, isPrimary hisobi ham). +2 unit test. O'lchov: 5 000 satr STATS validate — 37 ms (dev DB, 3 ta query), 100 xato satr to'g'ri topildi. Apply bosqichi satr-satr yozadi (inherent), lekin lookup'lar Map'dan. `MAX_IMPORT_ROWS` — B2-07.
+
 **Hozir.** `runValidate`: har satr uchun `validateRefs` (1–2 query) + `detectAction` (1 query) → 5k satr ≈ 15k query.
 `runApply`: har satr `applyStats` (≈8 query + recalculate).
 

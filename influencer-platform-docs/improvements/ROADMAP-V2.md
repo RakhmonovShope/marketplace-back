@@ -73,7 +73,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 ### - [x] B2-13 — Aggregate: aniq kalit `del`, batch `recalculate(ids)`, dashboard dirty-flag ✅ 2026-09-06
 **Manba.** `02` §4, §10. **DoD.** `SCAN` chaqiruvi yo'q (Redis `MONITOR`); import 1 000 satrda dashboard keshi 1 marta tozalanadi.
 
-### - [ ] B2-14 — Import: referenslarni oldindan yuklash (Map), N+1 yo'q
+### - [x] B2-14 — Import: referenslarni oldindan yuklash (Map), N+1 yo'q ✅ 2026-09-06
 **Manba.** `02` §5. **DoD.** 5 000 satr STATS < 3 daqiqa (lokal); query soni satr soniga chiziqli emas.
 
 ### - [ ] B2-15 — Sync: `UnrecoverableError`, provayder rate limit/kvota, ustuvorlik
