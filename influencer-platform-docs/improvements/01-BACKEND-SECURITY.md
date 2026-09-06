@@ -6,6 +6,8 @@
 
 ## S1. `trust proxy` yo'q — throttler va IP statistikasi buziladi (KRITIK, prod)
 
+> ✅ Bajarildi (2026-09-06, B2-01): `TRUST_PROXY` env (default `false`, prod compose `1`) → Express `trust proxy`; `ThrottlerModule.forRootAsync` + `@nest-lab/throttler-storage-redis` (mavjud `REDIS_CLIENT`), `THROTTLE_LIMIT/TTL_MS` env; search `@Throttle(60/min)`. Tekshirildi: Redis'da `{…:default}:hits`, TRUST_PROXY=1 da XFF IP'lar alohida bucket (61-so'rov 429, boshqa IP 201), false da XFF e'tiborsiz.
+
 **Muammo.** `docker-compose.prod.yml`: nginx → `app:3000`, nginx `X-Forwarded-For` yuboradi, lekin Express
 `trust proxy` o'rnatilmagan → `req.ip` har doim nginx konteyner IP'si. Oqibat:
 - `ThrottlerModule` (120/min/IP) → **butun sayt** uchun bitta hisoblagich → 120 so'rovdan keyin hammaga 429;

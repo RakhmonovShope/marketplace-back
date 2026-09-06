@@ -14,7 +14,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 
 ## FAZA 0 — Kritik tuzatishlar (production trafigidan oldin)
 
-### - [ ] B2-01 — `trust proxy` + Redis throttler storage
+### - [x] B2-01 — `trust proxy` + Redis throttler storage ✅ 2026-09-06
 **Manba.** `01-BACKEND-SECURITY` S1, `02-PERF` §8. **Fayllar.** `src/main.ts`, `src/common/env.validation.ts`, `src/app.module.ts`, `docker-compose.prod.yml`, `.env.example`
 **Bajarish.** `TRUST_PROXY` env (default `false`, prod `1`) → Express `trust proxy`; `@nest-lab/throttler-storage-redis`; search route'ga `@Throttle({ default: { limit: 60, ttl: 60_000 } })`.
 **DoD.** nginx ortida `req.ip` real IP (pino logda); 2 ta IP'dan alohida limit.
