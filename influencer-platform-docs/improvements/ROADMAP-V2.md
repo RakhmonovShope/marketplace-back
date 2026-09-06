@@ -25,7 +25,7 @@ Fazalar: **0** kritik (1 hafta) → **1** performance + ma'lumot sifati (2–3 h
 **DoD.** `contact` imzosiz/soxta → 401 `INVALID_CONTACT_DATA`; to'g'ri imzo (test bot token bilan yasalgan) → telefon bog'lanadi.
 **Tekshirish.** `pnpm test -- validate-contact`.
 
-### - [ ] B2-03 — Loglarda token redaction + `userId`
+### - [x] B2-03 — Loglarda token redaction + `userId` ✅ 2026-09-06
 **Manba.** `01` S3. **Fayllar.** `src/app.module.ts`
 **DoD.** Logda `authorization: "[redacted]"`; `userId` maydoni bor; `/files/`, `/api/docs` auto-log'dan tashqarida.
 **Tekshirish.** `curl -H "Authorization: Bearer abc" …/auth/me` → log qatorida `abc` yo'q.

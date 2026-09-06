@@ -49,6 +49,8 @@ Proxy'siz muhitda `false` qoladi (aks holda mijoz `X-Forwarded-For` bilan limitn
 
 ## S3. Loglarda `Authorization` sarlavhasi (O'RTA)
 
+> ✅ Bajarildi (2026-09-06, B2-03): pinoHttp `redact` (authorization/cookie/x-telegram-init-data/set-cookie), `req` serializer faqat id/method/url/ip/userAgent (ip = Express `req.ip`, TRUST_PROXY bilan real), `customProps.userId`, autoLogging ignore: health, `/files/`, `/api/docs`. Smoke: Bearer/Cookie logda yo'q, `userId` bor, XFF 9.9.9.9 → `ip`.
+
 **Muammo.** `LoggerModule` → pino-http default `req` serializer `headers` ni to'liq yozadi (`authorization: Bearer ...`, `cookie`).
 Loglar Loki/faylga ketsa — token sizadi.
 
