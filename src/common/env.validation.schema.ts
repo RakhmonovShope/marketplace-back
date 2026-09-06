@@ -60,6 +60,9 @@ export const envValidationSchema = Joi.object({
     .optional(),
   LOG_PRETTY: Joi.boolean().allow('').optional(),
 
+  // /health/ready: heap shu chegaradan oshsa unhealthy (MB).
+  HEALTH_HEAP_LIMIT_MB: Joi.number().integer().min(128).default(1024),
+
   // Sentry (bo'sh — o'chiq). APP_ENV: staging/production farqlash uchun (Sentry environment).
   APP_ENV: Joi.string().allow('').optional(),
   SENTRY_DSN: Joi.string().uri().allow('').default(''),
